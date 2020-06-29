@@ -28,7 +28,7 @@ type bepaClient struct {
 var _ Client = &bepaClient{}
 
 // NewClient creates a new client to interact with bepa server
-func NewClient(accessToken, baseURL, defaultWorkspace, userUUID string) (*bepaClient, error) {
+func NewClient(accessToken, baseURL, defaultWorkspace, userUUID string) (Client, error) {
 	client := &bepaClient{}
 	if err := client.SetServerURL(baseURL); err != nil {
 		return nil, err
