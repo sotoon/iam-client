@@ -21,8 +21,6 @@ const (
 	RouteRuleCreate      = "/workspace/{workspace_uuid}/rule/"
 	RouteRuleGetOne      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
 	RouteRuleGetAll      = "/rule/"
-	RouteRuleDelete      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
-	RouteRuleGetAllUsers = "/workspace/{workspace_uuid}/rule/{rule_uuid}/user/"
 	RouteRuleGetAllRoles = "/workspace/{workspace_uuid}/rule/{rule_uuid}/role/"
 
 	RouteServiceGetAll = "/service/"
