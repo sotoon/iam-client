@@ -58,12 +58,16 @@ type Client interface {
 	CreateUserTokenByCreds(email, password string) (*UserToken, error)
 	SetConfigDefaultUserData(context, token, userUUID, email string) error
 	SetCurrentContext(context string) error
+	SuspendUser(userUUID *uuid.UUID) error
+	ActivateUser(userUUID *uuid.UUID) error
 
 	CreatePublicKeyForDefaultUser(title, keyType, key string) (*PublicKey, error)
 	GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*PublicKey, error)
 	GetAllDefaultUserPublicKeys() ([]*PublicKey, error)
 	DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error
 	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*PublicKey, error)
+	VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error)
+
 
 	Authorize(identity, action, object string) error
 	Identify(token string) (*types.UserRes, error)
@@ -73,4 +77,12 @@ type Client interface {
 	SetUser(userUUID string)
 	SetServerURL(serverURL string) error
 	GetServerURL() string
+
+	CreateTokenWithToken(server, secret string) (*UserToken, error)
+	GetUserToken(server, user_token_uuid string) (*UserToken, error)
+	GetAllUserToken(server string) (*[]UserToken, error)
+	DeleteUserToken(server, user_token_uuid string) error
+
+	GetAllServices(server string) (*[]Service, error)
+	GetService(server, name string) (*Service, error)
 }

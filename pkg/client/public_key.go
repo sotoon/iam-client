@@ -92,3 +92,23 @@ func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string
 	}
 	return c.CreatePublicKeyForDefaultUser(title, defaultSSHKeyType, string(key))
 }
+
+func (c *bepaClient) VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error) {
+	publicKeyVerifyReq := &types.PublicKeyVerifyReq{
+		KeyType:        keyType,
+		Key:            key,
+		Workspace_uuid: workspace_uuid,
+		Email:          username,
+		Hostname:       hostname,
+	}
+
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: c.userUUID,
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyVerify), replaceDict)
+
+	if err := c.Do(http.MethodPost, apiURL, publicKeyVerifyReq, nil); err != nil {
+		return false, err
+	}
+	return true, nil
+}

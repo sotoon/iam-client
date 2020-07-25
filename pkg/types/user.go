@@ -66,3 +66,11 @@ type PublicKeyReq struct {
 type VerifRes struct {
 	Message string `json:"message"`
 }
+
+type PublicKeyVerifyReq struct {
+	Key string
+	KeyType string
+	Workspace_uuid string `json:"workspace_uuid"`
+	Hostname string `json:"hostname"`
+	Email string `json:"email"`
+}

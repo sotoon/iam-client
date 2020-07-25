@@ -11,4 +11,7 @@ const (
 	userEmailPlaceholder           = "{user_email}"
 	publicKeyUUIDPlaceholder       = "{public_key_uuid}"
 	userInvitationTokenPlaceholder = "{user_invitation_token}"
+	userTokenUUIDPlaceholder       = "{user_token_uuid}"
+	serviceNamePlaceholder         = "{name}"
+
 )
