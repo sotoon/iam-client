@@ -61,6 +61,9 @@ func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) 
 	if err != nil {
 		return err
 	}
+	if c.accessToken !=""{
+		httpRequest.Header.Add("Content-Type", "application/json")
+	}
 
 	client := &http.Client{}
 	httpResponse, err := client.Do(httpRequest)
@@ -95,8 +98,8 @@ func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", c.accessToken))
 	return req, nil
 }
 

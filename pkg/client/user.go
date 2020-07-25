@@ -36,7 +36,10 @@ type InvitationInfo struct {
 type UserSecret struct {
 	Secret string `json:"secret"`
 }
-
+type Service struct {
+	Name string `json:"name"`
+	Actions []string `json:"actions"`
+}
 func (c *bepaClient) CreateUser(userName, email, password string) (*User, error) {
 	userRequest := &types.UserReq{
 		Name:     userName,
@@ -277,4 +280,24 @@ func (c *bepaClient) SetCurrentContext(context string) error {
 		}
 	}
 	return fmt.Errorf("could not find context %s", context)
+}
+
+func (c *bepaClient) SuspendUser(userUUID *uuid.UUID) error {
+
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserSuspend), replaceDict)
+
+	return c.Do(http.MethodPut, apiURL, nil, nil)
+}
+
+func (c *bepaClient) ActivateUser(userUUID *uuid.UUID) error {
+
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserActivate), replaceDict)
+
+	return c.Do(http.MethodPut, apiURL, nil, nil)
 }
