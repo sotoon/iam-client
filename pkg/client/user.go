@@ -2,13 +2,14 @@ package client
 
 import (
 	"fmt"
+	"net/http"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 	"net/http"
 )
-
 
 func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, error) {
 	userRequest := &types.UserReq{
@@ -218,9 +219,7 @@ func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationTok
 	replaceDict := map[string]string{
 		userInvitationTokenPlaceholder: invitationToken,
 	}
-	if err := c.SetServerURL(server); err != nil {
-		return nil, err
-	}
+
 	joinedUser := &types.User{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, joinReq, joinedUser)

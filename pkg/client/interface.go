@@ -68,37 +68,34 @@ type Client interface {
 	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*PublicKey, error)
 	VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error)
 
-
 	Authorize(identity, action, object string) error
 	Identify(token string) (*types.UserRes, error)
 
 	Do(method, path string, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
 	SetUser(userUUID string)
-	SetServerURL(serverURL string) error
-	GetServerURL() string
 
-	CreateTokenWithToken(server, secret string) (*types.UserToken, error)
-	GetUserToken(server, user_token_uuid string) (*types.UserToken, error)
-	GetAllUserToken(server string) (*[]types.UserToken, error)
-	DeleteUserToken(server, user_token_uuid string) error
+	CreateTokenWithToken(secret string) (*types.UserToken, error)
+	GetUserToken(user_token_uuid string) (*types.UserToken, error)
+	GetAllUserToken() (*[]types.UserToken, error)
+	DeleteUserToken(user_token_uuid string) error
 
-	GetAllServices(server string) (*[]types.Service, error)
-	GetService(server, name string) (*types.Service, error)
+	GetAllServices() (*[]types.Service, error)
+	GetService(name string) (*types.Service, error)
 
 	DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error
 	GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error)
 	CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error)
 	CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error)
 	GetServiceUserByName(workspaceName string, serviceUserName string, userUUID *uuid.UUID) (*types.ServiceUser, error)
-	DeleteServiceUser(workspaceUUID,serviceUserUUID *uuid.UUID) error
+	DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error
 	GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
 	GetServiceUser(workspaceUUID,serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
 	BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
 
-	GetGroup(workspaceUUID,groupUUID *uuid.UUID) (*types.Group, error)
+	GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error)
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
 	GetGroupByName(workspaceName string, groupName string, userUUID *uuid.UUID) (*types.Group, error)
