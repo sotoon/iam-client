@@ -18,29 +18,54 @@ var (
 	ErrInternalServerError = errors.New("internal server error")
 )
 
-func ensureStatusOK(resp *http.Response) error {
-	switch resp.StatusCode {
-	case http.StatusCreated:
-		fallthrough
-	case http.StatusNoContent:
-		fallthrough
-	case http.StatusResetContent:
-		fallthrough
-	case http.StatusOK:
-		return nil
-	case http.StatusForbidden:
-		return ErrForbidden
-	case http.StatusBadRequest:
-		return ErrBadRequest
-	case http.StatusInternalServerError:
-		return ErrInternalServerError
-	default:
-		var jerr types.ResponseError
-		if err := json.NewDecoder(resp.Body).Decode(&jerr); err != nil {
-			return err
-		}
-		return errors.New(jerr.Error)
+//HTTPResponseError is a type for errors on http requests based on status code
+type HTTPResponseError struct {
+	StatusCode  int
+	IsFaulty    bool
+	internalErr error
+}
+
+func (re *HTTPResponseError) Error() string {
+	return re.internalErr.Error()
+}
+
+func createHTTPResponseError(statusCode int, internalErr error) *HTTPResponseError {
+	return &HTTPResponseError{
+		StatusCode:  statusCode,
+		IsFaulty:    false,
+		internalErr: internalErr,
 	}
+}
+
+func createFaultyHTTPResponseError(statusCode int, internalErr error) *HTTPResponseError {
+	return &HTTPResponseError{
+		StatusCode:  statusCode,
+		IsFaulty:    true,
+		internalErr: internalErr,
+	}
+}
+
+func ensureStatusOK(resp *http.Response) error {
+	switch resp.StatusCode / 100 {
+	case 2:
+		return nil
+	case 4:
+		switch resp.StatusCode {
+		case http.StatusForbidden:
+			return createHTTPResponseError(resp.StatusCode, ErrForbidden)
+		case http.StatusBadRequest:
+			return createHTTPResponseError(resp.StatusCode, ErrBadRequest)
+
+		}
+	case 5:
+		return createFaultyHTTPResponseError(resp.StatusCode, ErrInternalServerError)
+
+	}
+	var jerr types.ResponseError
+	if err := json.NewDecoder(resp.Body).Decode(&jerr); err != nil {
+		return createFaultyHTTPResponseError(resp.StatusCode, err)
+	}
+	return createHTTPResponseError(resp.StatusCode, errors.New(jerr.Error))
 }
 
 func substringReplace(str string, dict map[string]string) string {
