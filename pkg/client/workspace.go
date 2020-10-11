@@ -2,26 +2,18 @@ package client
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
+	"net/http"
 )
 
-type Workspace struct {
-	UUID      *uuid.UUID `json:"uuid"`
-	Name      string     `json:"name"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-}
 
-func (c *bepaClient) GetWorkspaces() ([]*Workspace, error) {
+func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
 	apiURL := trimURLSlash(routes.RouteWorkspaceGetAll)
 
-	workspaces := []*Workspace{}
+	workspaces := []*types.Workspace{}
 	err := c.Do(http.MethodGet, apiURL, nil, &workspaces)
 	if err != nil {
 		return nil, err
@@ -36,14 +28,14 @@ func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	return persistClientConfigFile()
 }
 
-func (c *bepaClient) GetWorkspaceByName(name string) (*Workspace, error) {
+func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: name,
 		userUUIDPlaceholder:      c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneWorkspaceByName), replaceDict)
 
-	workspace := &Workspace{}
+	workspace := &types.Workspace{}
 	err := c.Do(http.MethodGet, apiURL, nil, &workspace)
 	if err != nil {
 		return nil, err
@@ -51,13 +43,13 @@ func (c *bepaClient) GetWorkspaceByName(name string) (*Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*Workspace, error) {
+func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGetOne), replaceDict)
 
-	workspace := &Workspace{}
+	workspace := &types.Workspace{}
 	err := c.Do(http.MethodGet, apiURL, nil, &workspace)
 	if err != nil {
 		return nil, err
@@ -65,13 +57,13 @@ func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetMyWorkspaces() ([]*Workspace, error) {
+func (c *bepaClient) GetMyWorkspaces() ([]*types.Workspace, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetAllWorkspaces), replaceDict)
 
-	workspaces := []*Workspace{}
+	workspaces := []*types.Workspace{}
 	err := c.Do(http.MethodGet, apiURL, nil, &workspaces)
 	if err != nil {
 		return nil, err
@@ -79,13 +71,13 @@ func (c *bepaClient) GetMyWorkspaces() ([]*Workspace, error) {
 	return workspaces, nil
 }
 
-func (c *bepaClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*User, error) {
+func (c *bepaClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*types.User, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGetUsers), replaceDict)
 
-	users := []*User{}
+	users := []*types.User{}
 	err := c.Do(http.MethodGet, apiURL, nil, &users)
 	if err != nil {
 		return nil, err
@@ -93,12 +85,12 @@ func (c *bepaClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*User, error) {
 	return users, nil
 }
 
-func (c *bepaClient) CreateWorkspace(name string) (*Workspace, error) {
+func (c *bepaClient) CreateWorkspace(name string) (*types.Workspace, error) {
 	workspaceRequest := &types.WorkspaceReq{
 		Name: name,
 	}
 
-	createdWorkspace := &Workspace{}
+	createdWorkspace := &types.Workspace{}
 	apiURL := trimURLSlash(routes.RouteWorkspaceCreate)
 	err := c.Do(http.MethodPost, apiURL, workspaceRequest, &createdWorkspace)
 	if err != nil {
@@ -107,12 +99,12 @@ func (c *bepaClient) CreateWorkspace(name string) (*Workspace, error) {
 	return createdWorkspace, nil
 }
 
-func (c *bepaClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*Rule, error) {
+func (c *bepaClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGetAllRules), replaceDict)
-	rules := []*Rule{}
+	rules := []*types.Rule{}
 	err := c.Do(http.MethodGet, apiURL, nil, &rules)
 	if err != nil {
 		return nil, err
@@ -120,12 +112,12 @@ func (c *bepaClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*Rule, error) {
 	return rules, nil
 }
 
-func (c *bepaClient) GetWorkspaceRoles(uuid *uuid.UUID) ([]*Role, error) {
+func (c *bepaClient) GetWorkspaceRoles(uuid *uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGetAllRoles), replaceDict)
-	roles := []*Role{}
+	roles := []*types.Role{}
 	err := c.Do(http.MethodGet, apiURL, nil, &roles)
 	if err != nil {
 		return nil, err

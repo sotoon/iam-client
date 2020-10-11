@@ -2,52 +2,22 @@ package client
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
+	"net/http"
 )
 
-type UserToken struct {
-	UUID         string     `json:"uuid"`
-	User         string     `json:"user"`
-	Secret       string     `json:"secret"`
-	Active       bool       `json:"active"`
-	LastAccessAt *time.Time `json:"last_access_at"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	DeletedAt    *time.Time `json:"deleted_at"`
-}
 
-type User struct {
-	UUID            *uuid.UUID `json:"uuid"`
-	Name            string     `json:"name"`
-	Email           string     `json:"email"`
-	InvitationToken string     `json:"invitation_token,omitempty"`
-}
-
-type InvitationInfo struct {
-	Token string `json:"invitation_token"`
-}
-
-type UserSecret struct {
-	Secret string `json:"secret"`
-}
-type Service struct {
-	Name string `json:"name"`
-	Actions []string `json:"actions"`
-}
-func (c *bepaClient) CreateUser(userName, email, password string) (*User, error) {
+func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, error) {
 	userRequest := &types.UserReq{
 		Name:     userName,
 		Email:    email,
 		Password: password,
 	}
 
-	createdUser := &User{}
+	createdUser := &types.User{}
 	apiURL := trimURLSlash(routes.RouteUserCreate)
 	if err := c.Do(http.MethodPost, apiURL, userRequest, createdUser); err != nil {
 		return nil, err
@@ -55,13 +25,13 @@ func (c *bepaClient) CreateUser(userName, email, password string) (*User, error)
 	return createdUser, nil
 }
 
-func (c *bepaClient) GetSecret(userUUID *uuid.UUID) (*UserSecret, error) {
+func (c *bepaClient) GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserSecretGet), replaceDict)
 
-	var secret UserSecret
+	var secret types.UserSecret
 	if err := c.Do(http.MethodGet, apiURL, nil, &secret); err != nil {
 		return nil, err
 	}
@@ -77,13 +47,13 @@ func (c *bepaClient) RevokeSecret(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodPost, apiURL, nil, nil)
 }
 
-func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*UserToken, error) {
+func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
 	tokenRequest := &types.UserTokenByCredsReq{
 		Email:    email,
 		Password: password,
 	}
 
-	createdToken := &UserToken{}
+	createdToken := &types.UserToken{}
 	apiURL := trimURLSlash(routes.RouteUserTokenCreateByCreds)
 	if err := c.Do(http.MethodPost, apiURL, tokenRequest, createdToken); err != nil {
 		return nil, err
@@ -106,48 +76,48 @@ func (c *bepaClient) UpdateUser(userUUID *uuid.UUID, name, email, password strin
 	return c.Do(http.MethodPatch, apiURL, userUpdateReq, nil)
 }
 
-func (c *bepaClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*User, error) {
+func (c *bepaClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		userEmailPlaceholder:     userName,
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceUserGetByEmail), replaceDict)
 
-	user := &User{}
+	user := &types.User{}
 	if err := c.Do(http.MethodGet, apiURL, nil, user); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (c *bepaClient) GetMySelf() (*User, error) {
+func (c *bepaClient) GetMySelf() (*types.User, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOne), replaceDict)
 
-	user := &User{}
+	user := &types.User{}
 	if err := c.Do(http.MethodGet, apiURL, nil, user); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (c *bepaClient) GetUser(userUUID *uuid.UUID) (*User, error) {
+func (c *bepaClient) GetUser(userUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOne), replaceDict)
 
-	user := &User{}
+	user := &types.User{}
 	if err := c.Do(http.MethodGet, apiURL, nil, user); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (c *bepaClient) GetUsers() ([]*User, error) {
-	users := []*User{}
+func (c *bepaClient) GetUsers() ([]*types.User, error) {
+	users := []*types.User{}
 	apiURL := trimURLSlash(routes.RouteUserGetAll)
 	if err := c.Do(http.MethodGet, apiURL, nil, &users); err != nil {
 		return nil, err
@@ -169,7 +139,7 @@ func (c *bepaClient) DeleteMySelf() error {
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserDelete), replaceDict)
 
-	user := &User{}
+	user := &types.User{}
 	if err := c.Do(http.MethodDelete, apiURL, nil, user); err != nil {
 		return err
 	}
@@ -227,20 +197,20 @@ func (c *bepaClient) SetMyEmail(email string) error {
 	return c.Do(http.MethodPatch, apiURL, userUpdateReq, nil)
 }
 
-func (c *bepaClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*InvitationInfo, error) {
+func (c *bepaClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error) {
 	inviteReq := &types.InviteUserReq{
 		Email: email,
 	}
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
-	invitationInfo := &InvitationInfo{}
+	invitationInfo := &types.InvitationInfo{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceInvite), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, inviteReq, invitationInfo)
 	return invitationInfo, err
 }
 
-func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationToken string) (*User, error) {
+func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationToken string) (*types.User, error) {
 	joinReq := &types.UserAcceptInvitationReq{
 		Name:     name,
 		Password: password,
@@ -251,7 +221,7 @@ func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationTok
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	joinedUser := &User{}
+	joinedUser := &types.User{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, joinReq, joinedUser)
 	return joinedUser, err

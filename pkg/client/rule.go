@@ -5,20 +5,10 @@ import (
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
-	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
 
-type Rule struct {
-	UUID          *uuid.UUID     `json:"uuid"`
-	WorkspaceUUID *uuid.UUID     `json:"workspace"`
-	Name          string         `json:"name"`
-	Actions       pq.StringArray `json:"actions" validate:"required,gte=1"`
-	Object        string         `json:"object" validate:"required"`
-	Deny          bool           `json:"deny"`
-}
-
-func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, obejct string, deny bool) (*Rule, error) {
+func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, obejct string, deny bool) (*types.Rule, error) {
 	ruleRequest := &types.RuleReq{
 		Name:    ruleName,
 		Actions: ruleActions,
@@ -31,21 +21,21 @@ func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleA
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleCreate), replaceDict)
 
-	createdRule := &Rule{}
+	createdRule := &types.Rule{}
 	if err := c.Do(http.MethodPost, apiURL, ruleRequest, createdRule); err != nil {
 		return nil, err
 	}
 	return createdRule, nil
 }
 
-func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*Role, error) {
+func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetAllRoles), replaceDict)
 
-	roles := []*Role{}
+	roles := []*types.Role{}
 	if err := c.Do(http.MethodGet, apiURL, nil, &roles); err != nil {
 		return nil, err
 	}
@@ -74,52 +64,52 @@ func (c *bepaClient) UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.
 	return err
 }
 
-func (c *bepaClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*Rule, error) {
+func (c *bepaClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetOne), replaceDict)
 
-	rule := &Rule{}
+	rule := &types.Rule{}
 	if err := c.Do(http.MethodGet, apiURL, nil, rule); err != nil {
 		return nil, err
 	}
 	return rule, nil
 }
 
-func (c *bepaClient) GetRuleByName(ruleName, workspaceName string) (*Rule, error) {
+func (c *bepaClient) GetRuleByName(ruleName, workspaceName string) (*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: workspaceName,
 		ruleNamePlaceholder:      ruleName,
 		userUUIDPlaceholder:      c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneRuleByName), replaceDict)
-	rule := &Rule{}
+	rule := &types.Rule{}
 	if err := c.Do(http.MethodGet, apiURL, nil, rule); err != nil {
 		return nil, err
 	}
 	return rule, nil
 }
 
-func (c *bepaClient) GetAllRules() ([]*Rule, error) {
+func (c *bepaClient) GetAllRules() ([]*types.Rule, error) {
 	replaceDict := map[string]string{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetAll), replaceDict)
 
-	rules := []*Rule{}
+	rules := []*types.Rule{}
 	if err := c.Do(http.MethodGet, apiURL, nil, &rules); err != nil {
 		return nil, err
 	}
 	return rules, nil
 }
 
-func (c *bepaClient) GetAllUserRules(userUUID *uuid.UUID) ([]*Rule, error) {
+func (c *bepaClient) GetAllUserRules(userUUID *uuid.UUID) ([]*types.Rule, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetAllRules), replaceDict)
 
-	rules := []*Rule{}
+	rules := []*types.Rule{}
 	if err := c.Do(http.MethodGet, apiURL, nil, &rules); err != nil {
 		return nil, err
 	}

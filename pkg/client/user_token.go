@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (c *bepaClient) CreateTokenWithToken(server, secret string) (*UserToken, error) {
+func (c *bepaClient) CreateTokenWithToken(server, secret string) (*types.UserToken, error) {
 	userTokenreq := &types.UserTokenReq{
 		Secret:     secret,
 	}
@@ -16,13 +16,13 @@ func (c *bepaClient) CreateTokenWithToken(server, secret string) (*UserToken, er
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	userToken := &UserToken{}
+	userToken := &types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenCreateByToken), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, userTokenreq, userToken)
 	return userToken, err
 }
 
-func (c *bepaClient) GetUserToken(server, user_token_uuid string) (*UserToken, error) {
+func (c *bepaClient) GetUserToken(server, user_token_uuid string) (*types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
@@ -31,12 +31,12 @@ func (c *bepaClient) GetUserToken(server, user_token_uuid string) (*UserToken, e
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	userToken := &UserToken{}
+	userToken := &types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenGetOne), replaceDict)
 	err := c.Do(http.MethodGet, apiURL, nil, userToken)
 	return userToken, err
 }
-func (c *bepaClient) GetAllUserToken(server string) (*[]UserToken, error) {
+func (c *bepaClient) GetAllUserToken(server string) (*[]types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
@@ -44,7 +44,7 @@ func (c *bepaClient) GetAllUserToken(server string) (*[]UserToken, error) {
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	userTokens := &[]UserToken{}
+	userTokens := &[]types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenGetAll), replaceDict)
 	err := c.Do(http.MethodGet, apiURL, nil, userTokens)
 	return userTokens, err
