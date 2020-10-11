@@ -65,3 +65,12 @@ func trimURLSlash(url string) string {
 func persistClientConfigFile() error {
 	return viper.WriteConfigAs(viper.ConfigFileUsed())
 }
+
+func AddItemsAsQueryParams(url string, items map[string]string) string {
+	url += "?"
+	for key, item := range items {
+		url += key + "=" + item + "&"
+	}
+	return url[:len(url)-1]
+
+}

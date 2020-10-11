@@ -1,0 +1,130 @@
+package client
+
+import (
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	uuid "github.com/satori/go.uuid"
+	"net/http"
+)
+
+func (c *bepaClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error) {
+	replaceDict := map[string]string{
+		groupUUIDPlaceholder:     groupUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetOne), replaceDict)
+
+	group := &types.Group{}
+	if err := c.Do(http.MethodGet, apiURL, nil, group); err != nil {
+		return nil, err
+	}
+	return group, nil
+}
+
+func (c *bepaClient) GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error) {
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	groups := []*types.Group{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetALL), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, nil, &groups); err != nil {
+		return nil, err
+	}
+	return groups, nil
+}
+
+func (c *bepaClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		groupUUIDPlaceholder:     groupUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupDelete), replaceDict)
+	return c.Do(http.MethodDelete, apiURL, nil, nil)
+}
+
+func (c *bepaClient) GetGroupByName(workspaceName string, groupName string, userUUID *uuid.UUID) (*types.Group, error) {
+	replaceDict := map[string]string{
+		groupNamePlaceholder:     groupName,
+		workspaceNamePlaceholder: workspaceName,
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetByName), replaceDict)
+
+	group := &types.Group{}
+	if err := c.Do(http.MethodGet, apiURL, nil, group); err != nil {
+		return nil, err
+	}
+	return group, nil
+}
+func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.Group, error) {
+	userRequest := &types.GroupReq{
+		Name:      groupName,
+		Workspace: workspace.String(),
+	}
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspace.String(),
+	}
+	createdGroup := &types.Group{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupCreate), replaceDict)
+	if err := c.Do(http.MethodPost, apiURL, userRequest, createdGroup); err != nil {
+		return nil, err
+	}
+	return createdGroup, nil
+}
+func (c *bepaClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error) {
+	replaceDict := map[string]string{
+		groupUUIDPlaceholder:     groupUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUserGetOne), replaceDict)
+
+	user := &types.User{}
+	if err := c.Do(http.MethodGet, apiURL, nil, user); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (c *bepaClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	users := []*types.User{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUserGetALL), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, nil, &users); err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		groupUUIDPlaceholder:     groupUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUnbindUser), replaceDict)
+	return c.Do(http.MethodDelete, apiURL, nil, nil)
+}
+
+func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) (*types.GroupUserRes, error) {
+	userRequest := &types.GroupReq{
+		Name:      groupName,
+		Workspace: workspace.String(),
+	}
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspace.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	createdGroupUser := &types.GroupUserRes{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBindUser), replaceDict)
+	if err := c.Do(http.MethodPost, apiURL, userRequest, createdGroupUser); err != nil {
+		return nil, err
+	}
+	return createdGroupUser, nil
+}

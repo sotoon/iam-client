@@ -2,10 +2,11 @@ package client
 
 import (
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"net/http"
 )
 
-func (c *bepaClient) GetService(server, name string) (*Service, error) {
+func (c *bepaClient) GetService(server, name string) (*types.Service, error) {
 
 	replaceDict := map[string]string{
 		serviceNamePlaceholder: name,
@@ -13,17 +14,17 @@ func (c *bepaClient) GetService(server, name string) (*Service, error) {
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	service := &Service{}
+	service := &types.Service{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetOne), replaceDict)
 	err := c.Do(http.MethodGet, apiURL, nil, service)
 	return service, err
 }
-func (c *bepaClient) GetAllServices(server string) (*[]Service, error) {
+func (c *bepaClient) GetAllServices(server string) (*[]types.Service, error) {
 
 	if err := c.SetServerURL(server); err != nil {
 		return nil, err
 	}
-	services := &[]Service{}
+	services := &[]types.Service{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetAll), nil)
 	err := c.Do(http.MethodGet, apiURL, nil, services)
 	return services, err
