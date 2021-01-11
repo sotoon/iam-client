@@ -8,11 +8,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, obejct string, deny bool) (*types.Rule, error) {
+func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
 	ruleRequest := &types.RuleReq{
 		Name:    ruleName,
 		Actions: ruleActions,
-		Object:  obejct,
+		Object:  object,
 		Deny:    deny,
 	}
 

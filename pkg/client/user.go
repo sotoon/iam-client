@@ -1,14 +1,11 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
-	"github.com/spf13/viper"
-	"net/http"
 )
 
 func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, error) {
@@ -140,8 +137,7 @@ func (c *bepaClient) DeleteMySelf() error {
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserDelete), replaceDict)
 
-	user := &types.User{}
-	if err := c.Do(http.MethodDelete, apiURL, nil, user); err != nil {
+	if err := c.Do(http.MethodDelete, apiURL, nil, nil); err != nil {
 		return err
 	}
 	return nil
@@ -211,7 +207,7 @@ func (c *bepaClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.
 	return invitationInfo, err
 }
 
-func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationToken string) (*types.User, error) {
+func (c *bepaClient) JoinByInvitationToken(name, password, invitationToken string) (*types.User, error) {
 	joinReq := &types.UserAcceptInvitationReq{
 		Name:     name,
 		Password: password,
@@ -224,31 +220,6 @@ func (c *bepaClient) JoinByInvitationToken(server, name, password, invitationTok
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, joinReq, joinedUser)
 	return joinedUser, err
-}
-
-func (c *bepaClient) SetConfigDefaultUserData(context, token, userUUID, email string) error {
-	if context == "" {
-		context = "default"
-	}
-	viper.Set(fmt.Sprintf("contexts.%s.token", context), token)
-	viper.Set(fmt.Sprintf("contexts.%s.user-uuid", context), userUUID)
-	viper.Set(fmt.Sprintf("contexts.%s.user", context), email)
-	viper.Set(fmt.Sprintf("contexts.%s.addr", context), c.GetServerURL())
-	c.accessToken = token
-	c.userUUID = userUUID
-	return persistClientConfigFile()
-}
-
-func (c *bepaClient) SetCurrentContext(context string) error {
-	contexts := viper.GetStringMap("contexts")
-	if _, ok := contexts[context]; ok {
-		viper.Set("current-context", context)
-		if err := persistClientConfigFile(); err == nil {
-			fmt.Printf("set default context to %s\n", context)
-			return nil
-		}
-	}
-	return fmt.Errorf("could not find context %s", context)
 }
 
 func (c *bepaClient) SuspendUser(userUUID *uuid.UUID) error {

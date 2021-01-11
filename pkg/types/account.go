@@ -1,8 +1,9 @@
 package types
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 type UserRes struct {
@@ -16,7 +17,8 @@ type UserRes struct {
 	Items           []map[string]string `json:"items,omitempty"`
 }
 type UserTokenReq struct {
-	Secret string `json:"secret" validate:"required"`
+	Secret   string `json:"secret" validate:"required"`
+	UserType string `json:"user_type"`
 }
 type UserUpdateReq struct {
 	Name     string `json:"name"`
@@ -73,7 +75,7 @@ type PublicKeyVerifyReq struct {
 	Email          string `json:"email"`
 }
 type Workspace struct {
-	UUID      *uuid.UUID `json:"uuid"`
+	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Name      string     `json:"name"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -90,15 +92,15 @@ type UserToken struct {
 }
 
 type User struct {
-	UUID            *uuid.UUID `json:"uuid"`
+	UUID            *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Name            string     `json:"name"`
 	Email           string     `json:"email"`
 	InvitationToken string     `json:"invitation_token,omitempty"`
 }
 type Group struct {
-	UUID      *uuid.UUID `json:"uuid"`
+	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Name      string     `json:"name"`
-	Workspace Workspace     `json:"workspace"`
+	Workspace Workspace  `json:"workspace"`
 }
 type GroupReq struct {
 	Name      string `json:"name"`
@@ -109,7 +111,7 @@ type GroupUserRes struct {
 	User  string `json:"user"`
 }
 type ServiceUser struct {
-	UUID      *uuid.UUID `json:"uuid"`
+	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Name      string     `json:"name"`
 	Workspace string     `json:"workspace"`
 }
@@ -118,7 +120,7 @@ type ServiceUserReq struct {
 	Workspace string `json:"workspace"`
 }
 type ServiceUserToken struct {
-	UUID        *uuid.UUID `json:"uuid"`
+	UUID        *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	ServiceUser string     `json:"service_user"`
 	Secret      string     `json:"secret"`
 }
@@ -133,4 +135,11 @@ type UserSecret struct {
 type Service struct {
 	Name    string   `json:"name"`
 	Actions []string `json:"actions"`
+}
+
+type PublicKey struct {
+	UUID  string `json:"uuid"`
+	Title string `json:"title"`
+	Key   string `json:"key"`
+	User  string `json:"user"`
 }

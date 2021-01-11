@@ -127,6 +127,7 @@ func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID
 	return c.Do(http.MethodPost, apiURL, values, nil)
 }
 
+// Is it right?
 func (c *bepaClient) UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -151,6 +152,7 @@ func (c *bepaClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserU
 	return c.Do(http.MethodPost, apiURL, values, nil)
 }
 
+// Is it right?
 func (c *bepaClient) UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:        roleUUID.String(),
@@ -202,6 +204,7 @@ func (c *bepaClient) BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UU
 	return c.Do(http.MethodPost, apiURL, values, nil)
 }
 
+// Is it right?
 func (c *bepaClient) UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error {
 
 	replaceDict := map[string]string{

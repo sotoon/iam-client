@@ -52,7 +52,7 @@ type Client interface {
 	GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error)
 	RevokeSecret(userUUID *uuid.UUID) error
 	InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error)
-	JoinByInvitationToken(server, name, password, invitationToken string) (*types.User, error)
+	JoinByInvitationToken(name, password, invitationToken string) (*types.User, error)
 	GetMyWorkspaces() ([]*types.Workspace, error)
 	GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error)
 	CreateUserTokenByCreds(email, password string) (*types.UserToken, error)
@@ -61,24 +61,24 @@ type Client interface {
 	SuspendUser(userUUID *uuid.UUID) error
 	ActivateUser(userUUID *uuid.UUID) error
 
-	CreatePublicKeyForDefaultUser(title, keyType, key string) (*PublicKey, error)
-	GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*PublicKey, error)
-	GetAllDefaultUserPublicKeys() ([]*PublicKey, error)
+	CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error)
+	GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types.PublicKey, error)
+	GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error)
 	DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error
-	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*PublicKey, error)
+	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error)
 	VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error)
 
 	Authorize(identity, action, object string) error
-	Identify(token string) (*types.UserRes, error)
+	Identify(token string, userType string) (*types.UserRes, error)
 
 	Do(method, path string, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
 	SetUser(userUUID string)
 
-	CreateTokenWithToken(secret string) (*types.UserToken, error)
-	GetUserToken(user_token_uuid string) (*types.UserToken, error)
-	GetAllUserToken() (*[]types.UserToken, error)
-	DeleteUserToken(user_token_uuid string) error
+	CreateMyUserTokenWithToken(secret string) (*types.UserToken, error)
+	GetMyUserToken(UserTokenUUID *uuid.UUID) (*types.UserToken, error)
+	GetAllMyUserTokens() (*[]types.UserToken, error)
+	DeleteMyUserToken(UserTokenUUID *uuid.UUID) error
 
 	GetAllServices() (*[]types.Service, error)
 	GetService(name string) (*types.Service, error)
@@ -87,10 +87,10 @@ type Client interface {
 	GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error)
 	CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error)
 	CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error)
-	GetServiceUserByName(workspaceName string, serviceUserName string, userUUID *uuid.UUID) (*types.ServiceUser, error)
+	GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error)
 	DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error
 	GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
-	GetServiceUser(workspaceUUID,serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
+	GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
 	BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
@@ -98,7 +98,7 @@ type Client interface {
 	GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error)
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
-	GetGroupByName(workspaceName string, groupName string, userUUID *uuid.UUID) (*types.Group, error)
+	GetGroupByName(workspaceName string, groupName string) (*types.Group, error)
 	CreateGroup(groupName string, workspace *uuid.UUID) (*types.Group, error)
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
 	GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)

@@ -1,16 +1,17 @@
 package client
 
 import (
+	"net/http"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
 )
 
-func (c *bepaClient) GetServiceUser(workspaceUUID,serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
+func (c *bepaClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
-		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetOne), replaceDict)
 
@@ -36,18 +37,17 @@ func (c *bepaClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.Service
 func (c *bepaClient) DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
-		workspaceUUIDPlaceholder: workspaceUUID.String(),
-
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDelete), replaceDict)
 	return c.Do(http.MethodDelete, apiURL, nil, nil)
 }
 
-func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName string, userUUID *uuid.UUID) (*types.ServiceUser, error) {
+func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		serviceUserNamePlaceholder: serviceUserName,
 		workspaceNamePlaceholder:   workspaceName,
-		userUUIDPlaceholder:        userUUID.String(),
+		userUUIDPlaceholder:        c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetByName), replaceDict)
 
@@ -87,8 +87,8 @@ func (c *bepaClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid
 func (c *bepaClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
 
 	replaceDict := map[string]string{
-		serviceUserUUIDPlaceholder:      serviceUserUUID.String(),
-		workspaceUUIDPlaceholder:        workspaceUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 	}
 	ServiceUserTokens := &[]types.ServiceUserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserTokenGetALL), replaceDict)

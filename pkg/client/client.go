@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	uuid "github.com/satori/go.uuid"
+	"github.com/spf13/viper"
 )
 
 // APIURI represents api addr to be appended to server url
@@ -151,16 +151,21 @@ func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) 
 		}
 
 		data, err := proccessRequest(httpRequest, target)
-
 		if loopBreaker, err := checkErrorsAndPenaltyReward(err, target); err != nil && loopBreaker {
+
 			return err
 		}
 
-		if err == nil && resp != nil {
-			return json.Unmarshal(data, resp)
+		if err == nil {
+			if resp != nil {
+				return json.Unmarshal(data, resp)
+			}
+			return nil
+
 		}
 
 	}
+
 	return errRetriesExceeded
 }
 
@@ -171,16 +176,18 @@ func proccessRequest(httpRequest *http.Request, target *target) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-
 	defer httpResponse.Body.Close()
-	if err := ensureStatusOK(httpResponse); err == nil {
+
+	err = ensureStatusOK(httpResponse)
+
+	if err == nil {
 		data, innerErr := ioutil.ReadAll(httpResponse.Body)
 		if innerErr != nil {
 			return nil, innerErr
 		}
-
 		return data, nil
 	}
+
 	return nil, err
 }
 
@@ -201,44 +208,6 @@ func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Requ
 
 }
 
-func (c *bepaClient) Authorize(identity, action, object string) error {
-	for i := 0; i < c.loadBalancer.TargetsLen()*2; i++ {
-		req, target, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
-
-		if err != nil {
-			return err
-		}
-
-		query := req.URL.Query()
-		query.Set("identity", identity)
-		query.Set("object", object)
-		query.Set("action", action)
-
-		req.URL.RawQuery = query.Encode()
-		_, err = proccessRequest(req, target)
-
-		if loopBreaker, err := checkErrorsAndPenaltyReward(err, target); err != nil && loopBreaker {
-			return err
-		}
-		return nil
-	}
-	return errRetriesExceeded
-}
-
-func (c *bepaClient) Identify(token string) (*types.UserRes, error) {
-	idenReq := &types.UserTokenReq{
-		Secret: token,
-	}
-
-	userRes := &types.UserRes{}
-	err := c.Do(http.MethodPost, trimURLSlash(routes.RouteUserTokenIdentify), idenReq, userRes)
-	if err != nil {
-		return nil, err
-	}
-
-	return userRes, nil
-}
-
 func createServerURL(serverURL string) (*url.URL, error) {
 	u, err := url.Parse(serverURL)
 	if err != nil {
@@ -257,4 +226,36 @@ func createServerURL(serverURL string) (*url.URL, error) {
 func (c *bepaClient) GetServerURL() string {
 	url := c.baseURL.String()
 	return strings.Replace(url, APIURI, "", -1)
+}
+
+func (c *bepaClient) SetConfigDefaultUserData(context, token, userUUID, email string) error {
+	if context == "" {
+		context = "default"
+	}
+	viper.Set(fmt.Sprintf("contexts.%s.token", context), token)
+	viper.Set(fmt.Sprintf("contexts.%s.user-uuid", context), userUUID)
+	viper.Set(fmt.Sprintf("contexts.%s.user", context), email)
+	viper.Set(fmt.Sprintf("contexts.%s.addr", context), c.GetServerURL())
+	c.accessToken = token
+	c.userUUID = userUUID
+	return persistClientConfigFile()
+}
+
+func (c *bepaClient) SetCurrentContext(context string) error {
+	contexts := viper.GetStringMap("contexts")
+	if _, ok := contexts[context]; ok {
+		viper.Set("current-context", context)
+		if err := persistClientConfigFile(); err == nil {
+			fmt.Printf("set default context to %s\n", context)
+			return nil
+		}
+	}
+	return fmt.Errorf("could not find context %s", context)
+}
+
+func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
+	context := viper.GetString("current-context")
+	viper.Set(fmt.Sprintf("contexts.%s.workspace", context), uuid.String())
+	c.defaultWorkspace = uuid.String()
+	return persistClientConfigFile()
 }
