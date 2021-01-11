@@ -1,14 +1,12 @@
 package client
 
 import (
-	"fmt"
+	"net/http"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
-	"github.com/spf13/viper"
-	"net/http"
 )
-
 
 func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
 	apiURL := trimURLSlash(routes.RouteWorkspaceGetAll)
@@ -19,13 +17,6 @@ func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
 		return nil, err
 	}
 	return workspaces, nil
-}
-
-func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
-	context := viper.GetString("current-context")
-	viper.Set(fmt.Sprintf("contexts.%s.workspace", context), uuid.String())
-	c.defaultWorkspace = uuid.String()
-	return persistClientConfigFile()
 }
 
 func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
@@ -132,5 +123,5 @@ func (c *bepaClient) DeleteWorkspace(uuid *uuid.UUID) error {
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceDelete), replaceDict)
 
-	return c.Do(http.MethodPost, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, nil, nil)
 }

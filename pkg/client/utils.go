@@ -14,6 +14,7 @@ import (
 
 var (
 	ErrForbidden           = errors.New("forbidden")
+	ErrNotFound            = errors.New("not exists")
 	ErrBadRequest          = errors.New("bad request")
 	ErrInternalServerError = errors.New("internal server error")
 )
@@ -46,11 +47,14 @@ func createFaultyHTTPResponseError(statusCode int, internalErr error) *HTTPRespo
 }
 
 func ensureStatusOK(resp *http.Response) error {
-	switch resp.StatusCode / 100 {
+	httpStatusCodeRange := int(resp.StatusCode / 100)
+	switch httpStatusCodeRange {
 	case 2:
 		return nil
 	case 4:
 		switch resp.StatusCode {
+		case http.StatusNotFound:
+			return createHTTPResponseError(resp.StatusCode, ErrNotFound)
 		case http.StatusForbidden:
 			return createHTTPResponseError(resp.StatusCode, ErrForbidden)
 		case http.StatusBadRequest:

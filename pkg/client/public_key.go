@@ -14,13 +14,6 @@ import (
 
 var defaultSSHKeyType = "ssh-rsa"
 
-type PublicKey struct {
-	UUID  string `json:"uuid"`
-	Title string `json:"title"`
-	Key   string `json:"key"`
-	User  string `json:"user"`
-}
-
 func (c *bepaClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
@@ -35,14 +28,14 @@ func (c *bepaClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error 
 	return nil
 }
 
-func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*PublicKey, error) {
+func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types.PublicKey, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		publicKeyUUIDPlaceholder: publicKeyUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyGetOne), replaceDict)
 
-	publicKey := &PublicKey{}
+	publicKey := &types.PublicKey{}
 	err := c.Do(http.MethodGet, apiURL, nil, &publicKey)
 	if err != nil {
 		return nil, err
@@ -50,13 +43,13 @@ func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*Publ
 	return publicKey, nil
 }
 
-func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*PublicKey, error) {
+func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyGetAll), replaceDict)
 
-	publicKeys := []*PublicKey{}
+	publicKeys := []*types.PublicKey{}
 	err := c.Do(http.MethodGet, apiURL, nil, &publicKeys)
 	if err != nil {
 		return nil, err
@@ -64,7 +57,7 @@ func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*PublicKey, error) {
 	return publicKeys, nil
 }
 
-func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*PublicKey, error) {
+func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error) {
 	publicKeyReq := &types.PublicKeyReq{
 		Title: title,
 		Key:   fmt.Sprintf("%s %s", keyType, key),
@@ -75,14 +68,14 @@ func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyCreate), replaceDict)
 
-	createdPublicKey := &PublicKey{}
+	createdPublicKey := &types.PublicKey{}
 	if err := c.Do(http.MethodPost, apiURL, publicKeyReq, createdPublicKey); err != nil {
 		return nil, err
 	}
 	return createdPublicKey, nil
 }
 
-func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*PublicKey, error) {
+func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error) {
 	if fileAdd == "" {
 		fileAdd = os.Getenv("HOME") + "/.ssh/id_rsa.pub"
 	}
@@ -93,11 +86,11 @@ func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string
 	return c.CreatePublicKeyForDefaultUser(title, defaultSSHKeyType, string(key))
 }
 
-func (c *bepaClient) VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error) {
+func (c *bepaClient) VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error) {
 	publicKeyVerifyReq := &types.PublicKeyVerifyReq{
 		KeyType:        keyType,
 		Key:            key,
-		Workspace_uuid: workspace_uuid,
+		Workspace_uuid: workspaceUUID,
 		Email:          username,
 		Hostname:       hostname,
 	}

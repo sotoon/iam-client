@@ -1,10 +1,11 @@
 package client
 
 import (
+	"net/http"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
-	"net/http"
 )
 
 func (c *bepaClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error) {
@@ -43,11 +44,11 @@ func (c *bepaClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
 	return c.Do(http.MethodDelete, apiURL, nil, nil)
 }
 
-func (c *bepaClient) GetGroupByName(workspaceName string, groupName string, userUUID *uuid.UUID) (*types.Group, error) {
+func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*types.Group, error) {
 	replaceDict := map[string]string{
 		groupNamePlaceholder:     groupName,
 		workspaceNamePlaceholder: workspaceName,
-		userUUIDPlaceholder:      userUUID.String(),
+		userUUIDPlaceholder:      c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetByName), replaceDict)
 

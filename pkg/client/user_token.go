@@ -5,9 +5,10 @@ import (
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) CreateTokenWithToken(secret string) (*types.UserToken, error) {
+func (c *bepaClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken, error) {
 	userTokenreq := &types.UserTokenReq{
 		Secret: secret,
 	}
@@ -21,11 +22,11 @@ func (c *bepaClient) CreateTokenWithToken(secret string) (*types.UserToken, erro
 	return userToken, err
 }
 
-func (c *bepaClient) GetUserToken(user_token_uuid string) (*types.UserToken, error) {
+func (c *bepaClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
-		userTokenUUIDPlaceholder: user_token_uuid,
+		userTokenUUIDPlaceholder: userTokenUUID.String(),
 	}
 
 	userToken := &types.UserToken{}
@@ -33,7 +34,7 @@ func (c *bepaClient) GetUserToken(user_token_uuid string) (*types.UserToken, err
 	err := c.Do(http.MethodGet, apiURL, nil, userToken)
 	return userToken, err
 }
-func (c *bepaClient) GetAllUserToken() (*[]types.UserToken, error) {
+func (c *bepaClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
@@ -45,11 +46,11 @@ func (c *bepaClient) GetAllUserToken() (*[]types.UserToken, error) {
 	return userTokens, err
 }
 
-func (c *bepaClient) DeleteUserToken(user_token_uuid string) error {
+func (c *bepaClient) DeleteMyUserToken(userTokenUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
-		userTokenUUIDPlaceholder: user_token_uuid,
+		userTokenUUIDPlaceholder: userTokenUUID.String(),
 	}
 
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenDelete), replaceDict)

@@ -1,7 +1,6 @@
 package types
 
 import (
-	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -19,22 +18,22 @@ type RoleReq struct {
 	Workspace string `json:"workspace" validate:"required"`
 }
 type Role struct {
-	UUID      *uuid.UUID `json:"uuid"`
+	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Workspace *Workspace `json:"workspace"`
 	Name      string     `json:"name"`
 }
 
 type RoleBinding struct {
 	RoleName  string            `json:"name"`
-	UserUUID  *uuid.UUID        `json:"user_uuid"`
+	UserUUID  *uuid.UUID        `json:"user_uuid" faker:"uuidObject"`
 	Workspace *Workspace        `json:"workspace"`
 	Items     map[string]string `json:"items,omitempty"`
 }
 type Rule struct {
-	UUID          *uuid.UUID     `json:"uuid"`
-	WorkspaceUUID *uuid.UUID     `json:"workspace"`
-	Name          string         `json:"name"`
-	Actions       pq.StringArray `json:"actions" validate:"required,gte=1"`
-	Object        string         `json:"object" validate:"required"`
-	Deny          bool           `json:"deny"`
+	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	WorkspaceUUID *uuid.UUID `json:"workspace" faker:"uuidObject"`
+	Name          string     `json:"name"`
+	Actions       []string   `json:"actions" validate:"required,gte=1"`
+	Object        string     `json:"object" validate:"required"`
+	Deny          bool       `json:"deny"`
 }

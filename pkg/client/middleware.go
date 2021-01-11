@@ -48,7 +48,7 @@ func (m *EchoMiddleware) Authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.NoContent(http.StatusBadRequest)
 		}
 
-		user, err := m.Client.Identify(userToken)
+		user, err := m.Client.Identify(userToken, "")
 		if err != nil {
 			return c.NoContent(http.StatusForbidden)
 		}
