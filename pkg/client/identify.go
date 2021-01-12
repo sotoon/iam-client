@@ -7,10 +7,9 @@ import (
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 )
 
-func (c *bepaClient) Identify(token string, userType string) (*types.UserRes, error) {
+func (c *bepaClient) Identify(token string) (*types.UserRes, error) {
 	idenReq := &types.UserTokenReq{
-		Secret:   token,
-		UserType: userType,
+		Secret: token,
 	}
 
 	userRes := &types.UserRes{}

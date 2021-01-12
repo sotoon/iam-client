@@ -6,10 +6,16 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+const (
+	UserTypeUser        = "user"
+	UserTypeServiceUser = "service-user"
+)
+
 type UserRes struct {
 	UUID            string              `json:"uuid"`
 	Name            string              `json:"name"`
 	Email           string              `json:"email"`
+	UserType        string              `json:"user_type"`
 	IsSuspended     bool                `json:"is_suspended"`
 	CreatedAt       time.Time           `json:"created_at,omitempty"`
 	UpdatedAt       time.Time           `json:"updated_at,omitempty"`
