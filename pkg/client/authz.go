@@ -6,7 +6,8 @@ import (
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 )
 
-func (c *bepaClient) Authorize(identity, action, object string) error {
+func (c *bepaClient) Authorize(identity, userType, action, object string) error {
+
 	for i := 0; i < c.loadBalancer.TargetsLen()*2; i++ {
 		req, target, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
 
@@ -16,6 +17,7 @@ func (c *bepaClient) Authorize(identity, action, object string) error {
 
 		query := req.URL.Query()
 		query.Set("identity", identity)
+		query.Set("user_type", userType)
 		query.Set("object", object)
 		query.Set("action", action)
 

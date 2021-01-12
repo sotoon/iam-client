@@ -16,9 +16,10 @@ import (
 )
 
 type rule struct {
-	uuid   string
-	action string
-	rri    string
+	uuid     string
+	userType string
+	action   string
+	rri      string
 }
 
 var rriRegex = regexp.MustCompile(`^rri:v1:cafebazaar\.cloud:(.+):(.+):(\/.+)*\/?$`)
@@ -32,6 +33,8 @@ func (r1 rule) equal(r2 rule) bool {
 func (r rule) isValid() bool {
 	return r.uuid != "" &&
 		r.action != "" &&
+		r.userType != "" &&
+
 		rriRegex.MatchString(r.rri)
 }
 
@@ -41,44 +44,41 @@ func TestAuthorization(t *testing.T) {
 		rule
 		valid bool
 	}{
-		{rule{"user1uuid", "get", newRRI("workspace", "ns", "pod")}, true},
-		{rule{"user2uuid", "write", newRRI("workspace", "ns", "pod")}, true},
-		{rule{"user2uuid", "get", newRRI("workspace", "ns", "pod")}, true},
-		{rule{"user1uuid", "list", newRRI("workspace", "ns", "pod")}, false},
-		{rule{"user3uuid", "get", newRRI("workspace", "ns", "pod")}, false},
+		{rule{"user1uuid", "user", "get", newRRI("workspace", "ns", "pod")}, true},
+		{rule{"user2uuid", "service-user", "write", newRRI("workspace", "ns", "pod")}, true},
+		{rule{"user2uuid", "user", "get", newRRI("workspace", "ns", "pod")}, true},
+		{rule{"user1uuid", "service-user", "list", newRRI("workspace", "ns", "pod")}, false},
+		{rule{"user3uuid", "user", "get", newRRI("workspace", "ns", "pod")}, false},
 	}
 
-	testId := 0
+	for _, tc := range testCases {
+		s := httptest.NewServer(http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				require.True(t, strings.HasPrefix(r.URL.Path, "/api/v1/authz"))
+				require.True(t, r.Method == "GET")
 
-	s := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			require.True(t, strings.HasPrefix(r.URL.Path, "/api/v1/authz"))
-			require.True(t, r.Method == "GET")
+				query := r.URL.Query()
+				rl := rule{
+					uuid:     query.Get("identity"),
+					action:   query.Get("action"),
+					userType: query.Get("user_type"),
+					rri:      query.Get("object"),
+				}
+				require.True(t, rl.isValid())
+				if tc.valid {
+					w.WriteHeader(http.StatusOK)
+					return
+				}
+				resp := types.ResponseError{
+					Error: "forbidden",
+				}
+				w.WriteHeader(http.StatusForbidden)
+				require.NoError(t, json.NewEncoder(w).Encode(resp))
+			}))
+		defer s.Close()
+		c := testutils.NewTestClient(s)
 
-			query := r.URL.Query()
-			rl := rule{
-				uuid:   query.Get("identity"),
-				action: query.Get("action"),
-				rri:    query.Get("object"),
-			}
-			require.True(t, rl.isValid())
-			if testCases[testId].valid {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-			resp := types.ResponseError{
-				Error: "forbidden",
-			}
-			w.WriteHeader(http.StatusForbidden)
-			require.NoError(t, json.NewEncoder(w).Encode(resp))
-		}))
-	defer s.Close()
-
-	c := testutils.NewTestClient(s)
-
-	for id, tc := range testCases {
-		testId = id
-		err := c.Authorize(tc.uuid, tc.action, tc.rri)
+		err := c.Authorize(tc.uuid, "UserType", tc.action, tc.rri)
 		require.True(t, (err == nil) == tc.valid)
 	}
 }

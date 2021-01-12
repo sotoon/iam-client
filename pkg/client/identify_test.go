@@ -20,9 +20,6 @@ func TestIdentification(t *testing.T) {
 		found bool
 	}{
 		{"user1uuid", "sampleusertoken", true},
-		{"user2uuid", "sampleusertoken", true},
-		{"user3uuid", "sampleusertoken", true},
-		{"user4uuid", "sampleusertoken", false},
 		{"user5uuid", "sampleusertoken", false},
 	}
 
@@ -52,7 +49,8 @@ func TestIdentification(t *testing.T) {
 			}))
 
 		c := testutils.NewTestClient(s)
-		user, err := c.Identify(tc.token, "")
+		user, err := c.Identify(tc.token)
+
 		if tc.found {
 			require.NoError(t, err)
 			require.Equal(t, tc.uuid, user.UUID)

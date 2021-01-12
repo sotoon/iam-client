@@ -66,10 +66,10 @@ type Client interface {
 	GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error)
 	DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error
 	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error)
-	VerifyPublicKey(keyType string, key string, workspace_uuid string, username string, hostname string) (bool, error)
+	VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error)
 
-	Authorize(identity, action, object string) error
-	Identify(token string, userType string) (*types.UserRes, error)
+	Authorize(identity, userType, action, object string) error
+	Identify(token string) (*types.UserRes, error)
 
 	Do(method, path string, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
