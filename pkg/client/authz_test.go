@@ -79,7 +79,7 @@ func TestAuthorization(t *testing.T) {
 		c := testutils.NewTestClient(s)
 
 		err := c.Authorize(tc.uuid, "UserType", tc.action, tc.rri)
-		require.True(t, (err == nil) == tc.valid)
+		require.True(t, (err == nil) == tc.valid, fmt.Sprintln(tc, err))
 	}
 }
 

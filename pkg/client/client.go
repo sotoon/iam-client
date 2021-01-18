@@ -3,16 +3,12 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
-	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
@@ -21,95 +17,28 @@ import (
 // APIURI represents api addr to be appended to server url
 const APIURI = "/api/v1/"
 
-var errRetriesExceeded = errors.New("maximum retries exceeded on targets")
-
-type targets []*target
-
-func (s targets) Len() int {
-	return len(s)
-}
-func (s targets) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-func (s targets) Less(i, j int) bool {
-	return (s[i].penaltyTime.Unix() > s[j].penaltyTime.Unix())
-}
-
-type loadBalancer struct {
-	Targets targets
-}
-
-type target struct {
-	BaseURL     *url.URL
-	penaltyTime time.Time
-}
-
-func (t *target) setPenalty() {
-	t.penaltyTime = time.Unix(0, 0)
-}
-
-func (t *target) setReward() {
-	t.penaltyTime = time.Now()
-}
-
-func (lb *loadBalancer) getTarget() *target {
-	sort.Sort(lb.Targets)
-	var noiseRation float32 = 0.1
-	if targetsCount := len(lb.Targets); targetsCount > 1 && rand.Float32() < noiseRation {
-		return lb.Targets[rand.Intn(targetsCount-1)+1]
-	}
-
-	return lb.Targets[0]
-}
-
-func (lb *loadBalancer) setTargets(urls []*url.URL) {
-	targets := make([]target, len(urls))
-	for i, url := range urls {
-		targets[i] = target{
-			BaseURL:     url,
-			penaltyTime: time.Now(),
-		}
-	}
-}
-
-func (lb *loadBalancer) addTarget(url *url.URL) {
-	lb.Targets = append(lb.Targets, &target{
-		BaseURL:     url,
-		penaltyTime: time.Now(),
-	})
-}
-
-func (lb *loadBalancer) TargetsLen() int {
-	return len(lb.Targets)
-}
-
 type bepaClient struct {
 	accessToken      string
 	baseURL          url.URL
 	defaultWorkspace string
 	userUUID         string
-	loadBalancer     *loadBalancer
 }
 
 var _ Client = &bepaClient{}
 
 // NewClient creates a new client to interact with bepa server
-func NewClient(accessToken string, targets []string, defaultWorkspace, userUUID string) (Client, error) {
+func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string) (Client, error) {
 	client := &bepaClient{}
-	lb := &loadBalancer{Targets: make([]*target, 0)}
-	for _, urlStr := range targets {
-		url, err := createServerURL(urlStr)
-		if err != nil {
-			return nil, err
-		}
 
-		lb.addTarget(url)
-
-	}
 	client.accessToken = accessToken
 	client.defaultWorkspace = defaultWorkspace
 	client.userUUID = userUUID
-	client.loadBalancer = lb
+	url, err := url.Parse(baseURL + APIURI)
+	if err != nil {
+		fmt.Printf("Base URL `%s` is not valid\r\n", baseURL)
+		panic(err)
+	}
+	client.baseURL = *url
 	return client, nil
 }
 
@@ -120,15 +49,7 @@ func (c *bepaClient) SetAccessToken(token string) {
 func (c *bepaClient) SetUser(userUUID string) {
 	c.userUUID = userUUID
 }
-func checkErrorsAndPenaltyReward(err error, target *target) (bool, error) {
-	httpErr, ok := err.(*HTTPResponseError)
-	if ok && !httpErr.IsFaulty || err == nil {
-		target.setReward()
-		return err != nil, err
-	}
-	target.setPenalty()
-	return false, err
-}
+
 func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) error {
 	var body io.Reader
 	if req != nil {
@@ -139,37 +60,29 @@ func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) 
 		body = bytes.NewBuffer(data)
 	}
 
-	for i := 0; i < c.loadBalancer.TargetsLen()*2; i++ {
-		httpRequest, target, err := c.NewRequest(method, path, body)
+	httpRequest, err := c.NewRequest(method, path, body)
 
-		if err != nil {
-			return err
-		}
-
-		if c.accessToken != "" {
-			httpRequest.Header.Add("Content-Type", "application/json")
-		}
-
-		data, err := proccessRequest(httpRequest, target)
-		if loopBreaker, err := checkErrorsAndPenaltyReward(err, target); err != nil && loopBreaker {
-
-			return err
-		}
-
-		if err == nil {
-			if resp != nil {
-				return json.Unmarshal(data, resp)
-			}
-			return nil
-
-		}
-
+	if err != nil {
+		return err
 	}
 
-	return errRetriesExceeded
+	if c.accessToken != "" {
+		httpRequest.Header.Add("Content-Type", "application/json")
+	}
+
+	data, err := proccessRequest(httpRequest)
+
+	if err == nil {
+		if resp != nil {
+			return json.Unmarshal(data, resp)
+		}
+		return nil
+
+	}
+	return err
 }
 
-func proccessRequest(httpRequest *http.Request, target *target) ([]byte, error) {
+func proccessRequest(httpRequest *http.Request) ([]byte, error) {
 	client := &http.Client{}
 	httpResponse, err := client.Do(httpRequest)
 
@@ -179,7 +92,6 @@ func proccessRequest(httpRequest *http.Request, target *target) ([]byte, error) 
 	defer httpResponse.Body.Close()
 
 	err = ensureStatusOK(httpResponse)
-
 	if err == nil {
 		data, innerErr := ioutil.ReadAll(httpResponse.Body)
 		if innerErr != nil {
@@ -191,20 +103,19 @@ func proccessRequest(httpRequest *http.Request, target *target) ([]byte, error) 
 	return nil, err
 }
 
-func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Request, *target, error) {
+func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {
 	pathURL, err := url.Parse(path)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	target := c.loadBalancer.getTarget()
-	fullPath := target.BaseURL.ResolveReference(pathURL)
+	fullPath := c.baseURL.ResolveReference(pathURL)
 
 	req, err := http.NewRequest(method, fullPath.String(), body)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", c.accessToken))
-	return req, target, nil
+	return req, nil
 
 }
 
