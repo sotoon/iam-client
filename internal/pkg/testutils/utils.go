@@ -27,8 +27,7 @@ const (
 
 //NewTestClient creates a testing client
 func NewTestClient(s *httptest.Server) client.Client {
-	targets := []string{s.URL}
-	c, _ := client.NewClient(TestAccessToken, targets, TestWorkspace, TestUserUUID)
+	c, _ := client.NewClient(TestAccessToken, s.URL, TestWorkspace, TestUserUUID)
 	return c
 }
 

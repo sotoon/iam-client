@@ -107,4 +107,6 @@ type Client interface {
 	GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error)
 	BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error
+
+	GetServerURL() string
 }

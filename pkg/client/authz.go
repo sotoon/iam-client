@@ -8,26 +8,19 @@ import (
 
 func (c *bepaClient) Authorize(identity, userType, action, object string) error {
 
-	for i := 0; i < c.loadBalancer.TargetsLen()*2; i++ {
-		req, target, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
+	req, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
 
-		if err != nil {
-			return err
-		}
-
-		query := req.URL.Query()
-		query.Set("identity", identity)
-		query.Set("user_type", userType)
-		query.Set("object", object)
-		query.Set("action", action)
-
-		req.URL.RawQuery = query.Encode()
-		_, err = proccessRequest(req, target)
-
-		if loopBreaker, err := checkErrorsAndPenaltyReward(err, target); err != nil && loopBreaker {
-			return err
-		}
-		return nil
+	if err != nil {
+		return err
 	}
-	return errRetriesExceeded
+
+	query := req.URL.Query()
+	query.Set("identity", identity)
+	query.Set("user_type", userType)
+	query.Set("object", object)
+	query.Set("action", action)
+
+	req.URL.RawQuery = query.Encode()
+	_, err = proccessRequest(req)
+	return err
 }
