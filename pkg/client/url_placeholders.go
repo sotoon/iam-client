@@ -18,4 +18,5 @@ const (
 	groupUUIDPlaceholder            = "{group_uuid}"
 	groupNamePlaceholder            = "{group_name}"
 	serviceUserNamePlaceholder      = "{service_user_name}"
+	backupKeyUUIDPlaceholder        = "{backup_key_uuid}"
 )

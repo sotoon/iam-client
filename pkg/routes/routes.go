@@ -9,6 +9,11 @@ const (
 	RoutePublicKeyDelete = "/user/{user_uuid}/public-key/{public_key_uuid}/"
 	RoutePublicKeyVerify = "/public-key/verify/"
 
+	RouteBackupKeyCreate = "/workspace/{workspace_uuid}/backup-key/"
+	RouteBackupKeyGetOne = "/workspace/{workspace_uuid}/backup-key/{backup_key_uuid}/"
+	RouteBackupKeyGetAll = "/workspace/{workspace_uuid}/backup-key/"
+	RouteBackupKeyDelete = "/workspace/{workspace_uuid}/backup-key/{backup_key_uuid}/"
+
 	RouteRoleCreate      = "/workspace/{workspace_uuid}/role/"
 	RouteRoleGetOne      = "/workspace/{workspace_uuid}/role/{role_uuid}/"
 	RouteRoleGetAll      = "/role/"
