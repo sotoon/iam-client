@@ -153,6 +153,7 @@ type BackupKey struct {
 	UUID  string `json:"uuid"`
 	Title string `json:"title"`
 	Key   string `json:"key"`
+	Type   string `json:"type"`
 	Workspace  string `json:"workspace"`
 }
 type BackupKeyReq struct {
