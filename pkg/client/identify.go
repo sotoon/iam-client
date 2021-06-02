@@ -13,7 +13,7 @@ func (c *bepaClient) Identify(token string) (*types.UserRes, error) {
 	}
 
 	userRes := &types.UserRes{}
-	err := c.Do(http.MethodPost, trimURLSlash(routes.RouteUserTokenIdentify), idenReq, userRes)
+	err := c.Do(http.MethodPost, trimURLSlash(routes.RouteUserTokenIdentify), 0, idenReq, userRes)
 	if err != nil {
 		return nil, err
 	}

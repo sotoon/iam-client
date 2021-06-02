@@ -71,7 +71,7 @@ type Client interface {
 	Authorize(identity, userType, action, object string) error
 	Identify(token string) (*types.UserRes, error)
 
-	Do(method, path string, req interface{}, resp interface{}) error
+	Do(method, path string, successCode int, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
 	SetUser(userUUID string)
 

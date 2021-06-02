@@ -21,6 +21,6 @@ func (c *bepaClient) Authorize(identity, userType, action, object string) error 
 	query.Set("action", action)
 
 	req.URL.RawQuery = query.Encode()
-	_, err = proccessRequest(req)
+	_, _, err = proccessRequest(req, 0)
 	return err
 }

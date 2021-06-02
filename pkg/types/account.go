@@ -2,7 +2,7 @@ package types
 
 import (
 	"time"
-
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -86,6 +86,21 @@ type Workspace struct {
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }
+
+type AuthnChallengeRequiredResponse struct {
+	ChallengeToken string `json:"challenge_token"`
+	ChallengeType	 string `json:"challenge_type"`
+}
+
+type AuthnChallengeRequest struct {
+	ChallengeToken 	string `json:"challenge_token"`
+	ChallengeAnswer string `json:"challenge_answer"`
+}
+
+func (r *AuthnChallengeRequiredResponse) Error() string {
+	return fmt.Sprintf("challenge of type '%s' required", r.ChallengeType)
+}
+
 type UserToken struct {
 	UUID         string     `json:"uuid"`
 	User         string     `json:"user"`

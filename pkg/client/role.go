@@ -21,7 +21,7 @@ func (c *bepaClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*typ
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleCreate), replaceDict)
 
 	createdRole := &types.Role{}
-	if err := c.Do(http.MethodPost, apiURL, roleRequest, createdRole); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, roleRequest, createdRole); err != nil {
 		return nil, err
 	}
 	return createdRole, nil
@@ -35,7 +35,7 @@ func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.Role,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneRoleByName), replaceDict)
 	role := &types.Role{}
-	if err := c.Do(http.MethodGet, apiURL, nil, role); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, role); err != nil {
 		return nil, err
 	}
 	return role, nil
@@ -49,7 +49,7 @@ func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, e
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetOne), replaceDict)
 
 	role := &types.Role{}
-	if err := c.Do(http.MethodGet, apiURL, nil, role); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, role); err != nil {
 		return nil, err
 	}
 	return role, nil
@@ -63,7 +63,7 @@ func (c *bepaClient) GetRoleUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAllUsers), replaceDict)
 
 	users := []*types.User{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &users); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &users); err != nil {
 		return nil, err
 	}
 	return users, nil
@@ -77,7 +77,7 @@ func (c *bepaClient) GetRoleRules(roleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAllRules), replaceDict)
 
 	rules := []*types.Rule{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &rules); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &rules); err != nil {
 		return nil, err
 	}
 	return rules, nil
@@ -90,7 +90,7 @@ func (c *bepaClient) GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, er
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetAllRoles), replaceDict)
 
 	roles := []*types.RoleBinding{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &roles); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &roles); err != nil {
 		return nil, err
 	}
 	return roles, nil
@@ -102,7 +102,7 @@ func (c *bepaClient) DeleteRole(roleUUID, workspaceUUID *uuid.UUID) error {
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleDelete), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
 func (c *bepaClient) GetAllRoles() ([]*types.Role, error) {
@@ -110,7 +110,7 @@ func (c *bepaClient) GetAllRoles() ([]*types.Role, error) {
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAll), replaceDict)
 
 	roles := []*types.Role{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &roles); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &roles); err != nil {
 		return nil, err
 	}
 	return roles, nil
@@ -124,7 +124,7 @@ func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID
 	}
 	values := &types.RoleBindingReq{Items: items}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserAppendRole), replaceDict)
-	return c.Do(http.MethodPost, apiURL, values, nil)
+	return c.Do(http.MethodPost, apiURL, 0, values, nil)
 }
 
 // Is it right?
@@ -138,7 +138,7 @@ func (c *bepaClient) UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.
 	if items != nil {
 		apiURL = AddItemsAsQueryParams(apiURL, items)
 	}
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
 func (c *bepaClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
@@ -149,7 +149,7 @@ func (c *bepaClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserU
 	}
 	values := &types.RoleBindingReq{Items: items}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserAppendRole), replaceDict)
-	return c.Do(http.MethodPost, apiURL, values, nil)
+	return c.Do(http.MethodPost, apiURL, 0, values, nil)
 }
 
 // Is it right?
@@ -164,7 +164,7 @@ func (c *bepaClient) UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceU
 	if items != nil {
 		apiURL = AddItemsAsQueryParams(apiURL, items)
 	}
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 func (c *bepaClient) GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 	replaceDict := map[string]string{
@@ -174,7 +174,7 @@ func (c *bepaClient) GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAllServiceUsers), replaceDict)
 
 	serviceUsers := []*types.ServiceUser{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &serviceUsers); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &serviceUsers); err != nil {
 		return nil, err
 	}
 	return serviceUsers, nil
@@ -187,7 +187,7 @@ func (c *bepaClient) GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAllGroups), replaceDict)
 
 	groups := []*types.Group{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &groups); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &groups); err != nil {
 		return nil, err
 	}
 	return groups, nil
@@ -201,7 +201,7 @@ func (c *bepaClient) BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UU
 	}
 	values := &types.RoleBindingReq{Items: items}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupAppendRole), replaceDict)
-	return c.Do(http.MethodPost, apiURL, values, nil)
+	return c.Do(http.MethodPost, apiURL, 0, values, nil)
 }
 
 // Is it right?
@@ -217,5 +217,5 @@ func (c *bepaClient) UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uui
 	if items != nil {
 		apiURL = AddItemsAsQueryParams(apiURL, items)
 	}
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }

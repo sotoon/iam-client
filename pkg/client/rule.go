@@ -22,7 +22,7 @@ func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleA
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleCreate), replaceDict)
 
 	createdRule := &types.Rule{}
-	if err := c.Do(http.MethodPost, apiURL, ruleRequest, createdRule); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, ruleRequest, createdRule); err != nil {
 		return nil, err
 	}
 	return createdRule, nil
@@ -36,7 +36,7 @@ func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetAllRoles), replaceDict)
 
 	roles := []*types.Role{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &roles); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &roles); err != nil {
 		return nil, err
 	}
 	return roles, nil
@@ -49,7 +49,7 @@ func (c *bepaClient) BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleAppendRule), replaceDict)
-	err := c.Do(http.MethodPost, apiURL, nil, nil)
+	err := c.Do(http.MethodPost, apiURL, 0, nil, nil)
 	return err
 }
 
@@ -60,7 +60,7 @@ func (c *bepaClient) UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleDropRule), replaceDict)
-	err := c.Do(http.MethodDelete, apiURL, nil, nil)
+	err := c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 	return err
 }
 
@@ -72,7 +72,7 @@ func (c *bepaClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, e
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetOne), replaceDict)
 
 	rule := &types.Rule{}
-	if err := c.Do(http.MethodGet, apiURL, nil, rule); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, rule); err != nil {
 		return nil, err
 	}
 	return rule, nil
@@ -86,7 +86,7 @@ func (c *bepaClient) GetRuleByName(ruleName, workspaceName string) (*types.Rule,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneRuleByName), replaceDict)
 	rule := &types.Rule{}
-	if err := c.Do(http.MethodGet, apiURL, nil, rule); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, rule); err != nil {
 		return nil, err
 	}
 	return rule, nil
@@ -97,7 +97,7 @@ func (c *bepaClient) GetAllRules() ([]*types.Rule, error) {
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetAll), replaceDict)
 
 	rules := []*types.Rule{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &rules); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &rules); err != nil {
 		return nil, err
 	}
 	return rules, nil
@@ -110,7 +110,7 @@ func (c *bepaClient) GetAllUserRules(userUUID *uuid.UUID) ([]*types.Rule, error)
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetAllRules), replaceDict)
 
 	rules := []*types.Rule{}
-	if err := c.Do(http.MethodGet, apiURL, nil, &rules); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &rules); err != nil {
 		return nil, err
 	}
 	return rules, nil

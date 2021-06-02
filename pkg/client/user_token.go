@@ -18,7 +18,7 @@ func (c *bepaClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken
 
 	userToken := &types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenCreateByToken), replaceDict)
-	err := c.Do(http.MethodPost, apiURL, userTokenreq, userToken)
+	err := c.Do(http.MethodPost, apiURL, 0, userTokenreq, userToken)
 	return userToken, err
 }
 
@@ -31,7 +31,7 @@ func (c *bepaClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken,
 
 	userToken := &types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenGetOne), replaceDict)
-	err := c.Do(http.MethodGet, apiURL, nil, userToken)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, userToken)
 	return userToken, err
 }
 func (c *bepaClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
@@ -42,7 +42,7 @@ func (c *bepaClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
 
 	userTokens := &[]types.UserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenGetAll), replaceDict)
-	err := c.Do(http.MethodGet, apiURL, nil, userTokens)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, userTokens)
 	return userTokens, err
 }
 
@@ -54,6 +54,6 @@ func (c *bepaClient) DeleteMyUserToken(userTokenUUID *uuid.UUID) error {
 	}
 
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserTokenDelete), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 
 }

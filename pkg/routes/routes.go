@@ -49,6 +49,7 @@ const (
 	RouteUserSuspend               = "/user/{user_uuid}/suspend/"
 	RouteUserTokenIdentify         = "/identify/"
 	RouteUserTokenCreateByCreds    = "/authn/"
+	RouteUserTokenByChallenge	   = "/authn/challenge/"
 	RouteUserTokenCreateByToken    = "/user/{user_uuid}/user-token/"
 	RouteUserTokenGetOne           = "/user/{user_uuid}/user-token/{user_token_uuid}/"
 	RouteUserTokenGetAll           = "/user/{user_uuid}/user-token/"
