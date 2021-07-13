@@ -164,3 +164,14 @@ type PublicKey struct {
 	Key   string `json:"key"`
 	User  string `json:"user"`
 }
+type BackupKey struct {
+	UUID  string `json:"uuid"`
+	Title string `json:"title"`
+	Key   string `json:"key"`
+	Type   string `json:"type"`
+	Workspace  string `json:"workspace"`
+}
+type BackupKeyReq struct {
+	Title string `json:"title"`
+	Key   string `json:"key" validate:"required"`
+}
