@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 )
@@ -50,7 +50,7 @@ func (c *bepaClient) SetUser(userUUID string) {
 	c.userUUID = userUUID
 }
 
-func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) error {
+func (c *bepaClient) Do(method, path string, successCode int, req interface{}, resp interface{}) error {
 	var body io.Reader
 	if req != nil {
 		data, err := json.Marshal(req)
@@ -70,7 +70,7 @@ func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) 
 		httpRequest.Header.Add("Content-Type", "application/json")
 	}
 
-	data, err := proccessRequest(httpRequest)
+	data, statusCode, err := proccessRequest(httpRequest, successCode)
 
 	if err == nil {
 		if resp != nil {
@@ -79,28 +79,36 @@ func (c *bepaClient) Do(method, path string, req interface{}, resp interface{}) 
 		return nil
 
 	}
-	return err
+
+	return &types.RequestExecutionError{
+		Err: err,
+		StatusCode: statusCode,
+		Data: data,
+	}
 }
 
-func proccessRequest(httpRequest *http.Request) ([]byte, error) {
+func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
 	client := &http.Client{}
 	httpResponse, err := client.Do(httpRequest)
 
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
+	
 	defer httpResponse.Body.Close()
 
-	err = ensureStatusOK(httpResponse)
-	if err == nil {
+	err = ensureStatusOK(httpResponse, successCode)
+	_, ok := err.(*HTTPResponseError)
+
+	if err == nil || ok {
 		data, innerErr := ioutil.ReadAll(httpResponse.Body)
 		if innerErr != nil {
-			return nil, innerErr
+			return nil, httpResponse.StatusCode, innerErr
 		}
-		return data, nil
+		return data, httpResponse.StatusCode, err
 	}
 
-	return nil, err
+	return nil, httpResponse.StatusCode, err
 }
 
 func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {

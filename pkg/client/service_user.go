@@ -16,7 +16,7 @@ func (c *bepaClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetOne), replaceDict)
 
 	service := &types.ServiceUser{}
-	if err := c.Do(http.MethodGet, apiURL, nil, service); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, service); err != nil {
 		return nil, err
 	}
 	return service, nil
@@ -28,7 +28,7 @@ func (c *bepaClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.Service
 	}
 	serviceUsers := []*types.ServiceUser{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetALL), replaceDict)
-	if err := c.Do(http.MethodGet, apiURL, nil, &serviceUsers); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &serviceUsers); err != nil {
 		return nil, err
 	}
 	return serviceUsers, nil
@@ -40,7 +40,7 @@ func (c *bepaClient) DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDelete), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
 func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error) {
@@ -52,7 +52,7 @@ func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName 
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetByName), replaceDict)
 
 	serviceUser := &types.ServiceUser{}
-	if err := c.Do(http.MethodGet, apiURL, nil, serviceUser); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, serviceUser); err != nil {
 		return nil, err
 	}
 	return serviceUser, nil
@@ -67,7 +67,7 @@ func (c *bepaClient) CreateServiceUser(serviceUserName string, workspace *uuid.U
 	}
 	createdServiceUser := &types.ServiceUser{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserCreate), replaceDict)
-	if err := c.Do(http.MethodPost, apiURL, userRequest, createdServiceUser); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, createdServiceUser); err != nil {
 		return nil, err
 	}
 	return createdServiceUser, nil
@@ -80,7 +80,7 @@ func (c *bepaClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid
 	}
 	ServiceUserToken := &types.ServiceUserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserTokenCreate), replaceDict)
-	err := c.Do(http.MethodPost, apiURL, nil, ServiceUserToken)
+	err := c.Do(http.MethodPost, apiURL, 0, nil, ServiceUserToken)
 	return ServiceUserToken, err
 }
 
@@ -92,7 +92,7 @@ func (c *bepaClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid
 	}
 	ServiceUserTokens := &[]types.ServiceUserToken{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserTokenGetALL), replaceDict)
-	err := c.Do(http.MethodGet, apiURL, nil, ServiceUserTokens)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, ServiceUserTokens)
 	return ServiceUserTokens, err
 }
 
@@ -104,6 +104,6 @@ func (c *bepaClient) DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serv
 		serviceUserTokenUUIDPlaceholder: serviceUserTokenUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserTokenDelete), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 
 }

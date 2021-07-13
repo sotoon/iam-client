@@ -21,7 +21,7 @@ func (c *bepaClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error 
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyDelete), replaceDict)
 
-	err := c.Do(http.MethodDelete, apiURL, nil, nil)
+	err := c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*type
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyGetOne), replaceDict)
 
 	publicKey := &types.PublicKey{}
-	err := c.Do(http.MethodGet, apiURL, nil, &publicKey)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, &publicKey)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyGetAll), replaceDict)
 
 	publicKeys := []*types.PublicKey{}
-	err := c.Do(http.MethodGet, apiURL, nil, &publicKeys)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, &publicKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyCreate), replaceDict)
 
 	createdPublicKey := &types.PublicKey{}
-	if err := c.Do(http.MethodPost, apiURL, publicKeyReq, createdPublicKey); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, publicKeyReq, createdPublicKey); err != nil {
 		return nil, err
 	}
 	return createdPublicKey, nil
@@ -100,7 +100,7 @@ func (c *bepaClient) VerifyPublicKey(keyType string, key string, workspaceUUID s
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RoutePublicKeyVerify), replaceDict)
 
-	if err := c.Do(http.MethodPost, apiURL, publicKeyVerifyReq, nil); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, publicKeyVerifyReq, nil); err != nil {
 		return false, err
 	}
 	return true, nil

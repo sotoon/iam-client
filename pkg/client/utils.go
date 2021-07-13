@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	ErrNotMatched		   = errors.New("not matched")
 	ErrForbidden           = errors.New("forbidden")
 	ErrNotFound            = errors.New("not exists")
 	ErrBadRequest          = errors.New("bad request")
@@ -46,11 +47,15 @@ func createFaultyHTTPResponseError(statusCode int, internalErr error) *HTTPRespo
 	}
 }
 
-func ensureStatusOK(resp *http.Response) error {
+func ensureStatusOK(resp *http.Response, successCode int) error {
 	httpStatusCodeRange := int(resp.StatusCode / 100)
+	if successCode == 0 && httpStatusCodeRange == 2 || resp.StatusCode == successCode {
+		return nil
+	}
+	
 	switch httpStatusCodeRange {
 	case 2:
-		return nil
+		return createFaultyHTTPResponseError(resp.StatusCode, ErrNotMatched)
 	case 4:
 		switch resp.StatusCode {
 		case http.StatusNotFound:

@@ -15,13 +15,13 @@ func (c *bepaClient) GetService(name string) (*types.Service, error) {
 
 	service := &types.Service{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetOne), replaceDict)
-	err := c.Do(http.MethodGet, apiURL, nil, service)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, service)
 	return service, err
 }
 func (c *bepaClient) GetAllServices() (*[]types.Service, error) {
 
 	services := &[]types.Service{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetAll), nil)
-	err := c.Do(http.MethodGet, apiURL, nil, services)
+	err := c.Do(http.MethodGet, apiURL, 0, nil, services)
 	return services, err
 }

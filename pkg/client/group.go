@@ -16,7 +16,7 @@ func (c *bepaClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetOne), replaceDict)
 
 	group := &types.Group{}
-	if err := c.Do(http.MethodGet, apiURL, nil, group); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, group); err != nil {
 		return nil, err
 	}
 	return group, nil
@@ -29,7 +29,7 @@ func (c *bepaClient) GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, err
 	}
 	groups := []*types.Group{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetALL), replaceDict)
-	if err := c.Do(http.MethodGet, apiURL, nil, &groups); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &groups); err != nil {
 		return nil, err
 	}
 	return groups, nil
@@ -41,7 +41,7 @@ func (c *bepaClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupDelete), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
 func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*types.Group, error) {
@@ -53,7 +53,7 @@ func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*ty
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetByName), replaceDict)
 
 	group := &types.Group{}
-	if err := c.Do(http.MethodGet, apiURL, nil, group); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, group); err != nil {
 		return nil, err
 	}
 	return group, nil
@@ -68,7 +68,7 @@ func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types
 	}
 	createdGroup := &types.Group{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupCreate), replaceDict)
-	if err := c.Do(http.MethodPost, apiURL, userRequest, createdGroup); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, createdGroup); err != nil {
 		return nil, err
 	}
 	return createdGroup, nil
@@ -82,7 +82,7 @@ func (c *bepaClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID)
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUserGetOne), replaceDict)
 
 	user := &types.User{}
-	if err := c.Do(http.MethodGet, apiURL, nil, user); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, user); err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -96,7 +96,7 @@ func (c *bepaClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*t
 	}
 	users := []*types.User{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUserGetALL), replaceDict)
-	if err := c.Do(http.MethodGet, apiURL, nil, &users); err != nil {
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &users); err != nil {
 		return nil, err
 	}
 	return users, nil
@@ -109,7 +109,7 @@ func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uui
 		userUUIDPlaceholder:      userUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUnbindUser), replaceDict)
-	return c.Do(http.MethodDelete, apiURL, nil, nil)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
 func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) (*types.GroupUserRes, error) {
@@ -124,7 +124,7 @@ func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID 
 	}
 	createdGroupUser := &types.GroupUserRes{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBindUser), replaceDict)
-	if err := c.Do(http.MethodPost, apiURL, userRequest, createdGroupUser); err != nil {
+	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, createdGroupUser); err != nil {
 		return nil, err
 	}
 	return createdGroupUser, nil
