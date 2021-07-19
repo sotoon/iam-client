@@ -109,4 +109,10 @@ type Client interface {
 	UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error
 
 	GetServerURL() string
+
+	GetAllDefaultBackupKeys() ([]*types.BackupKey, error)
+	GetOneDefaultBackupKey(BackupKeyUUID *uuid.UUID) (*types.BackupKey, error)
+	DeleteDefaultWorkspaceBackupKey(backupKeyUUID *uuid.UUID) error
+	CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error)
+	CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error)
 }
