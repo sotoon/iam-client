@@ -9,7 +9,7 @@ import (
 type Client interface {
 	GetWorkspaces() ([]*types.Workspace, error)
 	GetWorkspaceByName(name string) (*types.Workspace, error)
-	GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.Workspace, error)
+	GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.WorkspaceWithOrganization, error)
 	GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error)
 	CreateWorkspace(name string) (*types.Workspace, error)
 	DeleteWorkspace(uuid *uuid.UUID) error

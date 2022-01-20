@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -80,11 +81,31 @@ type PublicKeyVerifyReq struct {
 	Hostname       string `json:"hostname"`
 	Email          string `json:"email"`
 }
+
 type Workspace struct {
-	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
-	Name      string     `json:"name"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	UUID         *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	Name         string     `json:"name"`
+	Namespace    string     `json:"namespace"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	Organization *uuid.UUID `json:"organization" faker:"uuidObject"`
+}
+
+type WorkspaceWithOrganization struct {
+	UUID         *uuid.UUID    `json:"uuid" faker:"uuidObject"`
+	Name         string        `json:"name"`
+	Namespace    string        `json:"namespace"`
+	Organization *Organization `json:"organization"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+}
+
+type Organization struct {
+	UUID           *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	Name           string     `json:"name_en"`
+	EnterpriseName string     `json:"enterprise_name"`
+	EconomicCode   string     `json:"economic_code"`
+	NationalId     string     `json:"national_id"`
 }
 
 type AuthnChallengeRequiredResponse struct {
