@@ -6,7 +6,6 @@ import (
 
 	"github.com/bxcodec/faker"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 )
@@ -16,7 +15,7 @@ func TestGetServiceUser(t *testing.T) {
 
 	workspace := uuid.NewV4()
 	ServiceUser := uuid.NewV4()
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&workspace, &ServiceUser},
 		ParamNames:       []string{"UUID"},
@@ -24,33 +23,33 @@ func TestGetServiceUser(t *testing.T) {
 		ClientMethodName: "GetServiceUser",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestGetServiceUsers(t *testing.T) {
 	var objects []types.ServiceUser
 	workspaceUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		ClientMethodName: "GetServiceUsers",
 		Object:           &objects,
 		Params:           []interface{}{&workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/service-user/`),
 	}
-	testutils.DoTestListingAPI(t, conf)
+	DoTestListingAPI(t, conf)
 }
 
 func TestDeleteServiceUser(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	serviceUserUUID := uuid.NewV4()
 
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/service-user/(.+)/`),
 		ClientMethodName: "DeleteServiceUser",
 		Params:           []interface{}{&workspaceUUID, &serviceUserUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &serviceUserUUID},
 	}
-	testutils.DoTestDeleteAPI(t, conf)
+	DoTestDeleteAPI(t, conf)
 }
 
 func TestGetServiceUserByName(t *testing.T) {
@@ -61,7 +60,7 @@ func TestGetServiceUserByName(t *testing.T) {
 	faker.FakeData(&name)
 	faker.FakeData(&workspaceName)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{workspaceName, name},
 		ParamsInURL:      []interface{}{workspaceName, name},
@@ -69,7 +68,7 @@ func TestGetServiceUserByName(t *testing.T) {
 		ClientMethodName: "GetServiceUserByName",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestCreateServiceUser(t *testing.T) {
@@ -78,14 +77,14 @@ func TestCreateServiceUser(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	faker.FakeData(&name)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{name, &workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/service-user/`),
 		ClientMethodName: "CreateServiceUser",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 
 func TestCreateServiceUserToken(t *testing.T) {
@@ -93,40 +92,40 @@ func TestCreateServiceUserToken(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	serviceUserUUID := uuid.NewV4()
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&serviceUserUUID, &workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &serviceUserUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/service-user/(.+)/token`),
 		ClientMethodName: "CreateServiceUserToken",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 
 func TestGetAllServiceUserToken(t *testing.T) {
 	var objects []types.ServiceUserToken
 	workspaceUUID := uuid.NewV4()
 	serviceUserUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		ClientMethodName: "GetAllServiceUserToken",
 		Params:           []interface{}{&serviceUserUUID, &workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &serviceUserUUID},
 		Object:           &objects,
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/service-user/(.+)/token`),
 	}
-	testutils.DoTestListingAPI(t, conf)
+	DoTestListingAPI(t, conf)
 }
 
 func TestDeleteServiceUserToken(t *testing.T) {
 	tokenUUID := uuid.NewV4()
 	workspaceUUID := uuid.NewV4()
 	serviceUserUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		URLregexp: regexp.MustCompile(`/workspace/(.+)/service-user/(.+)/token/(.+)/`),
 
 		ClientMethodName: "DeleteServiceUserToken",
 		Params:           []interface{}{&serviceUserUUID, &workspaceUUID, &tokenUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &serviceUserUUID, &tokenUUID},
 	}
-	testutils.DoTestDeleteAPI(t, conf)
+	DoTestDeleteAPI(t, conf)
 }

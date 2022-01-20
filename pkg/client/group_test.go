@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
@@ -15,40 +14,40 @@ func TestGetGroup(t *testing.T) {
 	var object types.Group
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		Object:           &object,
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/`),
 		ClientMethodName: "GetGroup",
 		Params:           []interface{}{&workspaceUUID, &groupUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
 	}
-	testutils.DoTestReadAPI(t, conf)
+	DoTestReadAPI(t, conf)
 }
 
 func TestGetAllGroups(t *testing.T) {
 	var object []types.Group
 	workspaceUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		Object:           &object,
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/`),
 		ClientMethodName: "GetAllGroups",
 		Params:           []interface{}{&workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID},
 	}
-	testutils.DoTestListingAPI(t, conf)
+	DoTestListingAPI(t, conf)
 }
 
 func TestDeleteGroup(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
 
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/`),
 		ClientMethodName: "DeleteGroup",
 		Params:           []interface{}{&workspaceUUID, &groupUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
 	}
-	testutils.DoTestDeleteAPI(t, conf)
+	DoTestDeleteAPI(t, conf)
 }
 
 func TestGetGroupByName(t *testing.T) {
@@ -57,7 +56,7 @@ func TestGetGroupByName(t *testing.T) {
 	faker.FakeData(&groupName)
 	faker.FakeData(&workspaceName)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{workspaceName, groupName},
 		ParamsInURL:      []interface{}{workspaceName, groupName},
@@ -66,7 +65,7 @@ func TestGetGroupByName(t *testing.T) {
 		ClientMethodName: "GetGroupByName",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestCreateGroup(t *testing.T) {
@@ -75,14 +74,14 @@ func TestCreateGroup(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	faker.FakeData(&name)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{name, &workspaceUUID},
 		ParamNames:       []string{"Name"},
 		URLregexp:        regexp.MustCompile(`/workspace/`),
 		ClientMethodName: "CreateGroup",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 
 func TestGetGroupUser(t *testing.T) {
@@ -91,13 +90,13 @@ func TestGetGroupUser(t *testing.T) {
 	groupUUID := uuid.NewV4()
 	userUUID := uuid.NewV4()
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&workspaceUUID, &groupUUID, &userUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/`),
 		ClientMethodName: "GetGroupUser",
 	}
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestGetAllGroupUsers(t *testing.T) {
@@ -105,14 +104,14 @@ func TestGetAllGroupUsers(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&workspaceUUID, &groupUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/user/`),
 		ClientMethodName: "GetAllGroupUsers",
 	}
-	testutils.DoTestListingAPI(t, config)
+	DoTestListingAPI(t, config)
 }
 
 func TestUnbindUserFromGroup(t *testing.T) {
@@ -120,14 +119,14 @@ func TestUnbindUserFromGroup(t *testing.T) {
 	groupUUID := uuid.NewV4()
 	userUUID := uuid.NewV4()
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Params:      []interface{}{&workspaceUUID, &groupUUID, &userUUID},
 		ParamsInURL: []interface{}{&workspaceUUID, &groupUUID, &userUUID},
 
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/user/(.+)/`),
 		ClientMethodName: "UnbindUserFromGroup",
 	}
-	testutils.DoTestDeleteAPI(t, config)
+	DoTestDeleteAPI(t, config)
 
 }
 
@@ -139,7 +138,7 @@ func TestBindGroup(t *testing.T) {
 	var groupName string
 	faker.FakeData(&groupName)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:      &object,
 		Params:      []interface{}{groupName, &workspaceUUID, &groupUUID, &userUUID},
 		ParamsInURL: []interface{}{&workspaceUUID, &groupUUID, &userUUID},
@@ -147,5 +146,5 @@ func TestBindGroup(t *testing.T) {
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/user/(.+)/`),
 		ClientMethodName: "BindGroup",
 	}
-	testutils.DoTestUpdateAPI(t, config, http.MethodPost)
+	DoTestUpdateAPI(t, config, http.MethodPost)
 }

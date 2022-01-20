@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"net/http"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
@@ -19,6 +20,7 @@ func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
 	return workspaces, nil
 }
 
+// todo deprecate and remove this functoin
 func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: name,
@@ -32,6 +34,30 @@ func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 		return nil, err
 	}
 	return workspace, nil
+}
+
+func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.Workspace, error) {
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: c.userUUID,
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneWorkspace), replaceDict)
+
+	parameters := map[string]string{
+		"name":     name,
+		"org_name": organizationName,
+	}
+
+	var workspacesSingleArray []types.Workspace
+
+	err := c.DoWithParams(http.MethodGet, apiURL, parameters, 0, nil, &workspacesSingleArray)
+	if err != nil {
+		return nil, err
+	}
+	if len(workspacesSingleArray) == 1 {
+		return &workspacesSingleArray[0], nil
+	} else {
+		return nil, errors.New("No workspace found")
+	}
 }
 
 func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {

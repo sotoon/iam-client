@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
@@ -15,19 +14,19 @@ func TestCreateMyUserTokenWithToken(t *testing.T) {
 	var secret string
 	faker.FakeData(&secret)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{secret},
 		URLregexp:        regexp.MustCompile(`/user/(.+)/user-token/`),
 		ClientMethodName: "CreateMyUserTokenWithToken",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 
 func TestGetMyUserToken(t *testing.T) {
 	var object types.UserToken
 	tokenUUID := uuid.NewV4()
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&tokenUUID},
 		ParamNames:       []string{"UUID"},
@@ -35,26 +34,26 @@ func TestGetMyUserToken(t *testing.T) {
 		ClientMethodName: "GetMyUserToken",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestGetAllMyUserTokens(t *testing.T) {
 	var objects []types.UserToken
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		ClientMethodName: "GetAllMyUserTokens",
 		Object:           &objects,
 		URLregexp:        regexp.MustCompile(`/user/.+/user-token/`),
 	}
-	testutils.DoTestListingAPI(t, conf)
+	DoTestListingAPI(t, conf)
 }
 
 func TestDeleteMyUserToken(t *testing.T) {
 	tokenUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		URLregexp:        regexp.MustCompile(`/user/.+/user-token/(.*)/`),
 		ClientMethodName: "DeleteMyUserToken",
 		Params:           []interface{}{&tokenUUID},
 		ParamsInURL:      []interface{}{&tokenUUID},
 	}
-	testutils.DoTestDeleteAPI(t, conf)
+	DoTestDeleteAPI(t, conf)
 }

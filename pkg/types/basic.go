@@ -6,9 +6,9 @@ type ResponseError struct {
 }
 
 type RequestExecutionError struct {
-	Err			error
-	StatusCode	int
-	Data		[]byte
+	Err        error
+	StatusCode int
+	Data       []byte
 }
 
 func (ree *RequestExecutionError) Error() string {

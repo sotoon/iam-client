@@ -24,10 +24,11 @@ type Role struct {
 }
 
 type RoleBinding struct {
-	RoleName  string            `json:"name"`
-	UserUUID  *uuid.UUID        `json:"user_uuid" faker:"uuidObject"`
-	Workspace *Workspace        `json:"workspace"`
-	Items     map[string]string `json:"items,omitempty"`
+	RoleName  string      `json:"name"`
+	UserUUID  *uuid.UUID  `json:"user_uuid" faker:"uuidObject"`
+	Workspace *Workspace  `json:"workspace"`
+	Items     interface{} `json:"items,omitempty"`
+	// todo map[string]string fails on empty map like []
 }
 type Rule struct {
 	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`

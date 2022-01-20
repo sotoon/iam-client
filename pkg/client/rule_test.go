@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
@@ -22,7 +21,7 @@ func TestCreateRule(t *testing.T) {
 	faker.FakeData(&ruleActions)
 	faker.FakeData(&deny)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &rule,
 		Params:           []interface{}{ruleName, &workspaceUUID, ruleActions, object, deny},
 		ParamNames:       []string{"Name"},
@@ -30,20 +29,20 @@ func TestCreateRule(t *testing.T) {
 		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/rule/`),
 		ClientMethodName: "CreateRule",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 func TestGetRuleRoles(t *testing.T) {
 	var roles []types.Role
 	ruleUUID := uuid.NewV4()
 	workspaceUUID := uuid.NewV4()
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &roles,
 		URLregexp:        regexp.MustCompile(`^/api/v1/workspace/(.*)/rule/(.*)/role/$`),
 		ClientMethodName: "GetRuleRoles",
 		Params:           []interface{}{&ruleUUID, &workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &ruleUUID},
 	}
-	testutils.DoTestListingAPI(t, config)
+	DoTestListingAPI(t, config)
 }
 func TestBindRuleToRole(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
@@ -52,14 +51,14 @@ func TestBindRuleToRole(t *testing.T) {
 	var params map[string]string
 	faker.FakeData(params)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Params:      []interface{}{&roleUUID, &ruleUUID, &workspaceUUID},
 		ParamsInURL: []interface{}{&workspaceUUID, &roleUUID, &ruleUUID},
 
 		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/role/(.+)/rule/(.+)/`),
 		ClientMethodName: "BindRuleToRole",
 	}
-	testutils.DoTestUpdateAPI(t, config, http.MethodPost)
+	DoTestUpdateAPI(t, config, http.MethodPost)
 }
 
 func TestUnbindRuleFromRole(t *testing.T) {
@@ -69,14 +68,14 @@ func TestUnbindRuleFromRole(t *testing.T) {
 	var params map[string]string
 	faker.FakeData(params)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Params:      []interface{}{&roleUUID, &ruleUUID, &workspaceUUID},
 		ParamsInURL: []interface{}{&workspaceUUID, &roleUUID, &ruleUUID},
 
 		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/role/(.+)/rule/(.+)/`),
 		ClientMethodName: "UnbindRuleFromRole",
 	}
-	testutils.DoTestDeleteAPI(t, config)
+	DoTestDeleteAPI(t, config)
 }
 
 func TestGetRule(t *testing.T) {
@@ -84,7 +83,7 @@ func TestGetRule(t *testing.T) {
 	rule := uuid.NewV4()
 	workspace := uuid.NewV4()
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&rule, &workspace},
 		ParamsInURL:      []interface{}{&workspace, &rule},
@@ -93,7 +92,7 @@ func TestGetRule(t *testing.T) {
 		ClientMethodName: "GetRule",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 func TestGetRuleByName(t *testing.T) {
 	var object types.Rule
@@ -101,7 +100,7 @@ func TestGetRuleByName(t *testing.T) {
 	faker.FakeData(&ruleName)
 	faker.FakeData(&workspaceName)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{ruleName, workspaceName},
 		ParamsInURL:      []interface{}{workspaceName, ruleName},
@@ -110,28 +109,28 @@ func TestGetRuleByName(t *testing.T) {
 		ClientMethodName: "GetRuleByName",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 func TestGetAllRules(t *testing.T) {
 	rules := []types.Rule{}
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &rules,
 		URLregexp:        regexp.MustCompile(`^/api/v1/rule/$`),
 		ClientMethodName: "GetAllRules",
 	}
-	testutils.DoTestListingAPI(t, config)
+	DoTestListingAPI(t, config)
 }
 
 func TestGetAllUserRules(t *testing.T) {
 	rules := []types.Rule{}
 	userUUID := uuid.NewV4()
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &rules,
 		URLregexp:        regexp.MustCompile(`^/api/v1/user/(.+)/rule/$`),
 		ClientMethodName: "GetAllUserRules",
 		Params:           []interface{}{&userUUID},
 		ParamsInURL:      []interface{}{&userUUID},
 	}
-	testutils.DoTestListingAPI(t, config)
+	DoTestListingAPI(t, config)
 }

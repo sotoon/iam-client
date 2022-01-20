@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/stretchr/testify/require"
@@ -48,7 +47,7 @@ func TestIdentification(t *testing.T) {
 				require.NoError(t, json.NewEncoder(w).Encode(userRes))
 			}))
 
-		c := testutils.NewTestClient(s)
+		c := NewTestClient(s)
 		user, err := c.Identify(tc.token)
 
 		if tc.found {

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
@@ -25,6 +26,10 @@ type bepaClient struct {
 }
 
 var _ Client = &bepaClient{}
+
+func NewMinimalClient(baseURL string) (Client, error) {
+	return NewClient("", baseURL, "", "")
+}
 
 // NewClient creates a new client to interact with bepa server
 func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string) (Client, error) {
@@ -46,11 +51,29 @@ func (c *bepaClient) SetAccessToken(token string) {
 	c.accessToken = token
 }
 
+func (c *bepaClient) SetDefaultWorkspace(workspace string) {
+	c.defaultWorkspace = workspace
+}
+
 func (c *bepaClient) SetUser(userUUID string) {
 	c.userUUID = userUUID
 }
 
 func (c *bepaClient) Do(method, path string, successCode int, req interface{}, resp interface{}) error {
+	return c.DoWithParams(method, path, nil, successCode, req, resp)
+}
+
+func (c *bepaClient) DoMinimal(method, path string, resp interface{}) error {
+	USUAL_SUCCESS_CODE_2XX := 0
+	return c.DoWithParams(method, path, nil, USUAL_SUCCESS_CODE_2XX, nil, resp)
+}
+
+func (c *bepaClient) DoSimple(method, path string, parameters map[string]string, req interface{}, resp interface{}) error {
+	USUAL_SUCCESS_CODE_2XX := 0
+	return c.DoWithParams(method, path, parameters, USUAL_SUCCESS_CODE_2XX, req, resp)
+}
+
+func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
 	var body io.Reader
 	if req != nil {
 		data, err := json.Marshal(req)
@@ -60,7 +83,7 @@ func (c *bepaClient) Do(method, path string, successCode int, req interface{}, r
 		body = bytes.NewBuffer(data)
 	}
 
-	httpRequest, err := c.NewRequest(method, path, body)
+	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
 
 	if err != nil {
 		return err
@@ -81,9 +104,9 @@ func (c *bepaClient) Do(method, path string, successCode int, req interface{}, r
 	}
 
 	return &types.RequestExecutionError{
-		Err: err,
+		Err:        err,
 		StatusCode: statusCode,
-		Data: data,
+		Data:       data,
 	}
 }
 
@@ -94,7 +117,7 @@ func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, e
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	defer httpResponse.Body.Close()
 
 	err = ensureStatusOK(httpResponse, successCode)
@@ -112,9 +135,21 @@ func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, e
 }
 
 func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {
+	return c.NewRequestWithParameters(method, path, nil, body)
+}
+
+func (c *bepaClient) NewRequestWithParameters(method, path string, parameters map[string]string, body io.Reader) (*http.Request, error) {
 	pathURL, err := url.Parse(path)
 	if err != nil {
 		return nil, err
+	}
+
+	if parameters != nil {
+		params := url.Values{}
+		for key, val := range parameters {
+			params.Add(key, val)
+		}
+		pathURL.RawQuery = params.Encode()
 	}
 
 	fullPath := c.baseURL.ResolveReference(pathURL)

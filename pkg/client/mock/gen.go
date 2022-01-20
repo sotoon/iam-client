@@ -1,4 +1,5 @@
 // The following directive is necessary to make the package coherent:
+//go:build ignore
 // +build ignore
 
 // This program generates mock.gen.go. It can be invoked by running
