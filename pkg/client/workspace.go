@@ -36,7 +36,7 @@ func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.Workspace, error) {
+func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.WorkspaceWithOrganization, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -47,7 +47,7 @@ func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName 
 		"org_name": organizationName,
 	}
 
-	var workspacesSingleArray []types.Workspace
+	var workspacesSingleArray []types.WorkspaceWithOrganization
 
 	err := c.DoWithParams(http.MethodGet, apiURL, parameters, 0, nil, &workspacesSingleArray)
 	if err != nil {
