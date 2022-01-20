@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/stretchr/testify/require"
@@ -76,7 +75,7 @@ func TestAuthorization(t *testing.T) {
 				require.NoError(t, json.NewEncoder(w).Encode(resp))
 			}))
 		defer s.Close()
-		c := testutils.NewTestClient(s)
+		c := NewTestClient(s)
 
 		err := c.Authorize(tc.uuid, "UserType", tc.action, tc.rri)
 		require.True(t, (err == nil) == tc.valid, fmt.Sprintln(tc, err))

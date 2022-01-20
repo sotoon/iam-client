@@ -1,9 +1,9 @@
 package types
 
 import (
-	"time"
 	"fmt"
 	uuid "github.com/satori/go.uuid"
+	"time"
 )
 
 const (
@@ -89,11 +89,11 @@ type Workspace struct {
 
 type AuthnChallengeRequiredResponse struct {
 	ChallengeToken string `json:"challenge_token"`
-	ChallengeType	 string `json:"challenge_type"`
+	ChallengeType  string `json:"challenge_type"`
 }
 
 type AuthnChallengeRequest struct {
-	ChallengeToken 	string `json:"challenge_token"`
+	ChallengeToken  string `json:"challenge_token"`
 	ChallengeAnswer string `json:"challenge_answer"`
 }
 
@@ -165,11 +165,11 @@ type PublicKey struct {
 	User  string `json:"user"`
 }
 type BackupKey struct {
-	UUID  string `json:"uuid"`
-	Title string `json:"title"`
-	Key   string `json:"key"`
-	Type   string `json:"type"`
-	Workspace  string `json:"workspace"`
+	UUID      string `json:"uuid"`
+	Title     string `json:"title"`
+	Key       string `json:"key"`
+	Type      string `json:"type"`
+	Workspace string `json:"workspace"`
 }
 type BackupKeyReq struct {
 	Title string `json:"title"`

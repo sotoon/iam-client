@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/internal/pkg/testutils"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/bxcodec/faker"
@@ -15,19 +14,19 @@ import (
 
 func TestDeleteDefaultUserPublicKey(t *testing.T) {
 	publicKeyUUID := uuid.NewV4()
-	conf := testutils.TestConfig{
+	conf := TestConfig{
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/(.+)/`),
 		ClientMethodName: "DeleteDefaultUserPublicKey",
 		Params:           []interface{}{&publicKeyUUID},
 		ParamsInURL:      []interface{}{&publicKeyUUID},
 	}
-	testutils.DoTestDeleteAPI(t, conf)
+	DoTestDeleteAPI(t, conf)
 }
 
 func TestGetOneDefaultUserPublicKey(t *testing.T) {
 	var object types.PublicKey
 	publicKeyUUID := uuid.NewV4()
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{&publicKeyUUID},
 		ParamNames:       []string{"UUID"},
@@ -35,18 +34,18 @@ func TestGetOneDefaultUserPublicKey(t *testing.T) {
 		ClientMethodName: "GetOneDefaultUserPublicKey",
 	}
 
-	testutils.DoTestReadAPI(t, config)
+	DoTestReadAPI(t, config)
 }
 
 func TestGetAllDefaultUserPublicKeys(t *testing.T) {
 	var object []types.PublicKey
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
 		ClientMethodName: "GetAllDefaultUserPublicKeys",
 	}
 
-	testutils.DoTestListingAPI(t, config)
+	DoTestListingAPI(t, config)
 }
 
 func TestCreatePublicKeyForDefaultUser(t *testing.T) {
@@ -56,13 +55,13 @@ func TestCreatePublicKeyForDefaultUser(t *testing.T) {
 	faker.FakeData(&keyType)
 	faker.FakeData(&key)
 
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Object:           &object,
 		Params:           []interface{}{title, keyType, key},
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
 		ClientMethodName: "CreatePublicKeyForDefaultUser",
 	}
-	testutils.DoTestCreateAPI(t, config)
+	DoTestCreateAPI(t, config)
 }
 
 func TestCreatePublicKeyFromFileForDefaultUser(t *testing.T) {
@@ -76,11 +75,11 @@ func TestVerifyPublicKey(t *testing.T) {
 	faker.FakeData(&workspaceUUID)
 	faker.FakeData(&username)
 	faker.FakeData(&hostname)
-	config := testutils.TestConfig{
+	config := TestConfig{
 		Params:           []interface{}{keyType, key, workspaceUUID, username, hostname},
 		URLregexp:        regexp.MustCompile(`/api/v1/public-key/verify/`),
 		ClientMethodName: "VerifyPublicKey",
 	}
-	testutils.DoTestUpdateAPI(t, config, http.MethodPost)
+	DoTestUpdateAPI(t, config, http.MethodPost)
 
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 )
 
 func (c *bepaClient) Authorize(identity, userType, action, object string) error {
@@ -21,6 +22,14 @@ func (c *bepaClient) Authorize(identity, userType, action, object string) error 
 	query.Set("action", action)
 
 	req.URL.RawQuery = query.Encode()
-	_, _, err = proccessRequest(req, 0)
-	return err
+	data, statusCode, errRes := proccessRequest(req, 0)
+	if errRes == nil {
+		return nil
+	}
+
+	return &types.RequestExecutionError{
+		Err:        errRes,
+		StatusCode: statusCode,
+		Data:       data,
+	}
 }

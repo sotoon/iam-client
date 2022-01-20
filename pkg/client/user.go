@@ -1,10 +1,12 @@
 package client
 
 import (
+	"encoding/json"
 	"net/http"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
-	"encoding/json"
+	"github.com/hashicorp/vic/lib/apiservers/service/restapi/handlers/errors"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -61,7 +63,7 @@ func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*types.User
 			if decodeErr != nil {
 				return nil, decodeErr
 			}
-			
+
 			return nil, challengeRequired
 		}
 
@@ -72,7 +74,7 @@ func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*types.User
 
 func (c *bepaClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
 	tokenRequest := &types.AuthnChallengeRequest{
-		ChallengeToken: challengeToken,
+		ChallengeToken:  challengeToken,
 		ChallengeAnswer: challengeAnswer,
 	}
 
@@ -86,7 +88,7 @@ func (c *bepaClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer 
 			if decodeErr != nil {
 				return nil, decodeErr
 			}
-			
+
 			return nil, challengeRequired
 		}
 
@@ -108,6 +110,27 @@ func (c *bepaClient) UpdateUser(userUUID *uuid.UUID, name, email, password strin
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserUpdate), replaceDict)
 
 	return c.Do(http.MethodPatch, apiURL, 0, userUpdateReq, nil)
+}
+
+func (c *bepaClient) GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*types.User, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	params := map[string]string{
+		"email": email,
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGetUsers), replaceDict)
+
+	var users []types.User
+	if err := c.DoSimple(http.MethodGet, apiURL, params, nil, &users); err != nil {
+		return nil, err
+	}
+	if len(users) > 0 {
+		// because email is unique
+		return &users[0], nil
+	} else {
+		return nil, errors.NewError(http.StatusNotFound, "User not found")
+	}
 }
 
 func (c *bepaClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error) {
@@ -256,6 +279,28 @@ func (c *bepaClient) JoinByInvitationToken(name, password, invitationToken strin
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, 0, joinReq, joinedUser)
 	return joinedUser, err
+}
+
+func (c *bepaClient) SuspendUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteSuspendUserInWorkspace), replaceDict)
+
+	return c.DoMinimal(http.MethodPut, apiURL, nil)
+}
+
+func (c *bepaClient) ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteActivateUserInWorkspace), replaceDict)
+
+	return c.DoMinimal(http.MethodPut, apiURL, nil)
 }
 
 func (c *bepaClient) SuspendUser(userUUID *uuid.UUID) error {

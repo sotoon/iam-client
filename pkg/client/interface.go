@@ -9,6 +9,7 @@ import (
 type Client interface {
 	GetWorkspaces() ([]*types.Workspace, error)
 	GetWorkspaceByName(name string) (*types.Workspace, error)
+	GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.Workspace, error)
 	GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error)
 	CreateWorkspace(name string) (*types.Workspace, error)
 	DeleteWorkspace(uuid *uuid.UUID) error
@@ -42,6 +43,7 @@ type Client interface {
 	GetUser(userUUID *uuid.UUID) (*types.User, error)
 	GetMySelf() (*types.User, error)
 	DeleteMySelf() error
+	GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*types.User, error)
 	GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error)
 	GetUsers() ([]*types.User, error)
 	DeleteUser(userUUID *uuid.UUID) error
@@ -51,6 +53,8 @@ type Client interface {
 	SetMyName(name string) error
 	GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error)
 	RevokeSecret(userUUID *uuid.UUID) error
+	SuspendUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error
+	ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error
 	InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error)
 	JoinByInvitationToken(name, password, invitationToken string) (*types.User, error)
 	GetMyWorkspaces() ([]*types.Workspace, error)
@@ -73,6 +77,7 @@ type Client interface {
 
 	Do(method, path string, successCode int, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
+	SetDefaultWorkspace(workspace string)
 	SetUser(userUUID string)
 
 	CreateMyUserTokenWithToken(secret string) (*types.UserToken, error)

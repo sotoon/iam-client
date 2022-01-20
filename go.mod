@@ -6,8 +6,9 @@ require (
 	github.com/bxcodec/faker v2.0.1+incompatible
 	github.com/corpix/uarand v0.1.1 // indirect
 	github.com/google/uuid v1.1.2 // indirect
+	github.com/hashicorp/vic v1.5.0
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428 // indirect
-	github.com/labstack/echo v3.3.10+incompatible
+	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/markbates/inflect v1.0.4 // indirect

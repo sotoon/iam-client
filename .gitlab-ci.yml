@@ -1,0 +1,25 @@
+stages:
+  - test and analysis
+
+lint:
+  stage: test and analysis
+  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.14.1
+  script:
+    - make fmt-check
+
+husky:
+  stage: test and analysis
+  variables:
+    NO_PROXY: ".security.sotoon.ir,.kise.cafebazaar.cloud"
+  before_script:
+    - wget --no-check-certificate https://huskyci-files.security.sotoon.ir/huskyci-client-bin
+    - chmod +x huskyci-client-bin
+  script:
+    - echo "husky is a static code analysis tool checking security vulnerabilities supported by Sotoon Security Team"
+    - ./huskyci-client-bin --level HIGH
+
+test:
+  stage: test and analysis
+  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.14.1
+  script:
+    - make test
