@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"testing"
 
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/bxcodec/faker"
@@ -46,6 +47,24 @@ func TestGetWorkspaceByName(t *testing.T) {
 		ParamsInURL:      []interface{}{workspace},
 		URLregexp:        regexp.MustCompile(`^/api/v1/user/.+/workspace/name=(.+)/`),
 		ClientMethodName: "GetWorkspaceByName",
+	}
+
+	DoTestReadAPI(t, config)
+}
+
+func TestGetWorkspaceByNameAndOrgName(t *testing.T) {
+	var object types.WorkspaceWithOrganization
+	var workspaceName string
+	var organizationName string
+	faker.FakeData(&workspaceName)
+	faker.FakeData(&organizationName)
+	config := TestConfig{
+		Object:      []types.WorkspaceWithOrganization{object},
+		Params:      []interface{}{workspaceName, organizationName},
+		ParamsInURL: []interface{}{},
+		URLregexp:   routeToRegex(routes.RouteUserGetOneWorkspace),
+
+		ClientMethodName: "GetWorkspaceByNameAndOrgName",
 	}
 
 	DoTestReadAPI(t, config)
