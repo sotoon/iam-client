@@ -55,6 +55,15 @@ func isWriteMethod(method string) bool {
 	return false
 }
 
+func routeToRegex(route string) *regexp.Regexp {
+	parameter := regexp.MustCompile(`{.+}`)
+	// to replace all {parameter} vaules to regex: .+
+	urlRegex := parameter.ReplaceAllString(route, ".+")
+	// to cover any url query parameters like: /api_path/?name=armita
+	urlRegex = "^/api/v1" + urlRegex + ".*$"
+	return regexp.MustCompile(urlRegex)
+}
+
 //TestHandlerFunc callback type for custom checks
 type TestHandlerFunc func(*http.ResponseWriter, *http.Request, *regexp.Regexp) bool
 
@@ -237,7 +246,9 @@ func DoTestListingAPI(t *testing.T, config TestConfig) {
 
 //DoTestReadAPI does tests for a read api
 func DoTestReadAPI(t *testing.T, config TestConfig) {
-	faker.FakeData(config.Object)
+	if config.Object != nil {
+		faker.FakeData(config.Object)
+	}
 	testCases := []httpTestCase{
 		{200, nil},
 		{403, ErrForbidden},
@@ -318,17 +329,6 @@ func DoTestUpdateAPI(t *testing.T, config TestConfig, httpMethod string) {
 	if config.Object != nil {
 		faker.FakeData(config.Object)
 	}
-	// reflectedObject := reflect.ValueOf(config.Object)
-	// for i, paramName := range config.ParamNames {
-	// 	if paramName != "" {
-	// 		fmt.Println(paramName, reflectedObject)
-
-	// 		val := reflect.ValueOf(config.Params[i])
-	// 		fmt.Println(val)
-
-	// 		reflectedObject.Elem().FieldByName(paramName).Set(val)
-	// 	}
-	// }
 
 	testCases := []httpTestCase{
 		{200, nil},

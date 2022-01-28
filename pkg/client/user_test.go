@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"testing"
 
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
@@ -93,7 +94,57 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestGetUserByName(t *testing.T) {
+	var object types.User
+	var userName string
+	faker.FakeData(&userName)
+	var workspaceId uuid.UUID = uuid.NewV4()
 
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{userName, &workspaceId},
+		URLregexp:        routeToRegex(routes.RouteWorkspaceUserGetByEmail),
+		ClientMethodName: "GetUserByName",
+	}
+	DoTestReadAPI(t, config)
+}
+
+func TestSuspendUserInWorkspace(t *testing.T) {
+	var workspaceId uuid.UUID = uuid.NewV4()
+	var userId uuid.UUID = uuid.NewV4()
+
+	config := TestConfig{
+		Params:           []interface{}{&workspaceId, &userId},
+		URLregexp:        routeToRegex(routes.RouteSuspendUserInWorkspace),
+		ClientMethodName: "SuspendUserInWorkspace",
+	}
+	DoTestUpdateAPI(t, config, "PUT")
+}
+
+func TestActivateUserInWorkspace(t *testing.T) {
+	var workspaceId uuid.UUID = uuid.NewV4()
+	var userId uuid.UUID = uuid.NewV4()
+
+	config := TestConfig{
+		Params:           []interface{}{&workspaceId, &userId},
+		URLregexp:        routeToRegex(routes.RouteActivateUserInWorkspace),
+		ClientMethodName: "ActivateUserInWorkspace",
+	}
+	DoTestUpdateAPI(t, config, "PUT")
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	var object types.User
+	var userEmail string
+	faker.FakeData(&userEmail)
+	var workspaceId uuid.UUID = uuid.NewV4()
+
+	config := TestConfig{
+		Object:           []types.User{object},
+		Params:           []interface{}{userEmail, &workspaceId},
+		URLregexp:        routeToRegex(routes.RouteWorkspaceGetUsers),
+		ClientMethodName: "GetUserByEmail",
+	}
+	DoTestReadAPI(t, config)
 }
 
 func TestGetMySelf(t *testing.T) {
