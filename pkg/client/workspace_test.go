@@ -71,7 +71,7 @@ func TestGetWorkspaceByNameAndOrgName(t *testing.T) {
 }
 
 func TestGetMyWorkspaces(t *testing.T) {
-	var objects []types.Workspace
+	var objects []types.WorkspaceWithOrganization
 	conf := TestConfig{
 		ClientMethodName: "GetMyWorkspaces",
 		Object:           &objects,

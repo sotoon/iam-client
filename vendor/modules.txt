@@ -2,14 +2,10 @@
 ## explicit
 github.com/bxcodec/faker
 github.com/bxcodec/faker/support/slice
-# github.com/corpix/uarand v0.1.1
-## explicit
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
-# github.com/google/uuid v1.1.2
-## explicit
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
@@ -24,24 +20,12 @@ github.com/hashicorp/hcl/json/token
 # github.com/hashicorp/vic v1.5.0
 ## explicit
 github.com/hashicorp/vic/lib/apiservers/service/restapi/handlers/errors
-# github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
-## explicit
-# github.com/labstack/echo v3.3.10+incompatible
-## explicit
-# github.com/labstack/gommon v0.3.0
-## explicit
-# github.com/lib/pq v1.7.0
-## explicit
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
-# github.com/markbates/inflect v1.0.4
-## explicit
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
-# github.com/pkg/errors v0.9.1
-## explicit
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/satori/go.uuid v1.2.0
@@ -65,9 +49,8 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/wawandco/fako v0.0.0-20180828010250-c36a0bc97398
-## explicit
 # golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a
+## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/transform

@@ -57,7 +57,7 @@ type Client interface {
 	ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error
 	InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error)
 	JoinByInvitationToken(name, password, invitationToken string) (*types.User, error)
-	GetMyWorkspaces() ([]*types.Workspace, error)
+	GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error)
 	GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error)
 	CreateUserTokenByCreds(email, password string) (*types.UserToken, error)
 	SetConfigDefaultUserData(context, token, userUUID, email string) error
