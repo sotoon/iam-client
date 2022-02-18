@@ -74,13 +74,13 @@ func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetMyWorkspaces() ([]*types.Workspace, error) {
+func (c *bepaClient) GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetAllWorkspaces), replaceDict)
 
-	workspaces := []*types.Workspace{}
+	workspaces := []*types.WorkspaceWithOrganization{}
 	err := c.Do(http.MethodGet, apiURL, 0, nil, &workspaces)
 	if err != nil {
 		return nil, err
