@@ -187,10 +187,10 @@ type PublicKey struct {
 }
 
 type KiseSecret struct {
-	UUID  string `json:"uuid"`
-	Title string `json:"title"`
-	Secret   string `json:"secret"`
-	User  string `json:"user"`
+	UUID   string `json:"uuid"`
+	Title  string `json:"title"`
+	Secret string `json:"secret"`
+	User   string `json:"user"`
 }
 type BackupKey struct {
 	UUID      string `json:"uuid"`

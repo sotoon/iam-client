@@ -11,8 +11,7 @@ func (c *bepaClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:       c.userUUID,
 		kiseSecretUUIDPlaceholder: kiseSecretUUID.String(),
-		workspaceUUIDPlaceholder: c.defaultWorkspace,
-
+		workspaceUUIDPlaceholder:  c.defaultWorkspace,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteKiseSecretDelete), replaceDict)
 
@@ -25,9 +24,8 @@ func (c *bepaClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {
 
 func (c *bepaClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
 	replaceDict := map[string]string{
-		userUUIDPlaceholder: c.userUUID,
+		userUUIDPlaceholder:      c.userUUID,
 		workspaceUUIDPlaceholder: c.defaultWorkspace,
-
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteKiseSecretGetAll), replaceDict)
 
@@ -39,17 +37,17 @@ func (c *bepaClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
 	return kiseSecret, nil
 }
 
-func (c *bepaClient) CreateKiseSecretForDefaultUser() (*types.KiseSecret, error) {
-	replaceDict := map[string]string{
-		userUUIDPlaceholder: c.userUUID,
-		workspaceUUIDPlaceholder: c.defaultWorkspace,
-
-	}
-	apiURL := substringReplace(trimURLSlash(routes.RouteKiseSecretCreate), replaceDict)
-
-	createdKiseSecret := &types.KiseSecret{}
-	if err := c.Do(http.MethodPost, apiURL, 0, nil, createdKiseSecret); err != nil {
-		return nil, err
-	}
-	return createdKiseSecret, nil
-}
+//func (c *bepaClient) CreateKiseSecretForDefaultUser() (*types.KiseSecret, error) {
+//	replaceDict := map[string]string{
+//		userUUIDPlaceholder: c.userUUID,
+//		workspaceUUIDPlaceholder: c.defaultWorkspace,
+//
+//	}
+//	apiURL := substringReplace(trimURLSlash(routes.RouteKiseSecretCreate), replaceDict)
+//
+//	createdKiseSecret := &types.KiseSecret{}
+//	if err := c.Do(http.MethodPost, apiURL, 0, nil, createdKiseSecret); err != nil {
+//		return nil, err
+//	}
+//	return createdKiseSecret, nil
+//}
