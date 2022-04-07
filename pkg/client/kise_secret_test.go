@@ -30,14 +30,12 @@ func TestGetAllUserKiseSecret(t *testing.T) {
 	DoTestListingAPI(t, config)
 }
 
-//func TestCreateKiseSecretForDefaultUser(t *testing.T) {
-//	var object types.KiseSecret
-//	config := TestConfig{
-//		Object:           &object,
-//		URLregexp:        regexp.MustCompile(`/api/v1/workspace/.+/user/.+/kise/key/`),
-//		ClientMethodName: "CreateKiseSecretForDefaultUser",
-//	}
-//	DoTestCreateAPI(t, config)
-//}
-//
-//
+func TestCreateKiseSecretForDefaultUser(t *testing.T) {
+	var object types.KiseSecret
+	config := TestConfig{
+		Object:           &object,
+		URLregexp:        regexp.MustCompile(`/api/v1/workspace/.+/user/.+/kise/key/`),
+		ClientMethodName: "CreateKiseSecretForDefaultUser",
+	}
+	DoTestCreateAPI(t, config)
+}

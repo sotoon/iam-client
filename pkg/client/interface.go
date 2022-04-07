@@ -74,7 +74,7 @@ type Client interface {
 
 	GetAllUserKiseSecret() ([]*types.KiseSecret, error)
 	DeleteUserKiseSecret(KiseSecretUUID *uuid.UUID) error
-	//CreateKiseSecretForDefaultUser() (*types.KiseSecret, error)
+	CreateKiseSecretForDefaultUser() (*types.KiseSecret, error)
 
 	Authorize(identity, userType, action, object string) error
 	Identify(token string) (*types.UserRes, error)
