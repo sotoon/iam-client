@@ -85,12 +85,6 @@ func (c *bepaClient) DoSimple(method, path string, parameters map[string]string,
 
 func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
 
-	c.log("bepa-client performing request:%s", method)
-	c.log("path:%s\n", path)
-	c.log("parameters:%s\n", parameters)
-	c.log("expected success code:%d\n", successCode)
-	c.log("request:%s\n", req)
-
 	var body io.Reader
 	if req != nil {
 		data, err := json.Marshal(req)
@@ -113,7 +107,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 
 	data, statusCode, err := proccessRequest(httpRequest, successCode)
 
-	c.log("bepa-client received response code:%s", statusCode)
+	c.log("bepa-client received response code:%d", statusCode)
 	c.log("bepa-client received response body:%s", data)
 	c.log("bepa-client faced error:%s", err)
 
