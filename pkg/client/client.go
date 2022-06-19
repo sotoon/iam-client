@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -18,11 +19,20 @@ import (
 // APIURI represents api addr to be appended to server url
 const APIURI = "/api/v1/"
 
+type LogLevel int
+
+const (
+	DEBUG int = 0
+	INFO  int = 1
+	ERROR int = 2
+)
+
 type bepaClient struct {
 	accessToken      string
 	baseURL          url.URL
 	defaultWorkspace string
 	userUUID         string
+	logLevel         LogLevel
 }
 
 var _ Client = &bepaClient{}
@@ -34,7 +44,7 @@ func NewMinimalClient(baseURL string) (Client, error) {
 // NewClient creates a new client to interact with bepa server
 func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string) (Client, error) {
 	client := &bepaClient{}
-
+	client.logLevel = LogLevel(DEBUG)
 	client.accessToken = accessToken
 	client.defaultWorkspace = defaultWorkspace
 	client.userUUID = userUUID
@@ -74,6 +84,7 @@ func (c *bepaClient) DoSimple(method, path string, parameters map[string]string,
 }
 
 func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
+
 	var body io.Reader
 	if req != nil {
 		data, err := json.Marshal(req)
@@ -84,6 +95,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
+	c.log("bepa-client performing request:%s", httpRequest)
 
 	if err != nil {
 		return err
@@ -94,6 +106,10 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 
 	data, statusCode, err := proccessRequest(httpRequest, successCode)
+
+	c.log("bepa-client received response code:%d", statusCode)
+	c.log("bepa-client received response body:%s", data)
+	c.log("bepa-client faced error:%s", err)
 
 	if err == nil {
 		if resp != nil {
@@ -212,4 +228,10 @@ func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	viper.Set(fmt.Sprintf("contexts.%s.workspace", context), uuid.String())
 	c.defaultWorkspace = uuid.String()
 	return persistClientConfigFile()
+}
+
+func (c *bepaClient) log(messageFmt string, object interface{}) {
+	if c.logLevel <= LogLevel(DEBUG) {
+		log.Printf(messageFmt, object)
+	}
 }
