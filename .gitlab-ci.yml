@@ -10,13 +10,15 @@ lint:
 husky:
   stage: test and analysis
   variables:
-    NO_PROXY: ".security.sotoon.ir,.kise.cafebazaar.cloud"
+    NO_PROXY: ".security.sotoon.ir,.kise.cafebazaar.cloud,.kise-thr-nd-1.sotoon.cloud,.sotoon.ir,.cafebazaar.cloud"
   before_script:
     - wget --no-check-certificate https://huskyci-files.security.sotoon.ir/huskyci-client-bin
     - chmod +x huskyci-client-bin
   script:
-    - echo "husky is a static code analysis tool checking security vulnerabilities supported by Sotoon Security Team"
-    - ./huskyci-client-bin --level HIGH
+    # todo consider checking for medium level errors
+    - ./huskyci-client-bin -s bandit -s jake --level HIGH
+  allow_failure: true
+  timeout: 5m
 
 test:
   stage: test and analysis
