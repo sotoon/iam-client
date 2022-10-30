@@ -19,7 +19,7 @@ type RoleReq struct {
 }
 type Role struct {
 	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
-	Workspace *Workspace `json:"workspace"`
+	Workspace *uuid.UUID `json:"workspace"`
 	Name      string     `json:"name"`
 }
 
