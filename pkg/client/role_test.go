@@ -17,6 +17,7 @@ func TestCreateRole(t *testing.T) {
 	var roleName string
 	workspaceUUID := uuid.NewV4()
 	faker.FakeData(&roleName)
+	faker.FakeData(&object)
 
 	config := TestConfig{
 		Object:           &object,
