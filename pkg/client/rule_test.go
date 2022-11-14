@@ -31,6 +31,20 @@ func TestCreateRule(t *testing.T) {
 	}
 	DoTestCreateAPI(t, config)
 }
+
+func TestDeleteRule(t *testing.T) {
+	workspaceUUID := uuid.NewV4()
+	ruleUUID := uuid.NewV4()
+
+	conf := TestConfig{
+		URLregexp:        regexp.MustCompile(`/workspace/(.+)/rule/(.+)/`),
+		ClientMethodName: "DeleteRule",
+		Params:           []interface{}{&workspaceUUID, &ruleUUID},
+		ParamsInURL:      []interface{}{&ruleUUID, &workspaceUUID},
+	}
+	DoTestDeleteAPI(t, conf)
+}
+
 func TestGetRuleRoles(t *testing.T) {
 	var roles []types.Role
 	ruleUUID := uuid.NewV4()
