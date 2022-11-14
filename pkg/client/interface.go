@@ -33,6 +33,7 @@ type Client interface {
 	GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, error)
 	GetRuleByName(ruleName, workspaceName string) (*types.Rule, error)
 	CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error)
+	DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error
 	GetAllRules() ([]*types.Rule, error)
 	GetAllUserRules(userUUID *uuid.UUID) ([]*types.Rule, error)
 	BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error

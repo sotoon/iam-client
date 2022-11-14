@@ -28,6 +28,15 @@ func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleA
 	return createdRule, nil
 }
 
+func (c *bepaClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		ruleUUIDPlaceholder:      ruleUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteRuleDelete), replaceDict)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
+}
+
 func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
