@@ -37,7 +37,7 @@ func TestDeleteRule(t *testing.T) {
 	ruleUUID := uuid.NewV4()
 
 	conf := TestConfig{
-		URLregexp:        regexp.MustCompile(`/workspace/(.+)/rule/(.+)/`),
+		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/rule/(.+)/`),
 		ClientMethodName: "DeleteRule",
 		Params:           []interface{}{&workspaceUUID, &ruleUUID},
 		ParamsInURL:      []interface{}{&ruleUUID, &workspaceUUID},
