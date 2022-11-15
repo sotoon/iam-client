@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/client"
+	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/client"
 )
 
 func main() {
