@@ -1,10 +1,11 @@
 package client
 
 import (
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
-	uuid "github.com/satori/go.uuid"
 	"net/http"
+
+	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (c *bepaClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {

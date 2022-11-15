@@ -1,7 +1,7 @@
 package client
 
 import (
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 )
 
