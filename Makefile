@@ -1,12 +1,18 @@
 GIT ?= git
-DOCKER_IMAGE := registry.cafebazaar.ir:5000/infrastructure/kraken/commander
+DOCKER_IMAGE := registry.cafebazaar.ir:5000/infrastructure/integration/sib/bepa-client
 COMMIT := $(shell $(GIT) rev-parse HEAD)
 VERSION ?= $(shell $(GIT) describe --tags ${COMMIT} 2> /dev/null || echo "$(COMMIT)")
 
 
+.PHONY: resolve
+resolve:
+	GOPRIVATE=git.cafebazaar.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go mod vendor
+	go mod tidy
+
+
 .PHONY: build
 build:
-	GOPRIVATE=git.cafebazaar.ir/infrastructure CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -mod=vendor -a -o bin/example.out ./examples/test.go
+	GOPRIVATE=git.cafebazaar.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -mod=vendor -a -o bin/example.out ./examples/test.go
 
 
 .PHONY: test
