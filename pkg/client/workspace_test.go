@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/routes"
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"

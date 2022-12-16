@@ -3,8 +3,8 @@ package client
 import (
 	"net/http"
 
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/routes"
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 )
 

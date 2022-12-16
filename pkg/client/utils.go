@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/spf13/viper"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 )
 
 func TestCreateRole(t *testing.T) {
