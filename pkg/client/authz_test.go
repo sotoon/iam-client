@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"git.cafebazaar.ir/infrastructure/integration/sib/bepa-client/pkg/types"
+	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )
