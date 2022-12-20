@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
@@ -33,6 +35,9 @@ type bepaClient struct {
 	defaultWorkspace string
 	userUUID         string
 	logLevel         LogLevel
+	apiUrlsList      []*url.URL
+	isReliable       bool
+	bepaTimeout      time.Duration
 }
 
 var _ Client = &bepaClient{}
@@ -54,6 +59,27 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 		panic(err)
 	}
 	client.baseURL = *url
+	return client, nil
+}
+
+// NewReliableClient creates a new reliable client to interact with bepa server
+// ReliableClient is a client that implements clientside fail-over using a list of bepa servers
+func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorkspace, userUUID string, bepaTimeout time.Duration) (Client, error) {
+	client := &bepaClient{}
+	client.logLevel = LogLevel(DEBUG)
+	client.accessToken = accessToken
+	client.defaultWorkspace = defaultWorkspace
+	client.userUUID = userUUID
+	client.isReliable = true
+	client.bepaTimeout = bepaTimeout
+	for _, serverUrl := range serverUrlsList {
+		fullUrl, err := url.Parse(serverUrl + APIURI)
+		if err != nil {
+			client.log("URL `%s` is not valid\r\n", fullUrl)
+			return nil, err
+		}
+		client.apiUrlsList = append(client.apiUrlsList, fullUrl)
+	}
 	return client, nil
 }
 
@@ -168,7 +194,11 @@ func (c *bepaClient) NewRequestWithParameters(method, path string, parameters ma
 		pathURL.RawQuery = params.Encode()
 	}
 
-	fullPath := c.baseURL.ResolveReference(pathURL)
+	serverAddress, err := c.GetBepaURL()
+	if err != nil {
+		return nil, err
+	}
+	fullPath := serverAddress.ResolveReference(pathURL)
 
 	req, err := http.NewRequest(method, fullPath.String(), body)
 
@@ -176,6 +206,39 @@ func (c *bepaClient) NewRequestWithParameters(method, path string, parameters ma
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", c.accessToken))
 	return req, nil
 
+}
+
+func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
+	err := healthCheck(c, serverUrl)
+	resp := types.HealthCheckResponse{serverUrl.String(), err}
+	if err != nil {
+		c.log("healthCheck failed. %s\n", resp.String())
+		return err
+	} else {
+		c.log("healthCheck successful. %s\n", resp.String())
+		resultChannel <- serverUrl
+		return nil
+	}
+}
+
+func (c *bepaClient) GetBepaURL() (*url.URL, error) {
+	if !c.isReliable {
+		return &c.baseURL, nil
+	}
+	//todo: add cache for healthy url
+	//todo: stop go routines after first healthcheck ack arrives
+	serverUrlChannel := make(chan *url.URL, 1)
+	for _, serverUrl := range c.apiUrlsList {
+		newServerUrl := serverUrl
+		go getHealthCheckValue(c, newServerUrl, serverUrlChannel)
+	}
+
+	select {
+	case res := <-serverUrlChannel:
+		return res, nil
+	case <-time.After(c.bepaTimeout):
+		return nil, errors.New("no available BEPA servers found")
+	}
 }
 
 func createServerURL(serverURL string) (*url.URL, error) {

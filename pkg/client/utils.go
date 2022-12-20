@@ -20,7 +20,7 @@ var (
 	ErrInternalServerError = errors.New("internal server error")
 )
 
-//HTTPResponseError is a type for errors on http requests based on status code
+// HTTPResponseError is a type for errors on http requests based on status code
 type HTTPResponseError struct {
 	StatusCode  int
 	IsFaulty    bool

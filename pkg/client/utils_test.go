@@ -2,6 +2,7 @@ package client
 
 import (
 	"reflect"
+	"time"
 
 	"encoding/json"
 	"fmt"
@@ -27,18 +28,25 @@ const (
 	TestUserUUID = "00000000-00000000-00000000-00000000"
 )
 
-//NewTestClient creates a testing client
+// NewTestClient creates a testing client
 func NewTestClient(s *httptest.Server) Client {
 	c, _ := NewClient(TestAccessToken, s.URL, TestWorkspace, TestUserUUID)
 	return c
 }
 
-//WriteObject serializes object to json and writes it as http response body
+// NewTestReliableClient creates a testing reliable client
+func NewTestReliableClient(serverList []string) Client {
+	// todo: investigate good practice for removing constant time.
+	c, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, 10*time.Millisecond)
+	return c
+}
+
+// WriteObject serializes object to json and writes it as http response body
 func WriteObject(w *http.ResponseWriter, object interface{}) {
 	json.NewEncoder(*w).Encode(object)
 }
 
-//ReadObject de-serializes object to json and writes it as http response body
+// ReadObject de-serializes object to json and writes it as http response body
 func ReadObject(r *http.Request) (interface{}, error) {
 	var object interface{}
 	err := json.NewDecoder(r.Body).Decode(&object)
@@ -64,7 +72,7 @@ func routeToRegex(route string) *regexp.Regexp {
 	return regexp.MustCompile(urlRegex)
 }
 
-//TestHandlerFunc callback type for custom checks
+// TestHandlerFunc callback type for custom checks
 type TestHandlerFunc func(*http.ResponseWriter, *http.Request, *regexp.Regexp) bool
 
 func checkRegex(t *testing.T, path string, regex *regexp.Regexp) {
@@ -204,7 +212,7 @@ func getType(v reflect.Value) string {
 	}
 }
 
-//TestConfig is a configuration declaration for listing api tests
+// TestConfig is a configuration declaration for listing api tests
 type TestConfig struct {
 	Object            interface{}
 	ClientMethodName  string
@@ -215,7 +223,7 @@ type TestConfig struct {
 	URLregexp         *regexp.Regexp
 }
 
-//DoTestListingAPI does tests for a listing api
+// DoTestListingAPI does tests for a listing api
 func DoTestListingAPI(t *testing.T, config TestConfig) {
 	kind := reflect.TypeOf(config.Object).Elem().Kind()
 	require.Equal(t, kind, reflect.Slice, fmt.Sprintf("object should be a slice, but %v is given.", kind))
@@ -244,7 +252,7 @@ func DoTestListingAPI(t *testing.T, config TestConfig) {
 	}
 }
 
-//DoTestReadAPI does tests for a read api
+// DoTestReadAPI does tests for a read api
 func DoTestReadAPI(t *testing.T, config TestConfig) {
 	if config.Object != nil {
 		faker.FakeData(config.Object)
@@ -275,7 +283,7 @@ func DoTestReadAPI(t *testing.T, config TestConfig) {
 	}
 }
 
-//DoTestDeleteAPI tests
+// DoTestDeleteAPI tests
 func DoTestDeleteAPI(t *testing.T, config TestConfig) {
 	testCases := []httpTestCase{
 		{204, nil},
@@ -298,7 +306,7 @@ func DoTestDeleteAPI(t *testing.T, config TestConfig) {
 
 }
 
-//DoTestCreateAPI test
+// DoTestCreateAPI test
 func DoTestCreateAPI(t *testing.T, config TestConfig) {
 	faker.FakeData(config.Object)
 
@@ -359,7 +367,7 @@ func fakeUUID(v reflect.Value) (interface{}, error) {
 	return &val, nil
 }
 
-//Registers faker provider for uuid.UUID type
+// Registers faker provider for uuid.UUID type
 var _ error = func() error {
 	faker.AddProvider("uuidObject", fakeUUID)
 	return nil

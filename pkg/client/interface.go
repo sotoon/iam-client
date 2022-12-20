@@ -3,6 +3,7 @@ package client
 import (
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"net/url"
 )
 
 // Client represents bepa client interface
@@ -125,4 +126,6 @@ type Client interface {
 	DeleteDefaultWorkspaceBackupKey(backupKeyUUID *uuid.UUID) error
 	CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error)
 	CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error)
+
+	GetBepaURL() (*url.URL, error)
 }
