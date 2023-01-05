@@ -62,15 +62,16 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 	return client, nil
 }
 
-const MIN_TIMEOUT_SECUNDS time.Duration = 1 * time.Second
-const MAX_TIMEOUT_SECUNDS time.Duration = 3 * time.Second
+const DEFAULT_TIMEOUT time.Duration = 1 * time.Second
+const MIN_TIMEOUT time.Duration = 300 * time.Millisecond
+const MAX_TIMEOUT time.Duration = 3 * time.Second
 
 // returns a reasonable timeout if user has set a bad value
 func tuneTimeout(userTimeout time.Duration) time.Duration {
-	if MIN_TIMEOUT_SECUNDS < userTimeout && userTimeout < MAX_TIMEOUT_SECUNDS {
+	if MIN_TIMEOUT <= userTimeout && userTimeout <= MAX_TIMEOUT {
 		return userTimeout
 	}
-	return MIN_TIMEOUT_SECUNDS
+	return DEFAULT_TIMEOUT
 }
 
 // returns a reasonable URL if user has set a bad value
@@ -101,7 +102,7 @@ func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorks
 }
 
 func NewMinimalReliableClient(serverUrlsList []string) (Client, error) {
-	return NewReliableClient("", serverUrlsList, "", "", MAX_TIMEOUT_SECUNDS)
+	return NewReliableClient("", serverUrlsList, "", "", DEFAULT_TIMEOUT)
 }
 
 func (c *bepaClient) SetAccessToken(token string) {
@@ -155,7 +156,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	data, statusCode, err := proccessRequest(httpRequest, successCode)
 
 	c.log("bepa-client received response code:%d", statusCode)
-	c.log("bepa-client received response body:%v", data)
+	c.log("bepa-client received response body:%s", data)
 	c.log("bepa-client faced error:%v", err)
 
 	if err == nil {
@@ -231,7 +232,7 @@ func (c *bepaClient) NewRequestWithParameters(method, path string, parameters ma
 
 func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
 	err := healthCheck(c, serverUrl)
-	resp := types.HealthCheckResponse{serverUrl.String(), err}
+	resp := types.HealthCheckResponse{ServerUrl: serverUrl.String(), Err: err}
 	if err != nil {
 		c.log("healthCheck failed. error: %v\n", err)
 		return err
