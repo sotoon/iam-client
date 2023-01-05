@@ -62,6 +62,22 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 	return client, nil
 }
 
+const MIN_TIMEOUT_SECUNDS time.Duration = 1 * time.Second
+const MAX_TIMEOUT_SECUNDS time.Duration = 3 * time.Second
+
+// returns a reasonable timeout if user has set a bad value
+func tuneTimeout(userTimeout time.Duration) time.Duration {
+	if MIN_TIMEOUT_SECUNDS < userTimeout && userTimeout < MAX_TIMEOUT_SECUNDS {
+		return userTimeout
+	}
+	return MIN_TIMEOUT_SECUNDS
+}
+
+// returns a reasonable URL if user has set a bad value
+func organizeUrl(userUrl string) string {
+	return strings.TrimSpace(userUrl)
+}
+
 // NewReliableClient creates a new reliable client to interact with bepa server
 // ReliableClient is a client that implements clientside fail-over using a list of bepa servers
 func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorkspace, userUUID string, bepaTimeout time.Duration) (Client, error) {
@@ -71,8 +87,9 @@ func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorks
 	client.defaultWorkspace = defaultWorkspace
 	client.userUUID = userUUID
 	client.isReliable = true
-	client.bepaTimeout = bepaTimeout
+	client.bepaTimeout = tuneTimeout(bepaTimeout)
 	for _, serverUrl := range serverUrlsList {
+		serverUrl = organizeUrl(serverUrl)
 		fullUrl, err := url.Parse(serverUrl + APIURI)
 		if err != nil {
 			client.log("URL `%s` is not valid\r\n", fullUrl)
@@ -81,6 +98,10 @@ func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorks
 		client.apiUrlsList = append(client.apiUrlsList, fullUrl)
 	}
 	return client, nil
+}
+
+func NewMinimalReliableClient(serverUrlsList []string) (Client, error) {
+	return NewReliableClient("", serverUrlsList, "", "", MAX_TIMEOUT_SECUNDS)
 }
 
 func (c *bepaClient) SetAccessToken(token string) {
@@ -212,10 +233,10 @@ func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *
 	err := healthCheck(c, serverUrl)
 	resp := types.HealthCheckResponse{serverUrl.String(), err}
 	if err != nil {
-		c.log("healthCheck failed. %s\n", resp.String())
+		c.log("healthCheck failed. error: %v\n", err)
 		return err
 	} else {
-		c.log("healthCheck successful. %s\n", resp.String())
+		c.log("healthCheck successful. %v\n", resp)
 		resultChannel <- serverUrl
 		return nil
 	}
