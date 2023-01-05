@@ -142,7 +142,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
-	c.log("bepa-client performing request:%s", httpRequest)
+	c.log("bepa-client performing request:%v", httpRequest)
 
 	if err != nil {
 		return err
@@ -155,8 +155,8 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	data, statusCode, err := proccessRequest(httpRequest, successCode)
 
 	c.log("bepa-client received response code:%d", statusCode)
-	c.log("bepa-client received response body:%s", data)
-	c.log("bepa-client faced error:%s", err)
+	c.log("bepa-client received response body:%v", data)
+	c.log("bepa-client faced error:%v", err)
 
 	if err == nil {
 		if resp != nil {
