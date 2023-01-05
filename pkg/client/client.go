@@ -143,7 +143,10 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
-	c.log("bepa-client performing request:%v", httpRequest)
+
+	// do not log whole request containing authorization secret
+	c.log("bepa-client performing request method:%v", httpRequest.Method)
+	c.log("bepa-client performing request url:%v", httpRequest.URL)
 
 	if err != nil {
 		return err
@@ -157,7 +160,6 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 
 	c.log("bepa-client received response code:%d", statusCode)
 	c.log("bepa-client received response body:%s", data)
-	c.log("bepa-client faced error:%v", err)
 
 	if err == nil {
 		if resp != nil {
@@ -166,7 +168,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 		return nil
 
 	}
-
+	c.log("bepa-client faced error:%v", err)
 	return &types.RequestExecutionError{
 		Err:        err,
 		StatusCode: statusCode,
