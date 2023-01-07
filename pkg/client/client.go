@@ -79,9 +79,25 @@ func organizeUrl(userUrl string) string {
 	return strings.TrimSpace(userUrl)
 }
 
+func (c *bepaClient) initializeServerUrls(serverUrls []string) error {
+	if serverUrls == nil || len(serverUrls) == 0 {
+		return errors.New("At least one Bepa server is required!")
+	}
+	for _, serverUrl := range serverUrls {
+		serverUrl = organizeUrl(serverUrl)
+		fullUrl, err := url.Parse(serverUrl + APIURI)
+		if err != nil {
+			c.log("URL `%s` is not valid\r\n", fullUrl)
+			return err
+		}
+		c.apiUrlsList = append(c.apiUrlsList, fullUrl)
+	}
+	return nil
+}
+
 // NewReliableClient creates a new reliable client to interact with bepa server
 // ReliableClient is a client that implements clientside fail-over using a list of bepa servers
-func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorkspace, userUUID string, bepaTimeout time.Duration) (Client, error) {
+func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace, userUUID string, bepaTimeout time.Duration) (Client, error) {
 	client := &bepaClient{}
 	client.logLevel = LogLevel(DEBUG)
 	client.accessToken = accessToken
@@ -89,20 +105,16 @@ func NewReliableClient(accessToken string, serverUrlsList []string, defaultWorks
 	client.userUUID = userUUID
 	client.isReliable = true
 	client.bepaTimeout = tuneTimeout(bepaTimeout)
-	for _, serverUrl := range serverUrlsList {
-		serverUrl = organizeUrl(serverUrl)
-		fullUrl, err := url.Parse(serverUrl + APIURI)
-		if err != nil {
-			client.log("URL `%s` is not valid\r\n", fullUrl)
-			return nil, err
-		}
-		client.apiUrlsList = append(client.apiUrlsList, fullUrl)
+	err := client.initializeServerUrls(serverUrls)
+	if err != nil {
+		return nil, err
+	} else {
+		return client, nil
 	}
-	return client, nil
 }
 
-func NewMinimalReliableClient(serverUrlsList []string) (Client, error) {
-	return NewReliableClient("", serverUrlsList, "", "", DEFAULT_TIMEOUT)
+func NewMinimalReliableClient(serverUrls []string) (Client, error) {
+	return NewReliableClient("", serverUrls, "", "", DEFAULT_TIMEOUT)
 }
 
 func (c *bepaClient) SetAccessToken(token string) {
@@ -131,7 +143,18 @@ func (c *bepaClient) DoSimple(method, path string, parameters map[string]string,
 	return c.DoWithParams(method, path, parameters, USUAL_SUCCESS_CODE_2XX, req, resp)
 }
 
+// do not fail parent process in case of segmentation violation or any other panic case
+// be careful: golang will return Default Values of Return Types in case of Panic
+// more info on https://golangbyexample.com/return-value-function-panic-recover-go/
+func (c *bepaClient) recoverIfPanic() {
+	if r := recover(); r != nil {
+		fmt.Println("bepa-client recovered from panic", r)
+	}
+}
+
 func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
+	defer c.recoverIfPanic()
+	err := errors.New("Panic Error Default Value")
 
 	var body io.Reader
 	if req != nil {
