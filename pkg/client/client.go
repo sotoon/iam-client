@@ -154,7 +154,7 @@ func (c *bepaClient) recoverIfPanic() {
 
 func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
 	defer c.recoverIfPanic()
-	err := errors.New("Panic Error Default Value")
+	panicErr := errors.New("Panic Error Default Value")
 
 	var body io.Reader
 	if req != nil {
@@ -197,6 +197,8 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 		StatusCode: statusCode,
 		Data:       data,
 	}
+	// in case of panic event
+	return panicErr
 }
 
 func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
