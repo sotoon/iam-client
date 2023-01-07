@@ -2,7 +2,6 @@ package client
 
 import (
 	"reflect"
-	"time"
 
 	"encoding/json"
 	"fmt"
@@ -37,7 +36,7 @@ func NewTestClient(s *httptest.Server) Client {
 // NewTestReliableClient creates a testing reliable client
 func NewTestReliableClient(serverList []string) Client {
 	// todo: investigate good practice for removing constant time.
-	c, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, 10*time.Millisecond)
+	c, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, MIN_TIMEOUT)
 	return c
 }
 

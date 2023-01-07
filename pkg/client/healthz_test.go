@@ -1,14 +1,15 @@
 package client
 
 import (
-	"github.com/bxcodec/faker/support/slice"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bxcodec/faker/support/slice"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHealthCheckAPI(t *testing.T) {
@@ -62,7 +63,7 @@ type BepaServer struct {
 
 func timeoutBepaHandler(w http.ResponseWriter, r *http.Request) {
 	// todo: investigate good practice for removing constant time.
-	timeoutDuration := 100 * time.Millisecond
+	timeoutDuration := MAX_TIMEOUT + 1
 	time.Sleep(timeoutDuration)
 	w.WriteHeader(http.StatusOK)
 }
