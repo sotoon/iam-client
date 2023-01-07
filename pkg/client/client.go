@@ -143,18 +143,7 @@ func (c *bepaClient) DoSimple(method, path string, parameters map[string]string,
 	return c.DoWithParams(method, path, parameters, USUAL_SUCCESS_CODE_2XX, req, resp)
 }
 
-// do not fail parent process in case of segmentation violation or any other panic case
-// be careful: golang will return Default Values of Return Types in case of Panic
-// more info on https://golangbyexample.com/return-value-function-panic-recover-go/
-func (c *bepaClient) recoverIfPanic() {
-	if r := recover(); r != nil {
-		fmt.Println("bepa-client recovered from panic", r)
-	}
-}
-
 func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
-	defer c.recoverIfPanic()
-	panicErr := errors.New("Panic Error Default Value")
 
 	var body io.Reader
 	if req != nil {
@@ -197,8 +186,6 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 		StatusCode: statusCode,
 		Data:       data,
 	}
-	// in case of panic event
-	return panicErr
 }
 
 func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
