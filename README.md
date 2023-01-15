@@ -125,9 +125,8 @@ Actively developing and supported.
 
 ## External Links
 
-- Commander: a successful example usage of the library with *Mocking and Testing*
-- Link to other projects that use this project or are used by this project.
-- Link to visualization tools and panels (e.g A reference to Turnilo would be beneficial in Account Manager project.)
+- [Commander](https://git.cafebazaar.ir/infrastructure/integration/sib/commander): a successful example usage of the library with *Mocking and Testing*
+- [Bepa2](https://git.cafebazaar.ir/infrastructure/integration/sib/bepa2): Sotoon IAM System Repository (Bepa2)
 
 ## Acknowledgements
 Please check the contributors section.
