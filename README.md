@@ -19,8 +19,8 @@
 
 
 ## General Information
-- There are so many products that need to use Sotoon IAM Service Aka Bepa as their *Identity and Access Management* engine.
-- Bepa-Client is a Golang Library empowering you can use it to control *the risk of API changes* and other support issues.
+- There are so many products that need to use Sotoon IAM Service Aka Bepa as their **Identity and Access Management** engine.
+- Bepa-Client is a Golang Library empowering you can use it to control **the risk of API changes** and other support issues.
 - It is under active development and support of Sotoon Integration Tribe.
 
 ## Technologies Used
@@ -29,7 +29,8 @@
 ## Quick Start🏎 
 
 Simply add bepa-client library latest stable version to your `go.mod` file:
-> *Note!* Please check latest version tag [hear](https://git.cafebazaar.ir/infrastructure/bepa-client/-/tags).
+> **Note!** Please check latest version tag [hear](https://git.cafebazaar.ir/infrastructure/bepa-client/-/tags).
+
 ### Installation
 
 In to `go.mod` file add:
@@ -62,21 +63,21 @@ import (
 func SimpleBepaClientExample() {
     // ... initialize BEPA_URL, accessToken, defaultWorkspaceId, userId
     client, err := client.NewClient(accessToken, BEPA_URL, defaultWorkspaceId, userId)
-	if err != nil {
-		logger.Error("Cannot make a Bepa client.", zap.Error(err))
-		// handle error or kill the process
-		return
-	}
+    if err != nil {
+        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        // handle error or kill the process
+        return
+    }
 }
 
 func ReliableBepaClientExample() {
     // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, bepaTimeout
-    client, err := 	return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, bepaTimeout)
-	if err != nil {
-		logger.Error("Cannot make a Bepa client.", zap.Error(err))
-		// handle error or kill the process
-		return
-	}
+    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, bepaTimeout)
+    if err != nil {
+        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        // handle error or kill the process
+        return
+    }
 }
 
 ```
@@ -120,7 +121,7 @@ Actively developing and supported.
 - Internal Mock Object in the library
 
 ## Support Notes
-- Please don't hesitate to give any type of feedback to maintaienrs!
+- Please don't hesitate to give any type of feedback to maintainers!
 
 ## External Links
 
