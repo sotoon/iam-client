@@ -1,6 +1,4 @@
-# bepa-client
-
-# Project Name
+# Bepa Client
 > A simple yet powerful library that empowers you using [Bepa2 APIs](https://bepa.sotoon.ir/swagger).
 
 ## Table of Contents
@@ -99,7 +97,7 @@ subject, err := client.Identify(token)
 
 ## Features
 
-1. Almost all services of Sotoon IAM service!
+1. Almost all services of Sotoon IAM System (aka Bepa)
 2. Client-Side Fail-over.
 
 ## Architecture
@@ -127,7 +125,7 @@ Actively developing and supported.
 - Internal Mock Object in the library
 
 ## Support Notes
-- Please don't hesitate to give any type of feedback to maintainers!
+Nothing yet :)
 
 ## External Links
 
@@ -135,8 +133,7 @@ Actively developing and supported.
 - [Bepa2](https://git.cafebazaar.ir/infrastructure/integration/sib/bepa2): Sotoon IAM System Repository (Bepa2)
 
 ## Acknowledgements
-Please check the contributors section.
+Please refer to **Contributors** Section.
 
 ## Contact
-Created by [@sib](https://www.sib.sotoon.ir/) team of Sotoon Integration Tribe!
-
+Please contact to [Sotoon Integration Backend Team](https://git.cafebazaar.ir/infrastructure/integration/sib/documents)!
