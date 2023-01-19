@@ -1,7 +1,7 @@
 # bepa-client
 
 # Project Name
-> A simple yet powerful library that empowers you using bepa2 APIs.
+> A simple yet powerful library that empowers you using [Bepa2 APIs](https://bepa.sotoon.ir/swagger).
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -109,7 +109,13 @@ Brief overview of projects deployment architecture.
 
 
 ## Setup
-Please refer to (Makefile)[Makefile].
+Please refer to [Makefile](Makefile).
+
+```bash
+make build
+
+make test
+```
 
 ## Project Status
 
