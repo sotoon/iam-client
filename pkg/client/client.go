@@ -112,10 +112,6 @@ func NewMinimalReliableClient(serverUrlsList []string) (Client, error) {
 	return NewReliableClient("", serverUrlsList, "", "", DEFAULT_TIMEOUT)
 }
 
-func (c *bepaClient) SetCache(cache Cache) {
-	c.cache = cache
-}
-
 func (c *bepaClient) SetAccessToken(token string) {
 	c.accessToken = token
 }
@@ -282,7 +278,6 @@ func (c *bepaClient) GetBepaURL() (*url.URL, error) {
 	}
 	bepaURL, err := c.GetHealthyBepaURL()
 	if err == nil {
-		log.Println("Bye")
 		c.cache.Set(HealthyBepaURLCachedKey, &bepaURL, cache.DefaultExpiration)
 	}
 	return bepaURL, err
