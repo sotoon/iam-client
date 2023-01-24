@@ -14,6 +14,9 @@ resolve:
 build:
 	GOPRIVATE=git.cafebazaar.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -mod=vendor -a -o bin/example.out ./examples/test.go
 
+.PHONY: mockgen
+mockgen:
+	mockgen -destination=mocks/mock_client.go -package=mocks -source=pkg/client/interface.go Cache --build_flags=--mod=mod
 
 .PHONY: test
 test:
