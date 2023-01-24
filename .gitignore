@@ -6,3 +6,5 @@
 bin
 config/config.yaml
 swarm/.vaultpass
+mocks/
+vendor/github.com/golang/mock

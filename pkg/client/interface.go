@@ -1,9 +1,11 @@
 package client
 
 import (
+	"net/url"
+	"time"
+
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
-	"net/url"
 )
 
 // Client represents bepa client interface
@@ -128,4 +130,9 @@ type Client interface {
 	CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error)
 
 	GetBepaURL() (*url.URL, error)
+}
+
+type Cache interface {
+	Get(string) (interface{}, bool)
+	Set(string, interface{}, time.Duration)
 }
