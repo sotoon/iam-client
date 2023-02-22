@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"regexp"
 	"testing"
 
@@ -34,10 +35,30 @@ func NewTestClient(s *httptest.Server) Client {
 }
 
 // NewTestReliableClient creates a testing reliable client
-func NewTestReliableClient(serverList []string) Client {
+func NewTestReliableClient(serverList []string, cache Cache) Client {
 	// todo: investigate good practice for removing constant time.
-	c, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, MIN_TIMEOUT)
-	return c
+	if cache == nil {
+		client, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, MIN_TIMEOUT)
+		return client
+	}
+	client := &bepaClient{}
+	client.logLevel = LogLevel(DEBUG)
+	client.accessToken = TestAccessToken
+	client.defaultWorkspace = TestWorkspace
+	client.userUUID = TestUserUUID
+	client.isReliable = true
+	client.bepaTimeout = tuneTimeout(MIN_TIMEOUT)
+	for _, serverUrl := range serverList {
+		serverUrl = organizeUrl(serverUrl)
+		fullUrl, err := url.Parse(serverUrl + APIURI)
+		if err != nil {
+			client.log("URL `%s` is not valid\r\n", fullUrl)
+			return nil
+		}
+		client.apiUrlsList = append(client.apiUrlsList, fullUrl)
+	}
+	client.cache = cache
+	return client
 }
 
 // WriteObject serializes object to json and writes it as http response body

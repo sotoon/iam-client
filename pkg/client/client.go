@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	"github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 )
@@ -29,6 +30,10 @@ const (
 	ERROR int = 2
 )
 
+const HealthyBepaURLCachedKey = "healthy_bepa_url"
+const CacheExpirationDuration = 10 * time.Minute
+const CacheCleanupInterval = 10 * time.Minute
+
 type bepaClient struct {
 	accessToken      string
 	baseURL          url.URL
@@ -38,6 +43,7 @@ type bepaClient struct {
 	apiUrlsList      []*url.URL
 	isReliable       bool
 	bepaTimeout      time.Duration
+	cache            Cache
 }
 
 var _ Client = &bepaClient{}
@@ -108,9 +114,9 @@ func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace
 	err := client.initializeServerUrls(serverUrls)
 	if err != nil {
 		return nil, err
-	} else {
-		return client, nil
 	}
+	client.cache = cache.New(CacheExpirationDuration, CacheCleanupInterval)
+	return client, nil
 }
 
 func NewMinimalReliableClient(serverUrls []string) (Client, error) {
@@ -257,11 +263,7 @@ func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *
 	}
 }
 
-func (c *bepaClient) GetBepaURL() (*url.URL, error) {
-	if !c.isReliable {
-		return &c.baseURL, nil
-	}
-	//todo: add cache for healthy url
+func (c *bepaClient) GetHealthyBepaURL() (*url.URL, error) {
 	//todo: stop go routines after first healthcheck ack arrives
 	serverUrlChannel := make(chan *url.URL, 1)
 	for _, serverUrl := range c.apiUrlsList {
@@ -275,6 +277,21 @@ func (c *bepaClient) GetBepaURL() (*url.URL, error) {
 	case <-time.After(c.bepaTimeout):
 		return nil, errors.New("no available BEPA servers found")
 	}
+}
+
+func (c *bepaClient) GetBepaURL() (*url.URL, error) {
+	if !c.isReliable {
+		return &c.baseURL, nil
+	}
+	if cached, found := c.cache.Get(HealthyBepaURLCachedKey); found {
+		bepaURL := cached.(*url.URL)
+		return bepaURL, nil
+	}
+	bepaURL, err := c.GetHealthyBepaURL()
+	if err == nil {
+		c.cache.Set(HealthyBepaURLCachedKey, &bepaURL, cache.DefaultExpiration)
+	}
+	return bepaURL, err
 }
 
 func createServerURL(serverURL string) (*url.URL, error) {

@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"git.cafebazaar.ir/infrastructure/bepa-client/mocks"
 	"github.com/bxcodec/faker/support/slice"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -80,7 +82,7 @@ var timeoutBepaServer = BepaServer{timeoutBepaHandler, false}
 var unhealthyBepaServer = BepaServer{unhealthyBepaHandler, false}
 var healthyBepaServer = BepaServer{healthyBepaHandler, true}
 
-func TestGetBepaURL(t *testing.T) {
+func TestGetHealthyBepaURL(t *testing.T) {
 	testCases := []struct {
 		servers       []BepaServer
 		serverUrls    []string
@@ -105,7 +107,7 @@ func TestGetBepaURL(t *testing.T) {
 			}
 			defer s.Close()
 		}
-		c := NewTestReliableClient(tc.serverUrls)
+		c := NewTestReliableClient(tc.serverUrls, nil)
 		serverUrl, err := c.GetBepaURL()
 		if tc.bepaAvailable {
 			require.NoError(t, err)
@@ -117,4 +119,73 @@ func TestGetBepaURL(t *testing.T) {
 
 	}
 
+}
+
+func TestSetCacheOnhealthyBepaURL(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	var server = healthyBepaServer
+
+	s := httptest.NewServer(http.HandlerFunc(server.handler))
+	serverUrl := s.URL
+	fullUrl, err := url.Parse(serverUrl + APIURI)
+	require.NoError(t, err)
+
+	cache := mocks.NewMockCache(mockCtrl)
+	cache.EXPECT().
+		Get(HealthyBepaURLCachedKey).
+		Return(nil, false).
+		Times(1)
+	cache.EXPECT().
+		Set(HealthyBepaURLCachedKey, &fullUrl, gomock.Any()).
+		Times(1)
+	cache.EXPECT().
+		Get(HealthyBepaURLCachedKey).
+		Return(fullUrl, true).
+		Times(1)
+
+	c := NewTestReliableClient([]string{serverUrl}, cache)
+
+	healthyUrl, err := c.GetBepaURL()
+	require.NoError(t, err)
+	require.Equal(t, fullUrl, healthyUrl)
+
+	cachedUrl, err := c.GetBepaURL()
+	require.NoError(t, err)
+	require.Equal(t, fullUrl, cachedUrl)
+}
+
+func TestDontSetCacheOnUnhealthyBepaURL(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	var server = unhealthyBepaServer
+
+	s := httptest.NewServer(http.HandlerFunc(server.handler))
+	serverUrl := s.URL
+
+	cache := mocks.NewMockCache(mockCtrl)
+	cache.EXPECT().
+		Get(HealthyBepaURLCachedKey).
+		Return(nil, false).
+		Times(1)
+	cache.EXPECT().
+		Set(gomock.Any(), gomock.Any(), gomock.Any()).
+		MaxTimes(0)
+	cache.EXPECT().
+		Get(HealthyBepaURLCachedKey).
+		Return(nil, false).
+		Times(1)
+	cache.EXPECT().
+		Set(gomock.Any(), gomock.Any(), gomock.Any()).
+		MaxTimes(0)
+
+	c := NewTestReliableClient([]string{serverUrl}, cache)
+
+	_, err := c.GetBepaURL()
+	require.Error(t, err)
+
+	_, err = c.GetBepaURL()
+	require.Error(t, err)
 }
