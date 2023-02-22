@@ -114,8 +114,6 @@ func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace
 	err := client.initializeServerUrls(serverUrls)
 	if err != nil {
 		return nil, err
-	} else {
-		return client, nil
 	}
 	client.cache = cache.New(CacheExpirationDuration, CacheCleanupInterval)
 	return client, nil
