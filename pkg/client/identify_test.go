@@ -67,7 +67,7 @@ func TestIdentification(t *testing.T) {
 }
 
 var benchmarkIterNumber int = 100
-var bepaEndpoint string = "https://bepa.sotoon.ir"
+var bepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
 var bepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
 var timeoutDuration time.Duration = 10 * time.Second
 
