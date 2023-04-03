@@ -22,6 +22,10 @@ mockgen:
 test:
 	go test -mod=vendor -v ./... -coverprofile cover.out
 
+.PHONY: benchmark
+benchmark:
+	bash benchmark.bash
+
 .PHONY: coverage
 coverage: test
 	go tool cover -func=cover.out
