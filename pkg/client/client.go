@@ -70,14 +70,17 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 
 const DEFAULT_TIMEOUT time.Duration = 1 * time.Second
 const MIN_TIMEOUT time.Duration = 300 * time.Millisecond
-const MAX_TIMEOUT time.Duration = 3 * time.Second
+const MAX_TIMEOUT time.Duration = 10 * time.Second
 
 // returns a reasonable timeout if user has set a bad value
 func tuneTimeout(userTimeout time.Duration) time.Duration {
-	if MIN_TIMEOUT <= userTimeout && userTimeout <= MAX_TIMEOUT {
-		return userTimeout
+	if userTimeout < MIN_TIMEOUT {
+		return MIN_TIMEOUT
 	}
-	return DEFAULT_TIMEOUT
+	if userTimeout > MAX_TIMEOUT {
+		return MAX_TIMEOUT
+	}
+	return userTimeout
 }
 
 // returns a reasonable URL if user has set a bad value
@@ -162,13 +165,13 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
 
-	// do not log whole request containing authorization secret
-	c.log("bepa-client performing request method:%v", httpRequest.Method)
-	c.log("bepa-client performing request url:%v", httpRequest.URL)
-
 	if err != nil {
 		return err
 	}
+
+	// do not log whole request containing authorization secret
+	c.log("bepa-client performing request method:%v", httpRequest.Method)
+	c.log("bepa-client performing request url:%v", httpRequest.URL)
 
 	if c.accessToken != "" {
 		httpRequest.Header.Add("Content-Type", "application/json")
