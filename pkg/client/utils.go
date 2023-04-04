@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 	"github.com/spf13/viper"
@@ -107,4 +109,11 @@ func AddItemsAsQueryParams(url string, items map[string]string) string {
 	}
 	return url[:len(url)-1]
 
+}
+
+func randomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	b := make([]byte, length+2)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)[2 : length+2]
 }

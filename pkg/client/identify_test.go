@@ -2,10 +2,14 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
@@ -60,4 +64,44 @@ func TestIdentification(t *testing.T) {
 		s.Close()
 	}
 
+}
+
+var concurrentIdentifyRequests int = 100
+var identifyBepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
+var identifyBepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
+var identifyTimeoutDuration time.Duration = 10 * time.Second
+
+func DoSingleBenchmarkIdentify(token string, wg *sync.WaitGroup) {
+	serverList := []string{identifyBepaEndpoint, identifyBepaEndpoint, identifyBepaEndpoint}
+	c, _ := NewReliableClient(identifyBepaBenchmarkToken, serverList, "", "", identifyTimeoutDuration)
+	c.Identify(token)
+	wg.Done()
+}
+
+func BenchmarkMultipleValidIdentify(b *testing.B) {
+	var wg sync.WaitGroup
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentIdentifyRequests), func(b *testing.B) {
+		var iters int = concurrentIdentifyRequests
+		for j := 0; j < b.N; j++ {
+			wg.Add(iters)
+			for i := 0; i < iters; i++ {
+				go DoSingleBenchmarkIdentify(identifyBepaBenchmarkToken, &wg)
+			}
+			wg.Wait()
+		}
+	})
+}
+
+func BenchmarkMultipleInvalidIdentify(b *testing.B) {
+	var wg sync.WaitGroup
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentIdentifyRequests), func(b *testing.B) {
+		var iters int = concurrentIdentifyRequests
+		for j := 0; j < b.N; j++ {
+			wg.Add(iters)
+			for i := 0; i < iters; i++ {
+				go DoSingleBenchmarkIdentify(randomString(10), &wg)
+			}
+			wg.Wait()
+		}
+	})
 }

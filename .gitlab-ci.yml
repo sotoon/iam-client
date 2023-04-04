@@ -25,3 +25,9 @@ test:
   image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.16.6
   script:
     - make test
+
+benchmark:
+  stage: test and analysis
+  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.16.6
+  script:
+    - make benchmark

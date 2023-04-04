@@ -8,7 +8,7 @@ import (
 )
 
 func (c *bepaClient) Authorize(identity, userType, action, object string) error {
-
+	c.log("authorizing %v", identity)
 	req, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
 
 	if err != nil {
@@ -24,9 +24,11 @@ func (c *bepaClient) Authorize(identity, userType, action, object string) error 
 	req.URL.RawQuery = query.Encode()
 	data, statusCode, errRes := proccessRequest(req, 0)
 	if errRes == nil {
+		c.log("user %v is authorized", identity)
 		return nil
 	}
 
+	c.log("user %v is not authorized", identity)
 	return &types.RequestExecutionError{
 		Err:        errRes,
 		StatusCode: statusCode,
