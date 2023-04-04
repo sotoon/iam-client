@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
 
@@ -84,4 +87,62 @@ func TestAuthorization(t *testing.T) {
 
 func newRRI(workspace, ns, resource string) string {
 	return fmt.Sprintf("rri:v1:cafebazaar.cloud:%s:godel:/%s/%s", workspace, ns, resource)
+}
+
+var concurrentAuthzRequests int = 100
+var authzBepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
+var authzBepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
+var authzBepaBenchmarkAuthCaseUUID string = os.Getenv("BENCHMARK_AUTH_CASE_UUID")
+var authzBepaBenchmarkAuthCaseUserType string = os.Getenv("BENCHMARK_AUTH_CASE_USER_TYPE")
+var authzBepaBenchmarkAuthCaseAction string = os.Getenv("BENCHMARK_AUTH_CASE_ACTION")
+var authzBepaBenchmarkAuthCaseObjectBegining string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_BEGINING")
+var authzBepaBenchmarkAuthCaseObjectPath string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_PATH")
+var authzTimeoutDuration time.Duration = 10 * time.Second
+
+func DoSingleBenchmarkAuthz(token string, testCase rule, wg *sync.WaitGroup) {
+	serverList := []string{authzBepaEndpoint, authzBepaEndpoint, authzBepaEndpoint}
+	c, _ := NewReliableClient(authzBepaBenchmarkToken, serverList, "", "", authzTimeoutDuration)
+	c.Authorize(testCase.uuid, testCase.userType, testCase.action, testCase.rri)
+	wg.Done()
+}
+
+func BenchmarkMultipleValidAuthz(b *testing.B) {
+	testCase := rule{
+		authzBepaBenchmarkAuthCaseUUID,
+		authzBepaBenchmarkAuthCaseUserType,
+		authzBepaBenchmarkAuthCaseAction,
+		authzBepaBenchmarkAuthCaseObjectBegining + authzBepaBenchmarkAuthCaseObjectPath,
+	}
+	var wg sync.WaitGroup
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentAuthzRequests), func(b *testing.B) {
+		var iters int = concurrentAuthzRequests
+		for j := 0; j < b.N; j++ {
+			wg.Add(iters)
+			for i := 0; i < iters; i++ {
+				go DoSingleBenchmarkAuthz(authzBepaBenchmarkToken, testCase, &wg)
+			}
+			wg.Wait()
+		}
+	})
+}
+
+func BenchmarkMultipleInvalidAuthz(b *testing.B) {
+	var wg sync.WaitGroup
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentAuthzRequests), func(b *testing.B) {
+		var iters int = concurrentAuthzRequests
+		for j := 0; j < b.N; j++ {
+			wg.Add(iters)
+			for i := 0; i < iters; i++ {
+				randomRRI := authzBepaBenchmarkAuthCaseObjectBegining + randomString(10)
+				testCase := rule{
+					authzBepaBenchmarkAuthCaseUUID,
+					authzBepaBenchmarkAuthCaseUserType,
+					authzBepaBenchmarkAuthCaseAction,
+					randomRRI,
+				}
+				go DoSingleBenchmarkAuthz(authzBepaBenchmarkToken, testCase, &wg)
+			}
+			wg.Wait()
+		}
+	})
 }

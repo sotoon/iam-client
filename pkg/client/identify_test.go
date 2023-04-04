@@ -66,26 +66,26 @@ func TestIdentification(t *testing.T) {
 
 }
 
-var benchmarkIterNumber int = 100
-var bepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
-var bepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
-var timeoutDuration time.Duration = 10 * time.Second
+var concurrentIdentifyRequests int = 100
+var identifyBepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
+var identifyBepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
+var identifyTimeoutDuration time.Duration = 10 * time.Second
 
 func DoSingleBenchmarkIdentify(token string, wg *sync.WaitGroup) {
-	serverList := []string{bepaEndpoint, bepaEndpoint, bepaEndpoint}
-	c, _ := NewReliableClient(bepaBenchmarkToken, serverList, "", "", timeoutDuration)
+	serverList := []string{identifyBepaEndpoint, identifyBepaEndpoint, identifyBepaEndpoint}
+	c, _ := NewReliableClient(identifyBepaBenchmarkToken, serverList, "", "", identifyTimeoutDuration)
 	c.Identify(token)
 	wg.Done()
 }
 
 func BenchmarkMultipleValidIdentify(b *testing.B) {
 	var wg sync.WaitGroup
-	b.Run(fmt.Sprintf("concurrent_iters_%d", benchmarkIterNumber), func(b *testing.B) {
-		var iters int = benchmarkIterNumber
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentIdentifyRequests), func(b *testing.B) {
+		var iters int = concurrentIdentifyRequests
 		for j := 0; j < b.N; j++ {
 			wg.Add(iters)
 			for i := 0; i < iters; i++ {
-				go DoSingleBenchmarkIdentify(bepaBenchmarkToken, &wg)
+				go DoSingleBenchmarkIdentify(identifyBepaBenchmarkToken, &wg)
 			}
 			wg.Wait()
 		}
@@ -94,8 +94,8 @@ func BenchmarkMultipleValidIdentify(b *testing.B) {
 
 func BenchmarkMultipleInvalidIdentify(b *testing.B) {
 	var wg sync.WaitGroup
-	b.Run(fmt.Sprintf("concurrent_iters_%d", benchmarkIterNumber), func(b *testing.B) {
-		var iters int = benchmarkIterNumber
+	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentIdentifyRequests), func(b *testing.B) {
+		var iters int = concurrentIdentifyRequests
 		for j := 0; j < b.N; j++ {
 			wg.Add(iters)
 			for i := 0; i < iters; i++ {
