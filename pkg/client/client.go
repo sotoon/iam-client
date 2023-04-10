@@ -292,7 +292,7 @@ func (c *bepaClient) GetBepaURL() (*url.URL, error) {
 	}
 	bepaURL, err := c.GetHealthyBepaURL()
 	if err == nil {
-		c.cache.Set(HealthyBepaURLCachedKey, &bepaURL, cache.DefaultExpiration)
+		c.cache.Set(HealthyBepaURLCachedKey, bepaURL, cache.DefaultExpiration)
 	}
 	return bepaURL, err
 }
