@@ -138,7 +138,7 @@ func TestSetCacheOnhealthyBepaURL(t *testing.T) {
 		Return(nil, false).
 		Times(1)
 	cache.EXPECT().
-		Set(HealthyBepaURLCachedKey, &fullUrl, gomock.Any()).
+		Set(HealthyBepaURLCachedKey, fullUrl, gomock.Any()).
 		Times(1)
 	cache.EXPECT().
 		Get(HealthyBepaURLCachedKey).
