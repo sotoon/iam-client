@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/client"
 )
 
 func main() {
-	var c client.Client
-	c, _ = client.NewClient("", "https://bepa.cafebazaar.cloud", "", "")
+	urls := []string{"https://afra.bepa.sotoon.ir", "https://neda.bepa.sotoon.ir"}
+	c, _ := client.NewReliableClient("", urls, "", "", 5*time.Second)
 	t, e := c.CreateUserTokenByCreds("foo@bar.ir", "__")
 
 	fmt.Println(e)
