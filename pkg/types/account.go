@@ -203,3 +203,38 @@ type BackupKeyReq struct {
 	Title string `json:"title"`
 	Key   string `json:"key" validate:"required"`
 }
+
+type WebhookWorkspaceOrganization struct {
+	UUID uuid.UUID `json:"uuid"`
+	Name string    `json:"name"`
+}
+
+type WebhookWorkspace struct {
+	UUID         uuid.UUID    `json:"uuid"`
+	Name         string       `json:"name"`
+	IsSuspended  bool         `json:"is_suspended"`
+	Organization Organization `json:"organization"`
+	CreatedAt    time.Time    `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
+}
+
+type WebhookUser struct {
+	UUID                  uuid.UUID `json:"uuid"`
+	Name                  string    `json:"name"`
+	Email                 string    `json:"email"`
+	IsEmailVerified       bool      `json:"email_verified"`
+	PhoneNumber           string    `json:"phone_number"`
+	IsPhoneNumberVerified bool      `json:"phone_number_verified"`
+	FirstName             string    `json:"first_name"`
+	LastName              string    `json:"last_name"`
+	Birthday              string    `json:"birthday"`
+	IsSuspended           bool      `json:"is_suspended"`
+	CreatedAt             time.Time `json:"created_at"`
+	UpdatedAt             time.Time `json:"updated_at"`
+}
+
+type WebhookUserWorkspaceRelation struct {
+	UserUUID      uuid.UUID `json:"user_uuid"`
+	WorkspaceUUID uuid.UUID `json:"workspace_uuid"`
+	IsSuspended   bool      `json:"is_suspended"`
+}
