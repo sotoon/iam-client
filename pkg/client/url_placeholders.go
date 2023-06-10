@@ -1,6 +1,7 @@
 package client
 
 const (
+	organizationUUIDPlaceholder     = "{organization_uuid}"
 	workspaceUUIDPlaceholder        = "{workspace_uuid}"
 	workspaceNamePlaceholder        = "{workspace_name}"
 	roleUUIDPlaceholder             = "{role_uuid}"
