@@ -103,5 +103,10 @@ const (
 	RouteGroupAppendRole  = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
 	RouteGroupDropRole    = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
 
+	RouteOrganizationGetAll           = "/organization/"
+	RouteOrganizationGetOne           = "/organization/{organization_uuid}/"
+	RouteOrganizationWorkspacesGetAll = "/organization/{organization_uuid}/workspace/"
+	RouteOrganizationWorkspacesGetOne = "/organization/{organization_uuid}/workspace/{workspace_uuid}/"
+
 	RouteHealthCheck = "/healthz/"
 )

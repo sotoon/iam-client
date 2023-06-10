@@ -10,6 +10,11 @@ import (
 
 // Client represents bepa client interface
 type Client interface {
+	GetOrganizations() ([]*types.Organization, error)
+	GetOrganization(*uuid.UUID) (*types.Organization, error)
+	GetOrganizationWorkspaces(*uuid.UUID) ([]*types.Workspace, error)
+	GetOrganizationWorkspace(*uuid.UUID, *uuid.UUID) (*types.Workspace, error)
+
 	GetWorkspaces() ([]*types.Workspace, error)
 	GetWorkspaceByName(name string) (*types.Workspace, error)
 	GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.WorkspaceWithOrganization, error)
