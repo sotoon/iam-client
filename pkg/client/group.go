@@ -58,15 +58,14 @@ func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*ty
 	}
 	return group, nil
 }
-func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.Group, error) {
+func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
 	userRequest := &types.GroupReq{
-		Name:      groupName,
-		Workspace: workspace.String(),
+		Name: groupName,
 	}
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspace.String(),
 	}
-	createdGroup := &types.Group{}
+	createdGroup := &types.GroupRes{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupCreate), replaceDict)
 	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, createdGroup); err != nil {
 		return nil, err

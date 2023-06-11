@@ -148,6 +148,12 @@ type GroupReq struct {
 	Name      string `json:"name"`
 	Workspace string `json:"workspace"`
 }
+type GroupRes struct {
+	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	Name          string     `json:"name"`
+	WorkspaceUUID string     `json:"workspace"`
+	Descriotion   string     `json:"description"`
+}
 type GroupUserRes struct {
 	Group string `json:"group"`
 	User  string `json:"user"`

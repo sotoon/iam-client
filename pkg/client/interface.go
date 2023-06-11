@@ -117,7 +117,7 @@ type Client interface {
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
 	GetGroupByName(workspaceName string, groupName string) (*types.Group, error)
-	CreateGroup(groupName string, workspace *uuid.UUID) (*types.Group, error)
+	CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error)
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
 	GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
 	UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error

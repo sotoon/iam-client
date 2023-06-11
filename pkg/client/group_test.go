@@ -69,7 +69,7 @@ func TestGetGroupByName(t *testing.T) {
 }
 
 func TestCreateGroup(t *testing.T) {
-	var object types.Group
+	var object types.GroupRes
 	var name string
 	workspaceUUID := uuid.NewV4()
 	faker.FakeData(&name)

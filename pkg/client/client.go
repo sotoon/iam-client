@@ -33,6 +33,7 @@ const (
 const HealthyBepaURLCachedKey = "healthy_bepa_url"
 const CacheExpirationDuration = 10 * time.Minute
 const CacheCleanupInterval = 10 * time.Minute
+const dummyUserUUID = "00000000-0000-0000-0000-000000000000"
 
 type bepaClient struct {
 	accessToken      string
@@ -49,7 +50,7 @@ type bepaClient struct {
 var _ Client = &bepaClient{}
 
 func NewMinimalClient(baseURL string) (Client, error) {
-	return NewClient("", baseURL, "", "")
+	return NewClient("", baseURL, "", dummyUserUUID)
 }
 
 // NewClient creates a new client to interact with bepa server
@@ -123,7 +124,7 @@ func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace
 }
 
 func NewMinimalReliableClient(serverUrls []string) (Client, error) {
-	return NewReliableClient("", serverUrls, "", "", DEFAULT_TIMEOUT)
+	return NewReliableClient("", serverUrls, "", dummyUserUUID, DEFAULT_TIMEOUT)
 }
 
 func (c *bepaClient) SetAccessToken(token string) {
