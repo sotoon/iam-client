@@ -116,6 +116,21 @@ func (c *bepaClient) GetAllRoles() ([]*types.Role, error) {
 	return roles, nil
 }
 
+func (c *bepaClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
+	replaceDict := map[string]string{
+		roleUUIDPlaceholder:      roleUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetBindedRole), replaceDict)
+
+	roleBindingRes := &types.RoleBindingRes{}
+	if err := c.Do(http.MethodGet, apiURL, 200, nil, roleBindingRes); err != nil {
+		return nil, err
+	}
+	return roleBindingRes.Items, nil
+}
+
 func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),

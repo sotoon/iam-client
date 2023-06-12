@@ -56,6 +56,7 @@ const (
 	RouteActivateUserInWorkspace   = "/workspace/{workspace_uuid}/user/{user_uuid}/allow/"
 	RouteUserDropWorkspace         = "/workspace/{workspace_uuid}/user/{user_uuid}/"
 	RouteUserAppendRole            = "/workspace/{workspace_uuid}/role/{role_uuid}/user/{user_uuid}/"
+	RouteUserGetBindedRole         = "/workspace/{workspace_uuid}/role/{role_uuid}/user/{user_uuid}/"
 	RouteUserDropRole              = "/workspace/{workspace_uuid}/role/{role_uuid}/user/{user_uuid}/"
 	RouteUserUpdate                = "/user/{user_uuid}/"
 	RouteUserActivate              = "/user/{user_uuid}/activate/"
