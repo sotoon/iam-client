@@ -86,7 +86,7 @@ const (
 	RouteServiceUserTokenGetALL = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
 	RouteServiceUserTokenCreate = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
 	RouteServiceUserTokenDelete = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/{service_user_token_uuid}/"
-	RouteServiceUserGetByName   = "/user/{user_uuid}/workspace/name={workspace_name}/service-user/name={service_user_name}/"
+	RouteServiceUserGetByName   = "/workspace/workspace={workspace_name}/service-user/name={service_user_name}/"
 	RouteRoleGetAllServiceUsers = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/"
 	RouteServiceUserAppendRole  = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/{service_user_uuid}/"
 	RouteServiceUserDropRole    = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/{service_user_uuid}/"
