@@ -60,7 +60,8 @@ func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*ty
 }
 func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
 	userRequest := &types.GroupReq{
-		Name: groupName,
+		Name:      groupName,
+		Workspace: workspace.String(),
 	}
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspace.String(),
