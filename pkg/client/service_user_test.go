@@ -64,7 +64,7 @@ func TestGetServiceUserByName(t *testing.T) {
 		Object:           &object,
 		Params:           []interface{}{workspaceName, name},
 		ParamsInURL:      []interface{}{workspaceName, name},
-		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/workspace/name=(.+)/service-user/name=(.+)/`),
+		URLregexp:        regexp.MustCompile(`/api/v1/workspace/workspace=(.+)/service-user/name=(.+)/`),
 		ClientMethodName: "GetServiceUserByName",
 	}
 
