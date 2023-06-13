@@ -28,6 +28,7 @@ const (
 	RouteRoleDropRule    = "/workspace/{workspace_uuid}/role/{role_uuid}/rule/{rule_uuid}/"
 
 	RouteRuleCreate      = "/workspace/{workspace_uuid}/rule/"
+	RouteRuleUpdate      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
 	RouteRuleDelete      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
 	RouteRuleGetOne      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
 	RouteRuleGetAll      = "/rule/"

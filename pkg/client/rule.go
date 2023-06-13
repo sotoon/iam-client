@@ -28,6 +28,27 @@ func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleA
 	return createdRule, nil
 }
 
+func (c *bepaClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
+	ruleRequest := &types.RuleReq{
+		Name:    ruleName,
+		Actions: ruleActions,
+		Object:  object,
+		Deny:    deny,
+	}
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		ruleUUIDPlaceholder:      ruleUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteRuleUpdate), replaceDict)
+
+	createdRule := &types.Rule{}
+	if err := c.Do(http.MethodPatch, apiURL, 0, ruleRequest, createdRule); err != nil {
+		return nil, err
+	}
+	return createdRule, nil
+}
+
 func (c *bepaClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
