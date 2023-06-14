@@ -128,7 +128,10 @@ func (c *bepaClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID 
 	if err := c.Do(http.MethodGet, apiURL, 200, nil, roleBindingRes); err != nil {
 		return nil, err
 	}
-	return roleBindingRes.Items, nil
+	if len(roleBindingRes.Items) == 0 {
+		return map[string]string{}, nil
+	}
+	return roleBindingRes.Items[0], nil
 }
 
 func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
