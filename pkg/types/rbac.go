@@ -8,7 +8,7 @@ type RoleBindingReq struct {
 	Items map[string]string `json:"items,omitempty"`
 }
 type RoleBindingRes struct {
-	Items map[string]string `json:"items,omitempty"`
+	Items []map[string]string `json:"items,omitempty"`
 }
 type RuleReq struct {
 	Name    string   `json:"name" validate:"required"`
