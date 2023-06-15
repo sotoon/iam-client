@@ -3,7 +3,7 @@ package webhook
 type IAMObjectType string
 
 const (
-	IAMObjectTypeTypeWorkspace IAMObjectType = "account.Workspace"
+	IAMObjectTypeWorkspace     IAMObjectType = "account.Workspace"
 	IAMObjectTypeUser          IAMObjectType = "account.User"
 	IAMObjectTypeUserWorkspace IAMObjectType = "account.UserWorkspace"
 	// TODO complete this list "later"

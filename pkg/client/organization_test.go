@@ -26,7 +26,7 @@ func TestGetOneOrganization(t *testing.T) {
 		Params:           []interface{}{&organization},
 		ParamNames:       []string{"organizationUUID"},
 		Object:           &object,
-		URLregexp:        regexp.MustCompile(`^/api/v1/organization/.[^/]+/$`),
+		URLregexp:        regexp.MustCompile(`^/api/v1/organization/[^/]+/$`),
 	}
 	DoTestReadAPI(t, conf)
 }
@@ -39,7 +39,7 @@ func TestGetOrganizationAllWorkspaces(t *testing.T) {
 		Params:           []interface{}{&organization},
 		ParamNames:       []string{"organizationUUID"},
 		Object:           &object,
-		URLregexp:        regexp.MustCompile(`^/api/v1/organization/.[^/]+/workspace/$`),
+		URLregexp:        regexp.MustCompile(`^/api/v1/organization/[^/]+/workspace/$`),
 	}
 	DoTestListingAPI(t, conf)
 }
@@ -53,7 +53,7 @@ func TestGetOrganizationOneWorkspace(t *testing.T) {
 		Params:           []interface{}{&organization, &workspace},
 		ParamNames:       []string{"organizationUUID", "workspaceUUID"},
 		Object:           &object,
-		URLregexp:        regexp.MustCompile(`^/api/v1/organization/.[^/]+/workspace/.[^/]+/$`),
+		URLregexp:        regexp.MustCompile(`^/api/v1/organization/[^/]+/workspace/[^/]+/$`),
 	}
 	DoTestReadAPI(t, conf)
 }

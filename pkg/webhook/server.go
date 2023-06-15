@@ -56,7 +56,7 @@ func (s *IAMWebhookServer) handleEvent(c *gin.Context) {
 
 	for _, eventListener := range s.eventListeners {
 		if eventListener.doesMatch(event) {
-			if err := eventListener.handle(*event); err != nil {
+			if err := eventListener.Handle(*event); err != nil {
 				c.JSON(http.StatusInternalServerError, err.Error())
 			}
 		}
