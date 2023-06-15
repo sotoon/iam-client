@@ -17,7 +17,7 @@ func parseIAMObjectJson(objectType IAMObjectType, jsonData []byte) (IAMObject, e
 			return nil, err
 		}
 		return user, nil
-	case IAMObjectTypeTypeWorkspace:
+	case IAMObjectTypeWorkspace:
 		var workspace types.WebhookWorkspace
 		if err := json.Unmarshal(jsonData, &workspace); err != nil {
 			return nil, err
