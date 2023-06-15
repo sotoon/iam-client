@@ -32,6 +32,30 @@ func TestCreateRule(t *testing.T) {
 	DoTestCreateAPI(t, config)
 }
 
+func TestUpdateRule(t *testing.T) {
+	var rule types.Rule
+	var ruleName, object string
+	var ruleActions []string
+	var deny bool
+
+	workspaceUUID := uuid.NewV4()
+	ruleUUID := uuid.NewV4()
+	faker.FakeData(&ruleName)
+	faker.FakeData(&ruleActions)
+	faker.FakeData(&deny)
+	faker.FakeData(&object)
+
+	config := TestConfig{
+		Object:           &rule,
+		Params:           []interface{}{&ruleUUID, ruleName, &workspaceUUID, ruleActions, object, deny},
+		ParamNames:       []string{"", "Name", "", "Actions", "Object", "Deny"},
+		ParamsInURL:      []interface{}{&workspaceUUID, &ruleUUID},
+		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/rule/(.+)/`),
+		ClientMethodName: "UpdateRule",
+	}
+	DoTestUpdateAPI(t, config, http.MethodPatch)
+}
+
 func TestDeleteRule(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	ruleUUID := uuid.NewV4()
