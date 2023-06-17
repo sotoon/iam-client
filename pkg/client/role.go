@@ -27,6 +27,25 @@ func (c *bepaClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*typ
 	return createdRole, nil
 }
 
+func (c *bepaClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
+	roleRequest := &types.RoleReq{
+		Name:      roleName,
+		Workspace: workspaceUUID.String(),
+	}
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		roleUUIDPlaceholder:      roleUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteRoleUpdate), replaceDict)
+
+	updatedRole := &types.Role{}
+	if err := c.Do(http.MethodPatch, apiURL, 0, roleRequest, updatedRole); err != nil {
+		return nil, err
+	}
+	return updatedRole, nil
+}
+
 func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: workspaceName,

@@ -19,6 +19,7 @@ const (
 	RouteBackupKeyDelete = "/workspace/{workspace_uuid}/backup-key/{backup_key_uuid}/"
 
 	RouteRoleCreate      = "/workspace/{workspace_uuid}/role/"
+	RouteRoleUpdate      = "/workspace/{workspace_uuid}/role/{role_uuid}/"
 	RouteRoleGetOne      = "/workspace/{workspace_uuid}/role/{role_uuid}/"
 	RouteRoleGetAll      = "/role/"
 	RouteRoleDelete      = "/workspace/{workspace_uuid}/role/{role_uuid}/"

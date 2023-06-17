@@ -42,11 +42,11 @@ func (c *bepaClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceU
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleUpdate), replaceDict)
 
-	createdRule := &types.Rule{}
-	if err := c.Do(http.MethodPatch, apiURL, 0, ruleRequest, createdRule); err != nil {
+	updatedRule := &types.Rule{}
+	if err := c.Do(http.MethodPatch, apiURL, 0, ruleRequest, updatedRule); err != nil {
 		return nil, err
 	}
-	return createdRule, nil
+	return updatedRule, nil
 }
 
 func (c *bepaClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
