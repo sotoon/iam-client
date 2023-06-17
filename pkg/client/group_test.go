@@ -114,6 +114,21 @@ func TestGetAllGroupUsers(t *testing.T) {
 	DoTestListingAPI(t, config)
 }
 
+func TestGetAllGroupServiceUsers(t *testing.T) {
+	var object []types.ServiceUser
+	workspaceUUID := uuid.NewV4()
+	groupUUID := uuid.NewV4()
+
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{&workspaceUUID, &groupUUID},
+		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
+		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/service-user/`),
+		ClientMethodName: "GetAllGroupServiceUsers",
+	}
+	DoTestListingAPI(t, config)
+}
+
 func TestUnbindUserFromGroup(t *testing.T) {
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
