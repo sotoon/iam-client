@@ -48,6 +48,7 @@ type Client interface {
 	BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error
 	UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error
 	GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.Role, error)
+	UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error)
 
 	CreateUser(userName, email, password string) (*types.User, error)
 	GetUser(userUUID *uuid.UUID) (*types.User, error)
