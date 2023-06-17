@@ -102,6 +102,20 @@ func (c *bepaClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*t
 	return users, nil
 }
 
+func (c *bepaClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	serviceUsers := []*types.ServiceUser{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupServiceUserGetALL), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &serviceUsers); err != nil {
+		return nil, err
+	}
+	return serviceUsers, nil
+}
+
 func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		groupUUIDPlaceholder:     groupUUID.String(),

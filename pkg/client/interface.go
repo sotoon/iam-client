@@ -121,6 +121,7 @@ type Client interface {
 	CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error)
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
 	GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
+	GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error)
 	UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error
 	BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) (*types.GroupUserRes, error)
 	GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error)
