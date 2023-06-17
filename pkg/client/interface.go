@@ -31,7 +31,7 @@ type Client interface {
 	CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
 	UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
 	GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, error)
-	GetRoleByName(roleName, workspaceName string) (*types.Role, error)
+	GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error)
 	GetAllRoles() ([]*types.Role, error)
 	GetRoleUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.User, error)
 	GetRoleRules(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Rule, error)

@@ -50,7 +50,7 @@ func TestUpdateRole(t *testing.T) {
 }
 
 func TestGetRoleByName(t *testing.T) {
-	var object types.Role
+	var object types.RoleRes
 	var roleName, workspaceName string
 	faker.FakeData(&roleName)
 	faker.FakeData(&workspaceName)
