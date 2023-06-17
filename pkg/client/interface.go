@@ -29,6 +29,7 @@ type Client interface {
 	SetConfigDefaultWorkspace(uuid *uuid.UUID) error
 
 	CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
+	UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
 	GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, error)
 	GetRoleByName(roleName, workspaceName string) (*types.Role, error)
 	GetAllRoles() ([]*types.Role, error)

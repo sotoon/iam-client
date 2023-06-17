@@ -30,6 +30,25 @@ func TestCreateRole(t *testing.T) {
 	DoTestCreateAPI(t, config)
 }
 
+func TestUpdateRole(t *testing.T) {
+	var role types.Role
+	var roleName string
+
+	workspaceUUID := uuid.NewV4()
+	roleUUID := uuid.NewV4()
+	faker.FakeData(&roleName)
+
+	config := TestConfig{
+		Object:           &role,
+		Params:           []interface{}{&roleUUID, roleName, &workspaceUUID},
+		ParamNames:       []string{"", "Name", ""},
+		ParamsInURL:      []interface{}{&workspaceUUID, &roleUUID},
+		URLregexp:        regexp.MustCompile(`/api/v1/workspace/(.+)/role/(.+)/`),
+		ClientMethodName: "UpdateRole",
+	}
+	DoTestUpdateAPI(t, config, http.MethodPatch)
+}
+
 func TestGetRoleByName(t *testing.T) {
 	var object types.Role
 	var roleName, workspaceName string
