@@ -46,18 +46,18 @@ func (c *bepaClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceU
 	return updatedRole, nil
 }
 
-func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.Role, error) {
+func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: workspaceName,
 		roleNamePlaceholder:      roleName,
 		userUUIDPlaceholder:      c.userUUID,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserGetOneRoleByName), replaceDict)
-	role := &types.Role{}
-	if err := c.Do(http.MethodGet, apiURL, 0, nil, role); err != nil {
+	roleResponse := &types.RoleRes{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, roleResponse); err != nil {
 		return nil, err
 	}
-	return role, nil
+	return roleResponse, nil
 }
 
 func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, error) {
