@@ -67,7 +67,7 @@ func TestGetRoleByName(t *testing.T) {
 }
 
 func TestGetRole(t *testing.T) {
-	var object types.Role
+	var object types.RoleRes
 	workspaceUUID := uuid.NewV4()
 	roleUUID := uuid.NewV4()
 

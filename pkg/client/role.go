@@ -60,14 +60,14 @@ func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.RoleR
 	return roleResponse, nil
 }
 
-func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, error) {
+func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetOne), replaceDict)
 
-	role := &types.Role{}
+	role := &types.RoleRes{}
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, role); err != nil {
 		return nil, err
 	}
