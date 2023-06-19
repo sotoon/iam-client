@@ -153,6 +153,42 @@ func (c *bepaClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID 
 	return roleBindingRes.Items[0], nil
 }
 
+func (c *bepaClient) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, groupUUID *uuid.UUID) (map[string]string, error) {
+	replaceDict := map[string]string{
+		roleUUIDPlaceholder:      roleUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupGetBindedRole), replaceDict)
+
+	roleBindingRes := &types.RoleBindingRes{}
+	if err := c.Do(http.MethodGet, apiURL, 200, nil, roleBindingRes); err != nil {
+		return nil, err
+	}
+	if len(roleBindingRes.Items) == 0 {
+		return map[string]string{}, nil
+	}
+	return roleBindingRes.Items[0], nil
+}
+
+func (c *bepaClient) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID) (map[string]string, error) {
+	replaceDict := map[string]string{
+		roleUUIDPlaceholder:        roleUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserGetBindedRole), replaceDict)
+
+	roleBindingRes := &types.RoleBindingRes{}
+	if err := c.Do(http.MethodGet, apiURL, 200, nil, roleBindingRes); err != nil {
+		return nil, err
+	}
+	if len(roleBindingRes.Items) == 0 {
+		return map[string]string{}, nil
+	}
+	return roleBindingRes.Items[0], nil
+}
+
 func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
