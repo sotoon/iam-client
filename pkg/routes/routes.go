@@ -48,6 +48,9 @@ const (
 	RouteUserGetAllWorkspaces = "/user/{user_uuid}/workspace/"
 	RouteUserGetAllRoles      = "/user/{user_uuid}/role/"
 
+	RouteServiceUserGetBindedRole = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/{user_uuid}/"
+	RouteGroupGetBindedRole       = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{user_uuid}/"
+
 	RouteUserGetOneWorkspace       = "/user/{user_uuid}/workspace/"
 	RouteUserGetOneWorkspaceByName = "/user/{user_uuid}/workspace/name={workspace_name}/"
 	RouteUserGetOneRoleByName      = "/user/{user_uuid}/workspace/name={workspace_name}/role/name={role_name}/"

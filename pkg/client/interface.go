@@ -39,6 +39,8 @@ type Client interface {
 	BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error
 	GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error)
+	GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error)
+	GetBindedRoleToGroupItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error)
 
 	GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, error)
 	GetRuleByName(ruleName, workspaceName string) (*types.Rule, error)
