@@ -126,7 +126,7 @@ func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uui
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) (*types.GroupUserRes, error) {
+func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) error {
 	userRequest := &types.GroupReq{
 		Name:      groupName,
 		Workspace: workspace.String(),
@@ -136,10 +136,9 @@ func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID 
 		groupUUIDPlaceholder:     groupUUID.String(),
 		userUUIDPlaceholder:      userUUID.String(),
 	}
-	createdGroupUser := &types.GroupUserRes{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBindUser), replaceDict)
-	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, createdGroupUser); err != nil {
-		return nil, err
+	if err := c.Do(http.MethodPost, apiURL, 0, userRequest, nil); err != nil {
+		return err
 	}
-	return createdGroupUser, nil
+	return nil
 }
