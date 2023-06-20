@@ -131,6 +131,9 @@ type Client interface {
 	GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error)
 	BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error
+	BindServiceUserToGroup(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error
+	UnbindServiceUserFromGroup(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error
+	GetGroupServiceUser(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
 
 	GetServerURL() string
 

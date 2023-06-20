@@ -163,3 +163,48 @@ func TestBindGroup(t *testing.T) {
 	}
 	DoTestUpdateAPI(t, config, http.MethodPost)
 }
+
+func TestBindServiceUserToGroup(t *testing.T) {
+	workspaceUUID := uuid.NewV4()
+	groupUUID := uuid.NewV4()
+	serviceUserUUID := uuid.NewV4()
+
+	config := TestConfig{
+		Params:      []interface{}{&workspaceUUID, &groupUUID, &serviceUserUUID},
+		ParamsInURL: []interface{}{&workspaceUUID, &groupUUID, &serviceUserUUID},
+
+		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/service-user/(.+)/`),
+		ClientMethodName: "BindServiceUserToGroup",
+	}
+	DoTestUpdateAPI(t, config, http.MethodPost)
+}
+
+func TestUnbindServiceUserFromGroup(t *testing.T) {
+	workspaceUUID := uuid.NewV4()
+	groupUUID := uuid.NewV4()
+	serviceUserUUID := uuid.NewV4()
+
+	config := TestConfig{
+		Params:      []interface{}{&workspaceUUID, &groupUUID, &serviceUserUUID},
+		ParamsInURL: []interface{}{&workspaceUUID, &groupUUID, &serviceUserUUID},
+
+		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/service-user/(.+)/`),
+		ClientMethodName: "UnbindServiceUserFromGroup",
+	}
+	DoTestDeleteAPI(t, config)
+}
+
+func TestGetGroupServiceUser(t *testing.T) {
+	var object types.ServiceUser
+	workspaceUUID := uuid.NewV4()
+	groupUUID := uuid.NewV4()
+	serviceUserUUID := uuid.NewV4()
+
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{&workspaceUUID, &groupUUID, &serviceUserUUID},
+		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/service-user/(.+)/`),
+		ClientMethodName: "GetGroupServiceUser",
+	}
+	DoTestReadAPI(t, config)
+}

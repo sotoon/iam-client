@@ -142,3 +142,43 @@ func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID 
 	}
 	return nil
 }
+
+func (c *bepaClient) BindServiceUserToGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		groupUUIDPlaceholder:       groupUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBindServiceUser), replaceDict)
+	if err := c.Do(http.MethodPost, apiURL, 0, nil, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *bepaClient) UnbindServiceUserFromGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		groupUUIDPlaceholder:       groupUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUnbindServiceUser), replaceDict)
+	if err := c.Do(http.MethodDelete, apiURL, 0, nil, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *bepaClient) GetGroupServiceUser(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		groupUUIDPlaceholder:       groupUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+	serviceUser := &types.ServiceUser{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupServiceUserGetOne), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, serviceUser); err != nil {
+		return nil, err
+	}
+	return serviceUser, nil
+}
