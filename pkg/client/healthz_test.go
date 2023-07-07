@@ -118,7 +118,8 @@ func TestGetHealthyBepaURL(t *testing.T) {
 		}
 
 	}
-
+	// to see the request logs
+	time.Sleep(MAX_TIMEOUT)
 }
 
 func TestSetCacheOnhealthyBepaURL(t *testing.T) {

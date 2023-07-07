@@ -260,15 +260,27 @@ func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *
 		c.log("healthCheck failed. error: %v\n", err)
 		return err
 	} else {
-		c.log("healthCheck successful. %v\n", resp)
-		resultChannel <- serverUrl
-		return nil
+		select {
+		case resultChannel <- serverUrl:
+			c.log("healthCheck successful: %v\n", resp)
+			return nil
+		case <-time.After(c.bepaTimeout):
+			c.log("healthCheck not used: %v", resp)
+			return nil
+		}
 	}
 }
 
 func (c *bepaClient) GetHealthyBepaURL() (*url.URL, error) {
-	//todo: stop go routines after first healthcheck ack arrives
-	serverUrlChannel := make(chan *url.URL, 1)
+	/*
+		A Not about the channelSize := 0
+		The channel size for a healthy server is set to zero (0) because we want to block the execution until the first response is received.
+		Since we don't require buffering in this case, the channel doesn't need a buffer.
+		Additionally, the Go garbage collector (GC) will automatically remove the channel when it becomes unreachable.
+		Therefore, there is no need to explicitly close the serverChannel, which could potentially cause a panic if other goroutines attempt to write to it.
+	*/
+	channelSize := 0
+	serverUrlChannel := make(chan *url.URL, channelSize)
 	for _, serverUrl := range c.apiUrlsList {
 		newServerUrl := serverUrl
 		go getHealthCheckValue(c, newServerUrl, serverUrlChannel)
@@ -349,8 +361,9 @@ func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	return persistClientConfigFile()
 }
 
-func (c *bepaClient) log(messageFmt string, object interface{}) {
+func (c *bepaClient) log(messageFmt string, objects ...interface{}) {
 	if c.logLevel <= LogLevel(DEBUG) {
-		log.Printf(messageFmt, object)
+		logMessage := fmt.Sprintf(messageFmt, objects...)
+		log.Println(logMessage)
 	}
 }
