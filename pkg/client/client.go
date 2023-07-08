@@ -273,7 +273,7 @@ func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *
 
 func (c *bepaClient) GetHealthyBepaURL() (*url.URL, error) {
 	/*
-		A Not about the channelSize := 0
+		A Note about the channelSize := 0
 		The channel size for a healthy server is set to zero (0) because we want to block the execution until the first response is received.
 		Since we don't require buffering in this case, the channel doesn't need a buffer.
 		Additionally, the Go garbage collector (GC) will automatically remove the channel when it becomes unreachable.
