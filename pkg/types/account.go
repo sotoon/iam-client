@@ -27,6 +27,12 @@ type UserTokenReq struct {
 	Secret   string `json:"secret" validate:"required"`
 	UserType string `json:"user_type"`
 }
+type IdentifyAndAuthorizeReq struct {
+	Token  string `json:"user_token"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+}
+
 type UserUpdateReq struct {
 	Name     string `json:"name"`
 	Email    string `json:"email" validate:"omitempty,email"`

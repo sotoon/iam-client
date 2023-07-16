@@ -92,6 +92,7 @@ type Client interface {
 
 	Authorize(identity, userType, action, object string) error
 	Identify(token string) (*types.UserRes, error)
+	IdentifyAndAuthorize(token, action, object string) error
 
 	Do(method, path string, successCode int, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
