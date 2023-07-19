@@ -90,9 +90,9 @@ type Client interface {
 	DeleteUserKiseSecret(KiseSecretUUID *uuid.UUID) error
 	CreateKiseSecretForDefaultUser() (*types.KiseSecret, error)
 
-	Authorize(identity, userType, action, object string) error
+	Authorize(identity, userType, action, rriObject string) error
 	Identify(token string) (*types.UserRes, error)
-	IdentifyAndAuthorize(token, action, object string) error
+	IdentifyAndAuthorize(token, action, rriObject string) error
 
 	Do(method, path string, successCode int, req interface{}, resp interface{}) error
 	SetAccessToken(token string)
