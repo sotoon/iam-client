@@ -101,7 +101,7 @@ err := client.IdentifyAndAuthorize(token, action, rriObject)
 // example: checking if the token's owner has the permission to list compute nodes?
 action := "list"
 rriObject = "rri:v1:cafebazaar.cloud:d386c6d8-0a0a-4251-b478-2dc03241927d:compute:/core/v1/_/nodes"
-err := client.IdentifyAndAuthorize(token, "get", "rri:v1:cafebazaar.cloud:d386c6d8-0a0a-4251-b478-2dc03241927d:k8s:/core/v1/_/nodes")
+err := client.IdentifyAndAuthorize(token, action, rriObject)
 
 if err != nil {
     // the owner of token is Not Authorized to do the action
