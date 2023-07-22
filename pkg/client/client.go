@@ -68,9 +68,9 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 	return client, nil
 }
 
-const DEFAULT_TIMEOUT time.Duration = 1 * time.Second
-const MIN_TIMEOUT time.Duration = 300 * time.Millisecond
-const MAX_TIMEOUT time.Duration = 10 * time.Second
+const DEFAULT_TIMEOUT time.Duration = 2 * time.Second
+const MIN_TIMEOUT time.Duration = 1 * time.Second
+const MAX_TIMEOUT time.Duration = 5 * time.Second
 
 // returns a reasonable timeout if user has set a bad value
 func tuneTimeout(userTimeout time.Duration) time.Duration {
