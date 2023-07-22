@@ -146,3 +146,26 @@ func BenchmarkMultipleInvalidAuthz(b *testing.B) {
 		}
 	})
 }
+
+func TestIdentifyAndAuthorize(t *testing.T) {
+	example := struct {
+		token  string
+		object string
+		action string
+	}{"sample-token", "sample-rri-object", "get"}
+
+	s := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			require.True(t, strings.HasPrefix(r.URL.Path, "/api/v1/identify-and-authz"))
+			var req types.IdentifyAndAuthorizeReq
+			require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+			require.Equal(t, example.token, req.Token)
+			w.WriteHeader(http.StatusOK)
+		}))
+
+	c := NewTestClient(s)
+	err := c.IdentifyAndAuthorize(example.token, example.action, example.object)
+	require.NoError(t, err)
+	s.Close()
+
+}

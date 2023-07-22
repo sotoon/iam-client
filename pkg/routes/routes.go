@@ -67,6 +67,7 @@ const (
 	RouteUserActivate              = "/user/{user_uuid}/activate/"
 	RouteUserSuspend               = "/user/{user_uuid}/suspend/"
 	RouteUserTokenIdentify         = "/identify/"
+	RouteIdentifyAndAuthorize      = "/identify-and-authz/"
 	RouteUserTokenCreateByCreds    = "/authn/"
 	RouteUserTokenByChallenge      = "/authn/challenge/"
 	RouteUserTokenCreateByToken    = "/user/{user_uuid}/user-token/"
