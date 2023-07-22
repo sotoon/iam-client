@@ -17,8 +17,8 @@
 
 
 ## General Information
-- There are so many products that need to use Sotoon IAM Service Aka Bepa as their **Identity and Access Management** engine.
-- Bepa-Client is a Golang Library empowering you can use it to control **the risk of API changes** and other support issues.
+- There are so many products that need to use Sotoon **IAM Service** aka **Bepa** as their **Identity and Access Management** engine.
+- Bepa-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
 - It is under active development and support of Sotoon Integration Tribe.
 
 ## Technologies Used
@@ -82,7 +82,7 @@ func ReliableBepaClientExample() {
 
 ### Usage
 
-See the [client.go](pkg/client/client.go) file to see the full list of API functions. The usage is so simple, just call the function with your intended parameters:
+See the [interface.go](pkg/client/interface.go) file to see the full list of API functions. The usage is so simple, just call the function with your intended parameters:
 
 ```golang
 // Get Workspace Data by name
@@ -96,8 +96,6 @@ subject, err := client.Identify(token)
 
 
 // check if a token's owner has the permission to perform the action on the RRI object
-err := client.IdentifyAndAuthorize(token, action, rriObject)
-
 // example: checking if the token's owner has the permission to list compute nodes?
 action := "list"
 rriObject := "rri:v1:cafebazaar.cloud:d386c6d8-0a0a-4251-b478-2dc03241927d:compute:/core/v1/_/nodes"
