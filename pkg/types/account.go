@@ -226,8 +226,10 @@ type WebhookWorkspace struct {
 	Name         string       `json:"name"`
 	IsSuspended  bool         `json:"is_suspended"`
 	Organization Organization `json:"organization"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
+
+	// TODO fix parsing error of CreatedAt and UpdatedAt
+	// CreatedAt    time.Time    `json:"created_at"`
+	// UpdatedAt    time.Time    `json:"updated_at"`
 }
 
 type WebhookUser struct {
@@ -241,8 +243,10 @@ type WebhookUser struct {
 	LastName              string    `json:"last_name"`
 	Birthday              string    `json:"birthday"`
 	IsSuspended           bool      `json:"is_suspended"`
-	CreatedAt             time.Time `json:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at"`
+
+	// TODO fix parsing error of CreatedAt and UpdatedAt
+	// CreatedAt             time.Time `json:"created_at"`
+	// UpdatedAt             time.Time `json:"updated_at"`
 }
 
 type WebhookUserWorkspaceRelation struct {
