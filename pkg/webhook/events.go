@@ -9,5 +9,5 @@ type EventListener struct {
 }
 
 func (el *EventListener) doesMatch(event *Event) bool {
-	return event.Action == el.Action && event.Object == el.ObjectType
+	return event.Action == el.Action && event.ObjectType == el.ObjectType
 }
