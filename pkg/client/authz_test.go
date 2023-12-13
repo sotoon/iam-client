@@ -169,3 +169,31 @@ func TestIdentifyAndAuthorize(t *testing.T) {
 	s.Close()
 
 }
+func TestHealthCheckLikeTheK8sAuthCodeChecks(t *testing.T) {
+
+	server200 := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+	server400 := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+		}))
+	server500 := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+
+	urls := []string{
+		server200.URL,
+		server400.URL,
+		server500.URL,
+	}
+
+	// this code section is just like the code used in k8s-auth
+	// https://git.cafebazaar.ir/infrastructure/k8s-auth/-/blob/master/internal/pkg/reviewer/reviewer.go?ref_type=heads
+	c, _ := NewReliableClient("", urls, "", "", 5*time.Second)
+	error := c.Do(http.MethodGet, "/api/v1/healthz", 200, nil, nil)
+
+	require.True(t, (error == nil), "Just One Healthy Server is enough")
+}
