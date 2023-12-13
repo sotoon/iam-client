@@ -19,6 +19,7 @@ husky:
     - ./huskyci-client-bin -s bandit -s jake --level HIGH
   allow_failure: true
   timeout: 5m
+  when: manual # todo: add golang security test instead of husky
 
 test:
   stage: test and analysis
