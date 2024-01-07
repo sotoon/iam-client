@@ -1,6 +1,7 @@
 package client
 
 import (
+	"log"
 	"net/url"
 	"time"
 
@@ -95,6 +96,7 @@ type Client interface {
 	IdentifyAndAuthorize(token, action, rriObject string) error
 
 	Do(method, path string, successCode int, req interface{}, resp interface{}) error
+	SetLogger(logger *log.Logger)
 	SetAccessToken(token string)
 	SetDefaultWorkspace(workspace string)
 	SetUser(userUUID string)
