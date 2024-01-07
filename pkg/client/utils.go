@@ -19,6 +19,7 @@ var (
 	ErrForbidden           = errors.New("forbidden")
 	ErrNotFound            = errors.New("not exists")
 	ErrBadRequest          = errors.New("bad request")
+	ErrTooManyRequests     = errors.New("too many requests")
 	ErrInternalServerError = errors.New("internal server error")
 )
 
@@ -66,11 +67,11 @@ func ensureStatusOK(resp *http.Response, successCode int) error {
 			return createHTTPResponseError(resp.StatusCode, ErrForbidden)
 		case http.StatusBadRequest:
 			return createHTTPResponseError(resp.StatusCode, ErrBadRequest)
-
+		case http.StatusTooManyRequests:
+			return createHTTPResponseError(resp.StatusCode, ErrTooManyRequests)
 		}
 	case 5:
 		return createFaultyHTTPResponseError(resp.StatusCode, ErrInternalServerError)
-
 	}
 	var jerr types.ResponseError
 	if err := json.NewDecoder(resp.Body).Decode(&jerr); err != nil {
