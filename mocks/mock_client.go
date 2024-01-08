@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	log "log"
 	url "net/url"
 	reflect "reflect"
 	time "time"
@@ -80,26 +81,25 @@ func (mr *MockClientMockRecorder) AddUserToWorkspace(userUUID, workspaceUUID int
 }
 
 // Authorize mocks base method.
-func (m *MockClient) Authorize(identity, userType, action, object string) error {
+func (m *MockClient) Authorize(identity, userType, action, rriObject string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authorize", identity, userType, action, object)
+	ret := m.ctrl.Call(m, "Authorize", identity, userType, action, rriObject)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Authorize indicates an expected call of Authorize.
-func (mr *MockClientMockRecorder) Authorize(identity, userType, action, object interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) Authorize(identity, userType, action, rriObject interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockClient)(nil).Authorize), identity, userType, action, object)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockClient)(nil).Authorize), identity, userType, action, rriObject)
 }
 
 // BindGroup mocks base method.
-func (m *MockClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) (*types.GroupUserRes, error) {
+func (m *MockClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "BindGroup", groupName, workspace, groupUUID, userUUID)
-	ret0, _ := ret[0].(*types.GroupUserRes)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // BindGroup indicates an expected call of BindGroup.
@@ -164,6 +164,20 @@ func (mr *MockClientMockRecorder) BindRuleToRole(roleUUID, ruleUUID, workspaceUU
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BindRuleToRole", reflect.TypeOf((*MockClient)(nil).BindRuleToRole), roleUUID, ruleUUID, workspaceUUID)
 }
 
+// BindServiceUserToGroup mocks base method.
+func (m *MockClient) BindServiceUserToGroup(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BindServiceUserToGroup", worspaceUUID, groupUUID, serviceUserUUID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// BindServiceUserToGroup indicates an expected call of BindServiceUserToGroup.
+func (mr *MockClientMockRecorder) BindServiceUserToGroup(worspaceUUID, groupUUID, serviceUserUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BindServiceUserToGroup", reflect.TypeOf((*MockClient)(nil).BindServiceUserToGroup), worspaceUUID, groupUUID, serviceUserUUID)
+}
+
 // CreateBackupKeyForDefaultWorkspace mocks base method.
 func (m *MockClient) CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error) {
 	m.ctrl.T.Helper()
@@ -195,10 +209,10 @@ func (mr *MockClientMockRecorder) CreateBackupKeyFromFileForDefaultUser(title, f
 }
 
 // CreateGroup mocks base method.
-func (m *MockClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.Group, error) {
+func (m *MockClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateGroup", groupName, workspace)
-	ret0, _ := ret[0].(*types.Group)
+	ret0, _ := ret[0].(*types.GroupRes)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -586,6 +600,21 @@ func (mr *MockClientMockRecorder) GetAllDefaultUserPublicKeys() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllDefaultUserPublicKeys", reflect.TypeOf((*MockClient)(nil).GetAllDefaultUserPublicKeys))
 }
 
+// GetAllGroupServiceUsers mocks base method.
+func (m *MockClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllGroupServiceUsers", workspaceUUID, groupUUID)
+	ret0, _ := ret[0].([]*types.ServiceUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllGroupServiceUsers indicates an expected call of GetAllGroupServiceUsers.
+func (mr *MockClientMockRecorder) GetAllGroupServiceUsers(workspaceUUID, groupUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroupServiceUsers", reflect.TypeOf((*MockClient)(nil).GetAllGroupServiceUsers), workspaceUUID, groupUUID)
+}
+
 // GetAllGroupUsers mocks base method.
 func (m *MockClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
 	m.ctrl.T.Helper()
@@ -736,6 +765,51 @@ func (mr *MockClientMockRecorder) GetBepaURL() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBepaURL", reflect.TypeOf((*MockClient)(nil).GetBepaURL))
 }
 
+// GetBindedRoleToGroupItems mocks base method.
+func (m *MockClient) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBindedRoleToGroupItems", workspaceUUID, roleUUID, userUUID)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBindedRoleToGroupItems indicates an expected call of GetBindedRoleToGroupItems.
+func (mr *MockClientMockRecorder) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, userUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBindedRoleToGroupItems", reflect.TypeOf((*MockClient)(nil).GetBindedRoleToGroupItems), workspaceUUID, roleUUID, userUUID)
+}
+
+// GetBindedRoleToServiceUserItems mocks base method.
+func (m *MockClient) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBindedRoleToServiceUserItems", workspaceUUID, roleUUID, userUUID)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBindedRoleToServiceUserItems indicates an expected call of GetBindedRoleToServiceUserItems.
+func (mr *MockClientMockRecorder) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, userUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBindedRoleToServiceUserItems", reflect.TypeOf((*MockClient)(nil).GetBindedRoleToServiceUserItems), workspaceUUID, roleUUID, userUUID)
+}
+
+// GetBindedRoleToUserItems mocks base method.
+func (m *MockClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBindedRoleToUserItems", workspaceUUID, roleUUID, userUUID)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBindedRoleToUserItems indicates an expected call of GetBindedRoleToUserItems.
+func (mr *MockClientMockRecorder) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBindedRoleToUserItems", reflect.TypeOf((*MockClient)(nil).GetBindedRoleToUserItems), workspaceUUID, roleUUID, userUUID)
+}
+
 // GetGroup mocks base method.
 func (m *MockClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error) {
 	m.ctrl.T.Helper()
@@ -764,6 +838,21 @@ func (m *MockClient) GetGroupByName(workspaceName, groupName string) (*types.Gro
 func (mr *MockClientMockRecorder) GetGroupByName(workspaceName, groupName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupByName", reflect.TypeOf((*MockClient)(nil).GetGroupByName), workspaceName, groupName)
+}
+
+// GetGroupServiceUser mocks base method.
+func (m *MockClient) GetGroupServiceUser(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroupServiceUser", worspaceUUID, groupUUID, serviceUserUUID)
+	ret0, _ := ret[0].(*types.ServiceUser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroupServiceUser indicates an expected call of GetGroupServiceUser.
+func (mr *MockClientMockRecorder) GetGroupServiceUser(worspaceUUID, groupUUID, serviceUserUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupServiceUser", reflect.TypeOf((*MockClient)(nil).GetGroupServiceUser), worspaceUUID, groupUUID, serviceUserUUID)
 }
 
 // GetGroupUser mocks base method.
@@ -856,11 +945,71 @@ func (mr *MockClientMockRecorder) GetOneDefaultUserPublicKey(publicKeyUUID inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneDefaultUserPublicKey", reflect.TypeOf((*MockClient)(nil).GetOneDefaultUserPublicKey), publicKeyUUID)
 }
 
+// GetOrganization mocks base method.
+func (m *MockClient) GetOrganization(arg0 *uuid.UUID) (*types.Organization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganization", arg0)
+	ret0, _ := ret[0].(*types.Organization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganization indicates an expected call of GetOrganization.
+func (mr *MockClientMockRecorder) GetOrganization(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganization", reflect.TypeOf((*MockClient)(nil).GetOrganization), arg0)
+}
+
+// GetOrganizationWorkspace mocks base method.
+func (m *MockClient) GetOrganizationWorkspace(arg0, arg1 *uuid.UUID) (*types.Workspace, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizationWorkspace", arg0, arg1)
+	ret0, _ := ret[0].(*types.Workspace)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizationWorkspace indicates an expected call of GetOrganizationWorkspace.
+func (mr *MockClientMockRecorder) GetOrganizationWorkspace(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizationWorkspace", reflect.TypeOf((*MockClient)(nil).GetOrganizationWorkspace), arg0, arg1)
+}
+
+// GetOrganizationWorkspaces mocks base method.
+func (m *MockClient) GetOrganizationWorkspaces(arg0 *uuid.UUID) ([]*types.Workspace, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizationWorkspaces", arg0)
+	ret0, _ := ret[0].([]*types.Workspace)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizationWorkspaces indicates an expected call of GetOrganizationWorkspaces.
+func (mr *MockClientMockRecorder) GetOrganizationWorkspaces(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizationWorkspaces", reflect.TypeOf((*MockClient)(nil).GetOrganizationWorkspaces), arg0)
+}
+
+// GetOrganizations mocks base method.
+func (m *MockClient) GetOrganizations() ([]*types.Organization, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizations")
+	ret0, _ := ret[0].([]*types.Organization)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizations indicates an expected call of GetOrganizations.
+func (mr *MockClientMockRecorder) GetOrganizations() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizations", reflect.TypeOf((*MockClient)(nil).GetOrganizations))
+}
+
 // GetRole mocks base method.
-func (m *MockClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.Role, error) {
+func (m *MockClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRole", roleUUID, workspaceUUID)
-	ret0, _ := ret[0].(*types.Role)
+	ret0, _ := ret[0].(*types.RoleRes)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -872,10 +1021,10 @@ func (mr *MockClientMockRecorder) GetRole(roleUUID, workspaceUUID interface{}) *
 }
 
 // GetRoleByName mocks base method.
-func (m *MockClient) GetRoleByName(roleName, workspaceName string) (*types.Role, error) {
+func (m *MockClient) GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRoleByName", roleName, workspaceName)
-	ret0, _ := ret[0].(*types.Role)
+	ret0, _ := ret[0].(*types.RoleRes)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -1275,6 +1424,20 @@ func (mr *MockClientMockRecorder) Identify(token interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Identify", reflect.TypeOf((*MockClient)(nil).Identify), token)
 }
 
+// IdentifyAndAuthorize mocks base method.
+func (m *MockClient) IdentifyAndAuthorize(token, action, rriObject string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IdentifyAndAuthorize", token, action, rriObject)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IdentifyAndAuthorize indicates an expected call of IdentifyAndAuthorize.
+func (mr *MockClientMockRecorder) IdentifyAndAuthorize(token, action, rriObject interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IdentifyAndAuthorize", reflect.TypeOf((*MockClient)(nil).IdentifyAndAuthorize), token, action, rriObject)
+}
+
 // InviteUser mocks base method.
 func (m *MockClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error) {
 	m.ctrl.T.Helper()
@@ -1397,6 +1560,18 @@ func (m *MockClient) SetDefaultWorkspace(workspace string) {
 func (mr *MockClientMockRecorder) SetDefaultWorkspace(workspace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDefaultWorkspace", reflect.TypeOf((*MockClient)(nil).SetDefaultWorkspace), workspace)
+}
+
+// SetLogger mocks base method.
+func (m *MockClient) SetLogger(logger *log.Logger) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetLogger", logger)
+}
+
+// SetLogger indicates an expected call of SetLogger.
+func (mr *MockClientMockRecorder) SetLogger(logger interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetLogger", reflect.TypeOf((*MockClient)(nil).SetLogger), logger)
 }
 
 // SetMyEmail mocks base method.
@@ -1537,6 +1712,20 @@ func (mr *MockClientMockRecorder) UnbindRuleFromRole(roleUUID, ruleUUID, workspa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnbindRuleFromRole", reflect.TypeOf((*MockClient)(nil).UnbindRuleFromRole), roleUUID, ruleUUID, workspaceUUID)
 }
 
+// UnbindServiceUserFromGroup mocks base method.
+func (m *MockClient) UnbindServiceUserFromGroup(worspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UnbindServiceUserFromGroup", worspaceUUID, groupUUID, serviceUserUUID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UnbindServiceUserFromGroup indicates an expected call of UnbindServiceUserFromGroup.
+func (mr *MockClientMockRecorder) UnbindServiceUserFromGroup(worspaceUUID, groupUUID, serviceUserUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnbindServiceUserFromGroup", reflect.TypeOf((*MockClient)(nil).UnbindServiceUserFromGroup), worspaceUUID, groupUUID, serviceUserUUID)
+}
+
 // UnbindUserFromGroup mocks base method.
 func (m *MockClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
 	m.ctrl.T.Helper()
@@ -1549,6 +1738,36 @@ func (m *MockClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uui
 func (mr *MockClientMockRecorder) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnbindUserFromGroup", reflect.TypeOf((*MockClient)(nil).UnbindUserFromGroup), workspaceUUID, groupUUID, userUUID)
+}
+
+// UpdateRole mocks base method.
+func (m *MockClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateRole", roleUUID, roleName, workspaceUUID)
+	ret0, _ := ret[0].(*types.Role)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateRole indicates an expected call of UpdateRole.
+func (mr *MockClientMockRecorder) UpdateRole(roleUUID, roleName, workspaceUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRole", reflect.TypeOf((*MockClient)(nil).UpdateRole), roleUUID, roleName, workspaceUUID)
+}
+
+// UpdateRule mocks base method.
+func (m *MockClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateRule", ruleUUID, ruleName, workspaceUUID, ruleActions, object, deny)
+	ret0, _ := ret[0].(*types.Rule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateRule indicates an expected call of UpdateRule.
+func (mr *MockClientMockRecorder) UpdateRule(ruleUUID, ruleName, workspaceUUID, ruleActions, object, deny interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRule", reflect.TypeOf((*MockClient)(nil).UpdateRule), ruleUUID, ruleName, workspaceUUID, ruleActions, object, deny)
 }
 
 // UpdateUser mocks base method.

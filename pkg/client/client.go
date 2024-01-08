@@ -44,6 +44,7 @@ type bepaClient struct {
 	isReliable       bool
 	bepaTimeout      time.Duration
 	cache            Cache
+	logger           *log.Logger
 }
 
 var _ Client = &bepaClient{}
@@ -86,6 +87,10 @@ func tuneTimeout(userTimeout time.Duration) time.Duration {
 // returns a reasonable URL if user has set a bad value
 func organizeUrl(userUrl string) string {
 	return strings.TrimSpace(userUrl)
+}
+
+func (c *bepaClient) SetLogger(logger *log.Logger) {
+	c.logger = logger
 }
 
 func (c *bepaClient) initializeServerUrls(serverUrls []string) error {
@@ -361,9 +366,16 @@ func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	return persistClientConfigFile()
 }
 
+func getDefaultLogger() *log.Logger {
+	return log.Default()
+}
+
 func (c *bepaClient) log(messageFmt string, objects ...interface{}) {
+	if c.logger == nil {
+		c.logger = getDefaultLogger()
+	}
+
 	if c.logLevel <= LogLevel(DEBUG) {
-		logMessage := fmt.Sprintf(messageFmt, objects...)
-		log.Println(logMessage)
+		c.logger.Printf(messageFmt, objects...)
 	}
 }
