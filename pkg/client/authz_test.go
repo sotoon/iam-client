@@ -36,7 +36,6 @@ func (r rule) isValid() bool {
 	return r.uuid != "" &&
 		r.action != "" &&
 		r.userType != "" &&
-
 		rriRegex.MatchString(r.rri)
 }
 
@@ -167,40 +166,5 @@ func TestIdentifyAndAuthorize(t *testing.T) {
 	err := c.IdentifyAndAuthorize(example.token, example.action, example.object)
 	require.NoError(t, err)
 	s.Close()
-
-}
-func TestHealthCheckLikeTheK8sAuthCodeChecks(t *testing.T) {
-
-	server200 := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("I am a healthy server"))
-			w.WriteHeader(http.StatusOK)
-		}))
-	server400 := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("I am bad request server"))
-			w.WriteHeader(http.StatusBadRequest)
-		}))
-	server500 := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("I am internal error server"))
-			w.WriteHeader(http.StatusInternalServerError)
-		}))
-
-	urls := []string{
-		server200.URL,
-		server400.URL,
-		server500.URL,
-	}
-
-	// this code section is just like the code used in k8s-auth
-	// https://git.cafebazaar.ir/infrastructure/k8s-auth/-/blob/master/internal/pkg/reviewer/reviewer.go?ref_type=heads
-	c, _ := NewReliableClient("", urls, "", "", 5*time.Second)
-
-	// call it multiple times just to make sure the concurrency and caching do not change something
-	for i := 0; i < 10; i++ {
-		error := c.Do(http.MethodGet, "/api/v1/healthz", 200, nil, nil)
-		require.True(t, (error == nil), "Just One Healthy Server is enough")
-	}
 
 }

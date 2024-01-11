@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -14,7 +13,6 @@ import (
 	"time"
 
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
-	"github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 )
@@ -216,7 +214,7 @@ func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, e
 	_, ok := err.(*HTTPResponseError)
 
 	if err == nil || ok {
-		data, innerErr := ioutil.ReadAll(httpResponse.Body)
+		data, innerErr := io.ReadAll(httpResponse.Body)
 		if innerErr != nil {
 			return nil, httpResponse.StatusCode, innerErr
 		}
