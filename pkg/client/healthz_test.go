@@ -115,10 +115,15 @@ func TestGetHealthyBepaURL(t *testing.T) {
 		}
 		c := NewTestReliableClient(tc.serverUrls, nil)
 		serverUrl, err := c.GetBepaURL()
+		isHealthy, healthError := c.IsHealthy()
 		if tc.bepaAvailable {
+			require.True(t, isHealthy)
+			require.NoError(t, healthError)
 			require.NoError(t, err)
 			require.True(t, slice.Contains(tc.correctUrls, serverUrl.String()))
 		} else {
+			require.False(t, isHealthy)
+			require.Error(t, healthError)
 			require.Error(t, err)
 			require.Nil(t, serverUrl)
 		}

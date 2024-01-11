@@ -358,6 +358,20 @@ func (c *bepaClient) SetCurrentContext(context string) error {
 	return fmt.Errorf("could not find context %s", context)
 }
 
+func (c *bepaClient) IsHealthy() (bool, error) {
+	serverUrl, err := c.GetBepaURL()
+	if c.isReliable {
+		// there is no need to check health of bepa in reliable client, the GetBepaUrl has already did it
+		if err == nil {
+			return true, nil
+		}
+		return false, err
+	}
+	// we should check the health of bepa endpoint, in simple client (when c.isReliable is false)
+	err = healthCheck(c, serverUrl)
+	return err == nil, err
+}
+
 func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	context := viper.GetString("current-context")
 	viper.Set(fmt.Sprintf("contexts.%s.workspace", context), uuid.String())
