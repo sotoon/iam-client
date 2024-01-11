@@ -2,12 +2,11 @@ package client
 
 import (
 	"encoding/json"
-	"net/http"
-
+	"errors"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
 	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
-	"github.com/hashicorp/vic/lib/apiservers/service/restapi/handlers/errors"
 	uuid "github.com/satori/go.uuid"
+	"net/http"
 )
 
 func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, error) {
@@ -129,7 +128,7 @@ func (c *bepaClient) GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*ty
 		// because email is unique
 		return &users[0], nil
 	} else {
-		return nil, errors.NewError(http.StatusNotFound, "User not found")
+		return nil, errors.New("User not found")
 	}
 }
 
