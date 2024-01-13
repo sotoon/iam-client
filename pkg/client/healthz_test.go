@@ -100,7 +100,8 @@ func TestGetHealthyBepaURL(t *testing.T) {
 		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, unhealthyBepaServer}, bepaAvailable: true},
 		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, timeoutBepaServer}, bepaAvailable: true},
 		{servers: []BepaServer{healthyBepaServer, healthyBepaServer, healthyBepaServer}, bepaAvailable: true},
-		{servers: []BepaServer{rateLimitingBepaServer, healthyBepaServer, timeoutBepaServer}, bepaAvailable: true},
+		{servers: []BepaServer{rateLimitingBepaServer, rateLimitingBepaServer, rateLimitingBepaServer}, bepaAvailable: false},
+		{servers: []BepaServer{rateLimitingBepaServer, timeoutBepaServer, unhealthyBepaServer}, bepaAvailable: false},
 	}
 	for _, tc := range testCases {
 		for _, testBepaServer := range tc.servers {
