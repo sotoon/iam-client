@@ -12,9 +12,9 @@ import (
 // Client represents bepa client interface
 type Client interface {
 
-	// IsHealthy returns nil if the client could connect with IAM Server without any problem
-	// For ReliableClient returns (true, nil) if it can connect to at least one healthy IAM Server endpoint
-	// For SimpleClient returns (true, nil) if it can connect to the one IAM Server Endpoint
+	// IsHealthy reports if the client can connect to the IAM Server (Bepa)
+	// For ReliableClient returns (true, nil) if it can connect to `at least one` healthy IAM Server endpoint
+	// For SimpleClient returns (true, nil) if it can connect to `the exactly one` IAM Server Endpoint and it is healthy
 	IsHealthy() (bool, error)
 
 	GetOrganizations() ([]*types.Organization, error)
