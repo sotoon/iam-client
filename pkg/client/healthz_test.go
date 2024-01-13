@@ -85,7 +85,7 @@ func healthyBepaHandler(w http.ResponseWriter, r *http.Request) {
 var timeoutBepaServer = BepaServer{timeoutBepaHandler, false}
 var unhealthyBepaServer = BepaServer{unhealthyBepaHandler, false}
 var healthyBepaServer = BepaServer{healthyBepaHandler, true}
-var rateLimitingBepaServer = BepaServer{rateLimitingBepaHandler, true}
+var rateLimitingBepaServer = BepaServer{rateLimitingBepaHandler, false}
 
 func TestGetHealthyBepaURL(t *testing.T) {
 	testCases := []struct {
