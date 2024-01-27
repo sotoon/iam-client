@@ -74,6 +74,10 @@ func unhealthyBepaHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 
+func rateLimitingBepaHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusTooManyRequests)
+}
+
 func healthyBepaHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
@@ -81,6 +85,7 @@ func healthyBepaHandler(w http.ResponseWriter, r *http.Request) {
 var timeoutBepaServer = BepaServer{timeoutBepaHandler, false}
 var unhealthyBepaServer = BepaServer{unhealthyBepaHandler, false}
 var healthyBepaServer = BepaServer{healthyBepaHandler, true}
+var rateLimitingBepaServer = BepaServer{rateLimitingBepaHandler, false}
 
 func TestGetHealthyBepaURL(t *testing.T) {
 	testCases := []struct {
@@ -95,6 +100,8 @@ func TestGetHealthyBepaURL(t *testing.T) {
 		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, unhealthyBepaServer}, bepaAvailable: true},
 		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, timeoutBepaServer}, bepaAvailable: true},
 		{servers: []BepaServer{healthyBepaServer, healthyBepaServer, healthyBepaServer}, bepaAvailable: true},
+		{servers: []BepaServer{rateLimitingBepaServer, rateLimitingBepaServer, rateLimitingBepaServer}, bepaAvailable: false},
+		{servers: []BepaServer{rateLimitingBepaServer, timeoutBepaServer, unhealthyBepaServer}, bepaAvailable: false},
 	}
 	for _, tc := range testCases {
 		for _, testBepaServer := range tc.servers {
@@ -109,10 +116,15 @@ func TestGetHealthyBepaURL(t *testing.T) {
 		}
 		c := NewTestReliableClient(tc.serverUrls, nil)
 		serverUrl, err := c.GetBepaURL()
+		isHealthy, healthError := c.IsHealthy()
 		if tc.bepaAvailable {
+			require.True(t, isHealthy)
+			require.NoError(t, healthError)
 			require.NoError(t, err)
 			require.True(t, slice.Contains(tc.correctUrls, serverUrl.String()))
 		} else {
+			require.False(t, isHealthy)
+			require.Error(t, healthError)
 			require.Error(t, err)
 			require.Nil(t, serverUrl)
 		}

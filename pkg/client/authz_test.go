@@ -36,7 +36,6 @@ func (r rule) isValid() bool {
 	return r.uuid != "" &&
 		r.action != "" &&
 		r.userType != "" &&
-
 		rriRegex.MatchString(r.rri)
 }
 
