@@ -18,11 +18,13 @@ type UserRes struct {
 	Email           string              `json:"email"`
 	UserType        string              `json:"user_type"`
 	IsSuspended     bool                `json:"is_suspended"`
+	Workspaces      []string            `json:"workspaces"`
 	CreatedAt       time.Time           `json:"created_at,omitempty"`
 	UpdatedAt       time.Time           `json:"updated_at,omitempty"`
 	InvitationToken string              `json:"invitation_token,omitempty"`
 	Items           []map[string]string `json:"items,omitempty"`
 }
+
 type UserTokenReq struct {
 	Secret   string `json:"secret" validate:"required"`
 	UserType string `json:"user_type"`
