@@ -18,12 +18,36 @@ import (
 
 func TestIdentification(t *testing.T) {
 	testCases := []struct {
-		uuid  string
+		user struct {
+			UUID       string
+			Name       string
+			Workspaces []string
+		}
 		token string
 		found bool
 	}{
-		{"user1uuid", "sampleusertoken", true},
-		{"user5uuid", "sampleusertoken", false},
+		{
+			user: struct {
+				UUID       string
+				Name       string
+				Workspaces []string
+			}{
+				UUID:       "123",
+				Name:       "test",
+				Workspaces: []string{"ws1", "ws2"},
+			},
+			token: "sampletoken1",
+			found: true,
+		},
+		{
+			user: struct {
+				UUID       string
+				Name       string
+				Workspaces []string
+			}{},
+			token: "sampletoken1",
+			found: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -46,7 +70,9 @@ func TestIdentification(t *testing.T) {
 				}
 				w.WriteHeader(http.StatusOK)
 				userRes := types.UserRes{
-					UUID: tc.uuid,
+					UUID:       tc.user.UUID,
+					Name:       tc.user.Name,
+					Workspaces: tc.user.Workspaces,
 				}
 				require.NoError(t, json.NewEncoder(w).Encode(userRes))
 			}))
@@ -56,7 +82,9 @@ func TestIdentification(t *testing.T) {
 
 		if tc.found {
 			require.NoError(t, err)
-			require.Equal(t, tc.uuid, user.UUID)
+			require.Equal(t, tc.user.UUID, user.UUID)
+			require.Equal(t, tc.user.Name, user.Name)
+			require.Equal(t, tc.user.Workspaces, user.Workspaces)
 		} else {
 			require.Error(t, err)
 		}
