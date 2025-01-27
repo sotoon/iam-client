@@ -12,6 +12,11 @@ const (
 	UserTypeServiceUser = "service-user"
 )
 
+type ThirdParty struct {
+	UUID string `json:"uuid"`
+	Tag  string `json:"tag"`
+}
+
 type UserRes struct {
 	UUID            string              `json:"uuid"`
 	Name            string              `json:"name"`
@@ -23,6 +28,7 @@ type UserRes struct {
 	UpdatedAt       time.Time           `json:"updated_at,omitempty"`
 	InvitationToken string              `json:"invitation_token,omitempty"`
 	Items           []map[string]string `json:"items,omitempty"`
+	ThirdParty      ThirdParty          `json:"third_party,omitempty"`
 }
 
 type UserTokenReq struct {
