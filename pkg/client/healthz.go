@@ -3,7 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
+	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
 	"net/http"
 	"net/url"
 )

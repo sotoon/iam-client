@@ -27,7 +27,7 @@
 ## Quick Start🏎 
 
 Simply add bepa-client library latest stable version to your `go.mod` file:
-> **Note!** Please check latest version tag [hear](https://git.cafebazaar.ir/infrastructure/bepa-client/-/tags).
+> **Note!** Please check latest version tag [hear](https://git.platform.sotoon.ir/iam/golang-bepa-client/-/tags).
 
 ### Installation
 
@@ -55,7 +55,7 @@ Then simply use the client in your code:
 
 ```golang
 import (
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 )
 
 func SimpleBepaClientExample() {
