@@ -6,13 +6,13 @@ VERSION ?= $(shell $(GIT) describe --tags ${COMMIT} 2> /dev/null || echo "$(COMM
 
 .PHONY: resolve
 resolve:
-	GOPRIVATE=git.cafebazaar.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go mod vendor
+	GOPRIVATE=git.platform.sotoon.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go mod vendor
 	go mod tidy
 
 
 .PHONY: build
 build:
-	GOPRIVATE=git.cafebazaar.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -mod=vendor -a -o bin/example.out ./examples/test.go
+	GOPRIVATE=git.platform.sotoon.ir CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -mod=vendor -a -o bin/example.out ./examples/test.go
 
 .PHONY: mockgen
 mockgen:

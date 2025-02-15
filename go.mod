@@ -1,4 +1,4 @@
-module git.cafebazaar.ir/infrastructure/bepa-client
+module git.platform.sotoon.ir/iam/golang-bepa-client
 
 go 1.19
 

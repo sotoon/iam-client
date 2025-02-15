@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	cache "github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"

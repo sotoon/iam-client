@@ -3,8 +3,8 @@ package client
 import (
 	"net/http"
 
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/routes"
-	"git.cafebazaar.ir/infrastructure/bepa-client/pkg/types"
+	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
+	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 
 	uuid "github.com/satori/go.uuid"
 )
