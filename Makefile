@@ -1,5 +1,5 @@
 GIT ?= git
-DOCKER_IMAGE := registry.cafebazaar.ir:5000/infrastructure/integration/sib/bepa-client
+DOCKER_IMAGE := registry.platform.sotoon.ir/iam/golang-bepa-client
 COMMIT := $(shell $(GIT) rev-parse HEAD)
 VERSION ?= $(shell $(GIT) describe --tags ${COMMIT} 2> /dev/null || echo "$(COMMIT)")
 

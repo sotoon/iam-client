@@ -56,7 +56,7 @@ func main() {
 		"package mock",
 	}
 	parts = append(parts, generateImports(
-		[]string{"git.cafebazaar.ir/infrastructure/iam/bepactl/pkg/client"},
+		[]string{"git.platform.sotoon.ir/iam/bepactl/pkg/client"},
 		f.Imports))
 	parts = append(parts, generateStruct(mockedName, interfaceName, ifaceFuncs))
 	ifaceFuncs.iterateSorted(func(methodName string, funcType *ast.FuncType) {
