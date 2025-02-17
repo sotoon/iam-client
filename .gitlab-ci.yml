@@ -3,7 +3,7 @@ stages:
 
 lint:
   stage: test and analysis
-  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.19.4
+  image: registry.platform.sotoon.ir/sib/infra/common-images/golang:1.19.4
   script:
     - make fmt-check
 
@@ -23,12 +23,12 @@ husky:
 
 test:
   stage: test and analysis
-  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.19.4
+  image: registry.platform.sotoon.ir/sib/infra/common-images/golang:1.19.4
   script:
     - make test
 
 benchmark:
   stage: test and analysis
-  image: registry.cafebazaar.ir:5000/infrastructure/kraken/common-images/golang:1.19.4
+  image: registry.platform.sotoon.ir/sib/infra/common-images/golang:1.19.4
   script:
     - make benchmark
