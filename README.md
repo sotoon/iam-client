@@ -1,5 +1,5 @@
 # IAM Client
-> A simple yet powerful library that empowers you using Bepa2 APIs.
+> A simple yet powerful library that empowers you using IAM APIs.
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -140,7 +140,7 @@ Nothing yet :)
 
 ## External Links
 
-- [Bepa2](https://github.com/sotoon/bepa2): Sotoon IAM System Repository (Bepa2)
+- [IAM](https://github.com/sotoon/iam-client): Sotoon Identity and Access Management System Repository
 
 ## Acknowledgements
 Please refer to **Contributors** Section.
