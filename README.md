@@ -1,5 +1,5 @@
 # IAM Client
-> A simple yet powerful library that empowers you using [Bepa2 APIs](https://bepa.sotoon.ir/swagger).
+> A simple yet powerful library that empowers you using Bepa2 APIs.
 
 ## Table of Contents
 * [General Info](#general-information)
