@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/client"
+	"github.com/sotoon/iam-client/pkg/client"
 )
 
 func main() {

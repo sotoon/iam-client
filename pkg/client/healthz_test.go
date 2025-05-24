@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/mocks"
+	"github.com/sotoon/iam-client/mocks"
 	"github.com/bxcodec/faker/support/slice"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"

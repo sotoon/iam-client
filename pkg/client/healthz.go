@@ -3,7 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/routes"
 	"net/http"
 	"net/url"
 )

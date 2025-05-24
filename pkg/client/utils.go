@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/spf13/viper"
 )
 

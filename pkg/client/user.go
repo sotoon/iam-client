@@ -3,8 +3,8 @@ package client
 import (
 	"encoding/json"
 	"errors"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 )

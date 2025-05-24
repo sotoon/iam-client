@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )

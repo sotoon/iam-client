@@ -1,4 +1,4 @@
-# Bepa Client
+# IAM Client
 > A simple yet powerful library that empowers you using [Bepa2 APIs](https://bepa.sotoon.ir/swagger).
 
 ## Table of Contents
@@ -18,7 +18,7 @@
 
 ## General Information
 - There are so many products that need to use Sotoon **IAM Service** aka **Bepa** as their **Identity and Access Management** engine.
-- Bepa-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
+- IAM-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
 - It is under active development and support of Sotoon Integration Tribe.
 
 ## Technologies Used
@@ -26,26 +26,24 @@
 
 ## Quick Start🏎 
 
-Simply add bepa-client library latest stable version to your `go.mod` file:
-> **Note!** Please check latest version tag [hear](https://git.platform.sotoon.ir/iam/golang-bepa-client/-/tags).
+Simply add iam-client library latest stable version to your `go.mod` file:
+> **Note!** Please check latest version tag [here](https://github.com/sotoon/iam-client/tags).
 
 ### Installation
 
 In to `go.mod` file add:
 ```mod
-module git.cafebazaar.ir/infrastructure/kraken/commander
+module your-module-path
 
 go 1.19
 
 require (
-	git.cafebazaar.ir/infrastructure/bepa-client v1.0.14
+	github.com/sotoon/iam-client v1.0.14
 )
 ```
-Resolve Golang library from private repository.
+Resolve Golang library:
 
 ```bash
-# you should have ssh access to gitlab repo of bepa-client
-export GOPRIVATE=git.cafebazaar.ir 
 go mod tidy
 go mod vendor
 ```
@@ -55,7 +53,7 @@ Then simply use the client in your code:
 
 ```golang
 import (
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
 func SimpleBepaClientExample() {
@@ -142,12 +140,11 @@ Nothing yet :)
 
 ## External Links
 
-- [Commander](https://git.cafebazaar.ir/infrastructure/integration/sib/commander): a successful example usage of the library with *Mocking and Testing*
-- [Bepa2](https://git.cafebazaar.ir/infrastructure/integration/sib/bepa2): Sotoon IAM System Repository (Bepa2)
+- [Bepa2](https://github.com/sotoon/bepa2): Sotoon IAM System Repository (Bepa2)
 
 ## Acknowledgements
 Please refer to **Contributors** Section.
 
 
 ## Contact
-Please contact to [Sotoon Integration Backend Team](https://git.cafebazaar.ir/infrastructure/integration/sib/documents)!
+Please contact to [Sotoon Integration Backend Team](https://github.com/sotoon)!

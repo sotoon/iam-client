@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	types "git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	types "github.com/sotoon/iam-client/pkg/types"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/satori/go.uuid"
 )
