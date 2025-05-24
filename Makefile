@@ -1,5 +1,4 @@
 GIT ?= git
-DOCKER_IMAGE := ghcr.io/sotoon/golang-bepa-client
 COMMIT := $(shell $(GIT) rev-parse HEAD)
 VERSION ?= $(shell $(GIT) describe --tags ${COMMIT} 2> /dev/null || echo "$(COMMIT)")
 
