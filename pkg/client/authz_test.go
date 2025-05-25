@@ -89,28 +89,28 @@ func newRRI(workspace, ns, resource string) string {
 }
 
 var concurrentAuthzRequests int = 100
-var authzBepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
-var authzBepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
-var authzBepaBenchmarkAuthCaseUUID string = os.Getenv("BENCHMARK_AUTH_CASE_UUID")
-var authzBepaBenchmarkAuthCaseUserType string = os.Getenv("BENCHMARK_AUTH_CASE_USER_TYPE")
-var authzBepaBenchmarkAuthCaseAction string = os.Getenv("BENCHMARK_AUTH_CASE_ACTION")
-var authzBepaBenchmarkAuthCaseObjectBegining string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_BEGINING")
-var authzBepaBenchmarkAuthCaseObjectPath string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_PATH")
+var authzIAMEndpoint string = os.Getenv("BENCHMARK_IAM_ENDPOINT")
+var authzIAMBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
+var authzIAMBenchmarkAuthCaseUUID string = os.Getenv("BENCHMARK_AUTH_CASE_UUID")
+var authzIAMBenchmarkAuthCaseUserType string = os.Getenv("BENCHMARK_AUTH_CASE_USER_TYPE")
+var authzIAMBenchmarkAuthCaseAction string = os.Getenv("BENCHMARK_AUTH_CASE_ACTION")
+var authzIAMBenchmarkAuthCaseObjectBegining string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_BEGINING")
+var authzIAMBenchmarkAuthCaseObjectPath string = os.Getenv("BENCHMARK_AUTH_CASE_OBJECT_PATH")
 var authzTimeoutDuration time.Duration = 10 * time.Second
 
 func DoSingleBenchmarkAuthz(token string, testCase rule, wg *sync.WaitGroup) {
-	serverList := []string{authzBepaEndpoint, authzBepaEndpoint, authzBepaEndpoint}
-	c, _ := NewReliableClient(authzBepaBenchmarkToken, serverList, "", "", authzTimeoutDuration)
+	serverList := []string{authzIAMEndpoint, authzIAMEndpoint, authzIAMEndpoint}
+	c, _ := NewReliableClient(authzIAMBenchmarkToken, serverList, "", "", authzTimeoutDuration)
 	c.Authorize(testCase.uuid, testCase.userType, testCase.action, testCase.rri)
 	wg.Done()
 }
 
 func BenchmarkMultipleValidAuthz(b *testing.B) {
 	testCase := rule{
-		authzBepaBenchmarkAuthCaseUUID,
-		authzBepaBenchmarkAuthCaseUserType,
-		authzBepaBenchmarkAuthCaseAction,
-		authzBepaBenchmarkAuthCaseObjectBegining + authzBepaBenchmarkAuthCaseObjectPath,
+		authzIAMBenchmarkAuthCaseUUID,
+		authzIAMBenchmarkAuthCaseUserType,
+		authzIAMBenchmarkAuthCaseAction,
+		authzIAMBenchmarkAuthCaseObjectBegining + authzIAMBenchmarkAuthCaseObjectPath,
 	}
 	var wg sync.WaitGroup
 	b.Run(fmt.Sprintf("concurrent_iters_%d", concurrentAuthzRequests), func(b *testing.B) {
@@ -118,7 +118,7 @@ func BenchmarkMultipleValidAuthz(b *testing.B) {
 		for j := 0; j < b.N; j++ {
 			wg.Add(iters)
 			for i := 0; i < iters; i++ {
-				go DoSingleBenchmarkAuthz(authzBepaBenchmarkToken, testCase, &wg)
+				go DoSingleBenchmarkAuthz(authzIAMBenchmarkToken, testCase, &wg)
 			}
 			wg.Wait()
 		}
@@ -132,14 +132,14 @@ func BenchmarkMultipleInvalidAuthz(b *testing.B) {
 		for j := 0; j < b.N; j++ {
 			wg.Add(iters)
 			for i := 0; i < iters; i++ {
-				randomRRI := authzBepaBenchmarkAuthCaseObjectBegining + randomString(10)
+				randomRRI := authzIAMBenchmarkAuthCaseObjectBegining + randomString(10)
 				testCase := rule{
-					authzBepaBenchmarkAuthCaseUUID,
-					authzBepaBenchmarkAuthCaseUserType,
-					authzBepaBenchmarkAuthCaseAction,
+					authzIAMBenchmarkAuthCaseUUID,
+					authzIAMBenchmarkAuthCaseUserType,
+					authzIAMBenchmarkAuthCaseAction,
 					randomRRI,
 				}
-				go DoSingleBenchmarkAuthz(authzBepaBenchmarkToken, testCase, &wg)
+				go DoSingleBenchmarkAuthz(authzIAMBenchmarkToken, testCase, &wg)
 			}
 			wg.Wait()
 		}

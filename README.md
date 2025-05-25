@@ -17,7 +17,7 @@
 
 
 ## General Information
-- There are so many products that need to use Sotoon **IAM Service** aka **Bepa** as their **Identity and Access Management** engine.
+- There are so many products that need to use Sotoon **IAM Service** as their **Identity and Access Management** engine.
 - IAM-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
 - It is under active development and support of Sotoon Integration Tribe.
 
@@ -56,21 +56,21 @@ import (
 	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func SimpleBepaClientExample() {
-    // ... initialize BEPA_URL, accessToken, defaultWorkspaceId, userId
-    client, err := client.NewClient(accessToken, BEPA_URL, defaultWorkspaceId, userId)
+func SimpleIamClientExample() {
+    // ... initialize IAM_URL, accessToken, defaultWorkspaceId, userId
+    client, err := client.NewClient(accessToken, IAM_URL, defaultWorkspaceId, userId)
     if err != nil {
-        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
         // handle error or kill the process
         return
     }
 }
 
-func ReliableBepaClientExample() {
-    // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, bepaTimeout
-    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, bepaTimeout)
+func ReliableIamClientExample() {
+    // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, iamTimeout
+    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, iamTimeout)
     if err != nil {
-        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
         // handle error or kill the process
         return
     }
@@ -108,13 +108,13 @@ if err != nil {
 
 ## Features
 
-1. Almost all services of Sotoon IAM System (aka Bepa)
+1. Almost all services of Sotoon IAM System
 2. Client-Side Fail-over.
 
 ## Architecture
 Brief overview of projects deployment architecture.
 
-![Bepa Client Failover](./docs/bepa_client_failover.png)
+![IAM Client Failover](./docs/client_failover.png)
 
 
 ## Setup

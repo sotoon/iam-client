@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
-	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken, error) {
 	userTokenreq := &types.UserTokenReq{
 		Secret: secret,
 	}
@@ -22,7 +22,7 @@ func (c *bepaClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken
 	return userToken, err
 }
 
-func (c *bepaClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken, error) {
+func (c *iamClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
@@ -34,7 +34,7 @@ func (c *bepaClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken,
 	err := c.Do(http.MethodGet, apiURL, 0, nil, userToken)
 	return userToken, err
 }
-func (c *bepaClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
+func (c *iamClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
@@ -46,7 +46,7 @@ func (c *bepaClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
 	return userTokens, err
 }
 
-func (c *bepaClient) DeleteMyUserToken(userTokenUUID *uuid.UUID) error {
+func (c *iamClient) DeleteMyUserToken(userTokenUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,

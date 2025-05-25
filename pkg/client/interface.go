@@ -5,14 +5,14 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/sotoon/iam-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-// Client represents bepa client interface
+// Client represents iam client interface
 type Client interface {
 
-	// IsHealthy reports if the client can connect to the IAM Server (Bepa)
+	// IsHealthy reports if the client can connect to the IAM Server
 	// For ReliableClient returns (true, nil) if it can connect to `at least one` healthy IAM Server endpoint
 	// For SimpleClient returns (true, nil) if it can connect to `the exactly one` IAM Server Endpoint and it is healthy
 	IsHealthy() (bool, error)
@@ -152,7 +152,7 @@ type Client interface {
 	CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error)
 	CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error)
 
-	GetBepaURL() (*url.URL, error)
+	GetBaseURL() (*url.URL, error)
 }
 
 type Cache interface {

@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
-	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error) {
+func (c *iamClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error) {
 	replaceDict := map[string]string{
 		groupUUIDPlaceholder:     groupUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -22,7 +22,7 @@ func (c *bepaClient) GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group
 	return group, nil
 }
 
-func (c *bepaClient) GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error) {
+func (c *iamClient) GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error) {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -35,7 +35,7 @@ func (c *bepaClient) GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, err
 	return groups, nil
 }
 
-func (c *bepaClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
+func (c *iamClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		groupUUIDPlaceholder:     groupUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -44,7 +44,7 @@ func (c *bepaClient) DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error {
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*types.Group, error) {
+func (c *iamClient) GetGroupByName(workspaceName string, groupName string) (*types.Group, error) {
 	replaceDict := map[string]string{
 		groupNamePlaceholder:     groupName,
 		workspaceNamePlaceholder: workspaceName,
@@ -58,7 +58,7 @@ func (c *bepaClient) GetGroupByName(workspaceName string, groupName string) (*ty
 	}
 	return group, nil
 }
-func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
+func (c *iamClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
 	userRequest := &types.GroupReq{
 		Name:      groupName,
 		Workspace: workspace.String(),
@@ -73,7 +73,7 @@ func (c *bepaClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types
 	}
 	return createdGroup, nil
 }
-func (c *bepaClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error) {
+func (c *iamClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		groupUUIDPlaceholder:     groupUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -88,7 +88,7 @@ func (c *bepaClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID)
 	return user, nil
 }
 
-func (c *bepaClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
+func (c *iamClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -102,7 +102,7 @@ func (c *bepaClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*t
 	return users, nil
 }
 
-func (c *bepaClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+func (c *iamClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -116,7 +116,7 @@ func (c *bepaClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID
 	return serviceUsers, nil
 }
 
-func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
+func (c *iamClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		groupUUIDPlaceholder:     groupUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -126,7 +126,7 @@ func (c *bepaClient) UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uui
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) error {
+func (c *iamClient) BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) error {
 	userRequest := &types.GroupReq{
 		Name:      groupName,
 		Workspace: workspace.String(),
@@ -143,7 +143,7 @@ func (c *bepaClient) BindGroup(groupName string, workspace, groupUUID, userUUID 
 	return nil
 }
 
-func (c *bepaClient) BindServiceUserToGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+func (c *iamClient) BindServiceUserToGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 		groupUUIDPlaceholder:       groupUUID.String(),
@@ -156,7 +156,7 @@ func (c *bepaClient) BindServiceUserToGroup(workspaceUUID, groupUUID, serviceUse
 	return nil
 }
 
-func (c *bepaClient) UnbindServiceUserFromGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
+func (c *iamClient) UnbindServiceUserFromGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 		groupUUIDPlaceholder:       groupUUID.String(),
@@ -169,7 +169,7 @@ func (c *bepaClient) UnbindServiceUserFromGroup(workspaceUUID, groupUUID, servic
 	return nil
 }
 
-func (c *bepaClient) GetGroupServiceUser(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
+func (c *iamClient) GetGroupServiceUser(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 		groupUUIDPlaceholder:       groupUUID.String(),

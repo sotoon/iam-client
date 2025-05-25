@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sotoon/iam-client/mocks"
 	"github.com/bxcodec/faker/support/slice"
 	"github.com/golang/mock/gomock"
+	"github.com/sotoon/iam-client/mocks"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,9 +40,9 @@ func TestHealthCheckAPI(t *testing.T) {
 		serverUrl, err := url.Parse(s.URL)
 		pathURL, err := url.Parse("/api/v1/healthz/")
 		fullPath := serverUrl.ResolveReference(pathURL)
-		client := &bepaClient{
+		client := &iamClient{
 			accessToken: tc.token,
-			bepaTimeout: 1 * time.Second,
+			timeout:     1 * time.Second,
 		}
 		err = healthCheck(client, fullPath)
 
@@ -56,58 +56,58 @@ func TestHealthCheckAPI(t *testing.T) {
 
 }
 
-type BepaHandlerFunc func(w http.ResponseWriter, r *http.Request)
+type IamHandlerFunc func(w http.ResponseWriter, r *http.Request)
 
-type BepaServer struct {
-	handler   BepaHandlerFunc
+type IamServer struct {
+	handler   IamHandlerFunc
 	isHealthy bool
 }
 
-func timeoutBepaHandler(w http.ResponseWriter, r *http.Request) {
+func timeoutIamHandler(w http.ResponseWriter, r *http.Request) {
 	// todo: investigate good practice for removing constant time.
 	timeoutDuration := MAX_TIMEOUT + 1
 	time.Sleep(timeoutDuration)
 	w.WriteHeader(http.StatusOK)
 }
 
-func unhealthyBepaHandler(w http.ResponseWriter, r *http.Request) {
+func unhealthyIamHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 
-func rateLimitingBepaHandler(w http.ResponseWriter, r *http.Request) {
+func rateLimitingIamHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTooManyRequests)
 }
 
-func healthyBepaHandler(w http.ResponseWriter, r *http.Request) {
+func healthyIamHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-var timeoutBepaServer = BepaServer{timeoutBepaHandler, false}
-var unhealthyBepaServer = BepaServer{unhealthyBepaHandler, false}
-var healthyBepaServer = BepaServer{healthyBepaHandler, true}
-var rateLimitingBepaServer = BepaServer{rateLimitingBepaHandler, false}
+var timeoutIamServer = IamServer{timeoutIamHandler, false}
+var unhealthyIamServer = IamServer{unhealthyIamHandler, false}
+var healthyIamServer = IamServer{healthyIamHandler, true}
+var rateLimitingIamServer = IamServer{rateLimitingIamHandler, false}
 
-func TestGetHealthyBepaURL(t *testing.T) {
+func TestGetHealthyIamURL(t *testing.T) {
 	testCases := []struct {
-		servers       []BepaServer
-		serverUrls    []string
-		correctUrls   []string
-		bepaAvailable bool
+		servers      []IamServer
+		serverUrls   []string
+		correctUrls  []string
+		iamAvailable bool
 	}{
-		{servers: []BepaServer{timeoutBepaServer, timeoutBepaServer, timeoutBepaServer}, bepaAvailable: false},
-		{servers: []BepaServer{timeoutBepaServer, unhealthyBepaServer, timeoutBepaServer}, bepaAvailable: false},
-		{servers: []BepaServer{unhealthyBepaServer, unhealthyBepaServer, unhealthyBepaServer}, bepaAvailable: false},
-		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, unhealthyBepaServer}, bepaAvailable: true},
-		{servers: []BepaServer{healthyBepaServer, unhealthyBepaServer, timeoutBepaServer}, bepaAvailable: true},
-		{servers: []BepaServer{healthyBepaServer, healthyBepaServer, healthyBepaServer}, bepaAvailable: true},
-		{servers: []BepaServer{rateLimitingBepaServer, rateLimitingBepaServer, rateLimitingBepaServer}, bepaAvailable: false},
-		{servers: []BepaServer{rateLimitingBepaServer, timeoutBepaServer, unhealthyBepaServer}, bepaAvailable: false},
+		{servers: []IamServer{timeoutIamServer, timeoutIamServer, timeoutIamServer}, iamAvailable: false},
+		{servers: []IamServer{timeoutIamServer, unhealthyIamServer, timeoutIamServer}, iamAvailable: false},
+		{servers: []IamServer{unhealthyIamServer, unhealthyIamServer, unhealthyIamServer}, iamAvailable: false},
+		{servers: []IamServer{healthyIamServer, unhealthyIamServer, unhealthyIamServer}, iamAvailable: true},
+		{servers: []IamServer{healthyIamServer, unhealthyIamServer, timeoutIamServer}, iamAvailable: true},
+		{servers: []IamServer{healthyIamServer, healthyIamServer, healthyIamServer}, iamAvailable: true},
+		{servers: []IamServer{rateLimitingIamServer, rateLimitingIamServer, rateLimitingIamServer}, iamAvailable: false},
+		{servers: []IamServer{rateLimitingIamServer, timeoutIamServer, unhealthyIamServer}, iamAvailable: false},
 	}
 	for _, tc := range testCases {
-		for _, testBepaServer := range tc.servers {
-			s := httptest.NewServer(http.HandlerFunc(testBepaServer.handler))
+		for _, testIamServer := range tc.servers {
+			s := httptest.NewServer(http.HandlerFunc(testIamServer.handler))
 			tc.serverUrls = append(tc.serverUrls, s.URL)
-			if testBepaServer.isHealthy {
+			if testIamServer.isHealthy {
 				fullURL, err := url.Parse(s.URL + APIURI)
 				require.NoError(t, err)
 				tc.correctUrls = append(tc.correctUrls, fullURL.String())
@@ -115,9 +115,9 @@ func TestGetHealthyBepaURL(t *testing.T) {
 			defer s.Close()
 		}
 		c := NewTestReliableClient(tc.serverUrls, nil)
-		serverUrl, err := c.GetBepaURL()
+		serverUrl, err := c.GetBaseURL()
 		isHealthy, healthError := c.IsHealthy()
-		if tc.bepaAvailable {
+		if tc.iamAvailable {
 			require.True(t, isHealthy)
 			require.NoError(t, healthError)
 			require.NoError(t, err)
@@ -134,11 +134,11 @@ func TestGetHealthyBepaURL(t *testing.T) {
 	time.Sleep(MAX_TIMEOUT)
 }
 
-func TestSetCacheOnhealthyBepaURL(t *testing.T) {
+func TestSetCacheOnHealthyIamURL(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	var server = healthyBepaServer
+	var server = healthyIamServer
 
 	s := httptest.NewServer(http.HandlerFunc(server.handler))
 	serverUrl := s.URL
@@ -147,47 +147,47 @@ func TestSetCacheOnhealthyBepaURL(t *testing.T) {
 
 	cache := mocks.NewMockCache(mockCtrl)
 	cache.EXPECT().
-		Get(HealthyBepaURLCachedKey).
+		Get(HealthyIamURLCachedKey).
 		Return(nil, false).
 		Times(1)
 	cache.EXPECT().
-		Set(HealthyBepaURLCachedKey, fullUrl, gomock.Any()).
+		Set(HealthyIamURLCachedKey, fullUrl, gomock.Any()).
 		Times(1)
 	cache.EXPECT().
-		Get(HealthyBepaURLCachedKey).
+		Get(HealthyIamURLCachedKey).
 		Return(fullUrl, true).
 		Times(1)
 
 	c := NewTestReliableClient([]string{serverUrl}, cache)
 
-	healthyUrl, err := c.GetBepaURL()
+	healthyUrl, err := c.GetBaseURL()
 	require.NoError(t, err)
 	require.Equal(t, fullUrl, healthyUrl)
 
-	cachedUrl, err := c.GetBepaURL()
+	cachedUrl, err := c.GetBaseURL()
 	require.NoError(t, err)
 	require.Equal(t, fullUrl, cachedUrl)
 }
 
-func TestDontSetCacheOnUnhealthyBepaURL(t *testing.T) {
+func TestDontSetCacheOnUnhealthyIamURL(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	var server = unhealthyBepaServer
+	var server = unhealthyIamServer
 
 	s := httptest.NewServer(http.HandlerFunc(server.handler))
 	serverUrl := s.URL
 
 	cache := mocks.NewMockCache(mockCtrl)
 	cache.EXPECT().
-		Get(HealthyBepaURLCachedKey).
+		Get(HealthyIamURLCachedKey).
 		Return(nil, false).
 		Times(1)
 	cache.EXPECT().
 		Set(gomock.Any(), gomock.Any(), gomock.Any()).
 		MaxTimes(0)
 	cache.EXPECT().
-		Get(HealthyBepaURLCachedKey).
+		Get(HealthyIamURLCachedKey).
 		Return(nil, false).
 		Times(1)
 	cache.EXPECT().
@@ -196,9 +196,9 @@ func TestDontSetCacheOnUnhealthyBepaURL(t *testing.T) {
 
 	c := NewTestReliableClient([]string{serverUrl}, cache)
 
-	_, err := c.GetBepaURL()
+	_, err := c.GetBaseURL()
 	require.Error(t, err)
 
-	_, err = c.GetBepaURL()
+	_, err = c.GetBaseURL()
 	require.Error(t, err)
 }

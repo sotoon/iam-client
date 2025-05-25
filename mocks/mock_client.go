@@ -10,9 +10,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	types "github.com/sotoon/iam-client/pkg/types"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/satori/go.uuid"
+	types "github.com/sotoon/iam-client/pkg/types"
 )
 
 // MockClient is a mock of Client interface.
@@ -750,19 +750,19 @@ func (mr *MockClientMockRecorder) GetAllUserRules(userUUID interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUserRules", reflect.TypeOf((*MockClient)(nil).GetAllUserRules), userUUID)
 }
 
-// GetBepaURL mocks base method.
-func (m *MockClient) GetBepaURL() (*url.URL, error) {
+// GetBaseURL mocks base method.
+func (m *MockClient) GetBaseURL() (*url.URL, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBepaURL")
+	ret := m.ctrl.Call(m, "GetBaseURL")
 	ret0, _ := ret[0].(*url.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetBepaURL indicates an expected call of GetBepaURL.
-func (mr *MockClientMockRecorder) GetBepaURL() *gomock.Call {
+// GetBaseURL indicates an expected call of GetBaseURL.
+func (mr *MockClientMockRecorder) GetBaseURL() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBepaURL", reflect.TypeOf((*MockClient)(nil).GetBepaURL))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBaseURL", reflect.TypeOf((*MockClient)(nil).GetBaseURL))
 }
 
 // GetBindedRoleToGroupItems mocks base method.

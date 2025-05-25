@@ -7,7 +7,7 @@ import (
 	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) GetService(name string) (*types.Service, error) {
+func (c *iamClient) GetService(name string) (*types.Service, error) {
 
 	replaceDict := map[string]string{
 		serviceNamePlaceholder: name,
@@ -18,7 +18,7 @@ func (c *bepaClient) GetService(name string) (*types.Service, error) {
 	err := c.Do(http.MethodGet, apiURL, 0, nil, service)
 	return service, err
 }
-func (c *bepaClient) GetAllServices() (*[]types.Service, error) {
+func (c *iamClient) GetAllServices() (*[]types.Service, error) {
 
 	services := &[]types.Service{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetAll), nil)

@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sotoon/iam-client/pkg/types"
 	cache "github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/spf13/viper"
 )
 
@@ -29,11 +29,11 @@ const (
 	ERROR int = 2
 )
 
-const HealthyBepaURLCachedKey = "healthy_bepa_url"
+const HealthyIamURLCachedKey = "healthy_iam_url"
 const CacheExpirationDuration = 10 * time.Minute
 const CacheCleanupInterval = 10 * time.Minute
 
-type bepaClient struct {
+type iamClient struct {
 	accessToken      string
 	baseURL          url.URL
 	defaultWorkspace string
@@ -41,20 +41,20 @@ type bepaClient struct {
 	logLevel         LogLevel
 	apiUrlsList      []*url.URL
 	isReliable       bool
-	bepaTimeout      time.Duration
+	timeout          time.Duration
 	cache            Cache
 	logger           *log.Logger
 }
 
-var _ Client = &bepaClient{}
+var _ Client = &iamClient{}
 
 func NewMinimalClient(baseURL string) (Client, error) {
 	return NewClient("", baseURL, "", "")
 }
 
-// NewClient creates a new client to interact with bepa server
+// NewClient creates a new client to interact with iam server
 func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string) (Client, error) {
-	client := &bepaClient{}
+	client := &iamClient{}
 	client.logLevel = LogLevel(DEBUG)
 	client.accessToken = accessToken
 	client.defaultWorkspace = defaultWorkspace
@@ -88,13 +88,13 @@ func organizeUrl(userUrl string) string {
 	return strings.TrimSpace(userUrl)
 }
 
-func (c *bepaClient) SetLogger(logger *log.Logger) {
+func (c *iamClient) SetLogger(logger *log.Logger) {
 	c.logger = logger
 }
 
-func (c *bepaClient) initializeServerUrls(serverUrls []string) error {
+func (c *iamClient) initializeServerUrls(serverUrls []string) error {
 	if serverUrls == nil || len(serverUrls) == 0 {
-		return errors.New("At least one Bepa server is required!")
+		return errors.New("at least one iam server is required")
 	}
 	for _, serverUrl := range serverUrls {
 		serverUrl = organizeUrl(serverUrl)
@@ -108,16 +108,16 @@ func (c *bepaClient) initializeServerUrls(serverUrls []string) error {
 	return nil
 }
 
-// NewReliableClient creates a new reliable client to interact with bepa server
-// ReliableClient is a client that implements clientside fail-over using a list of bepa servers
-func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace, userUUID string, bepaTimeout time.Duration) (Client, error) {
-	client := &bepaClient{}
+// NewReliableClient creates a new reliable client to interact with iam server
+// ReliableClient is a client that implements clientside fail-over using a list of iam servers
+func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace, userUUID string, iamTimeout time.Duration) (Client, error) {
+	client := &iamClient{}
 	client.logLevel = LogLevel(DEBUG)
 	client.accessToken = accessToken
 	client.defaultWorkspace = defaultWorkspace
 	client.userUUID = userUUID
 	client.isReliable = true
-	client.bepaTimeout = tuneTimeout(bepaTimeout)
+	client.timeout = tuneTimeout(iamTimeout)
 	err := client.initializeServerUrls(serverUrls)
 	if err != nil {
 		return nil, err
@@ -130,33 +130,33 @@ func NewMinimalReliableClient(serverUrls []string) (Client, error) {
 	return NewReliableClient("", serverUrls, "", "", DEFAULT_TIMEOUT)
 }
 
-func (c *bepaClient) SetAccessToken(token string) {
+func (c *iamClient) SetAccessToken(token string) {
 	c.accessToken = token
 }
 
-func (c *bepaClient) SetDefaultWorkspace(workspace string) {
+func (c *iamClient) SetDefaultWorkspace(workspace string) {
 	c.defaultWorkspace = workspace
 }
 
-func (c *bepaClient) SetUser(userUUID string) {
+func (c *iamClient) SetUser(userUUID string) {
 	c.userUUID = userUUID
 }
 
-func (c *bepaClient) Do(method, path string, successCode int, req interface{}, resp interface{}) error {
+func (c *iamClient) Do(method, path string, successCode int, req interface{}, resp interface{}) error {
 	return c.DoWithParams(method, path, nil, successCode, req, resp)
 }
 
-func (c *bepaClient) DoMinimal(method, path string, resp interface{}) error {
-	USUAL_SUCCESS_CODE_2XX := 0
-	return c.DoWithParams(method, path, nil, USUAL_SUCCESS_CODE_2XX, nil, resp)
+func (c *iamClient) DoMinimal(method, path string, resp interface{}) error {
+	UsualSuccessCode2xx := 0
+	return c.DoWithParams(method, path, nil, UsualSuccessCode2xx, nil, resp)
 }
 
-func (c *bepaClient) DoSimple(method, path string, parameters map[string]string, req interface{}, resp interface{}) error {
-	USUAL_SUCCESS_CODE_2XX := 0
-	return c.DoWithParams(method, path, parameters, USUAL_SUCCESS_CODE_2XX, req, resp)
+func (c *iamClient) DoSimple(method, path string, parameters map[string]string, req interface{}, resp interface{}) error {
+	UsualSuccessCode2xx := 0
+	return c.DoWithParams(method, path, parameters, UsualSuccessCode2xx, req, resp)
 }
 
-func (c *bepaClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
+func (c *iamClient) DoWithParams(method, path string, parameters map[string]string, successCode int, req interface{}, resp interface{}) error {
 
 	var body io.Reader
 	if req != nil {
@@ -174,17 +174,17 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 
 	// do not log whole request containing authorization secret
-	c.log("bepa-client performing request method:%v", httpRequest.Method)
-	c.log("bepa-client performing request url:%v", httpRequest.URL)
+	c.log("iam-client performing request method:%v", httpRequest.Method)
+	c.log("iam-client performing request url:%v", httpRequest.URL)
 
 	if c.accessToken != "" {
 		httpRequest.Header.Add("Content-Type", "application/json")
 	}
 
-	data, statusCode, err := proccessRequest(httpRequest, successCode)
+	data, statusCode, err := processRequest(httpRequest, successCode)
 
-	c.log("bepa-client received response code:%d", statusCode)
-	c.log("bepa-client received response body:%s", data)
+	c.log("iam-client received response code:%d", statusCode)
+	c.log("iam-client received response body:%s", data)
 
 	if err == nil {
 		if resp != nil {
@@ -193,7 +193,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 		return nil
 
 	}
-	c.log("bepa-client faced error:%v", err)
+	c.log("iam-client faced error:%v", err)
 	return &types.RequestExecutionError{
 		Err:        err,
 		StatusCode: statusCode,
@@ -201,7 +201,7 @@ func (c *bepaClient) DoWithParams(method, path string, parameters map[string]str
 	}
 }
 
-func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
+func processRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
 	client := &http.Client{}
 	httpResponse, err := client.Do(httpRequest)
 
@@ -225,11 +225,11 @@ func proccessRequest(httpRequest *http.Request, successCode int) ([]byte, int, e
 	return nil, httpResponse.StatusCode, err
 }
 
-func (c *bepaClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {
+func (c *iamClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {
 	return c.NewRequestWithParameters(method, path, nil, body)
 }
 
-func (c *bepaClient) NewRequestWithParameters(method, path string, parameters map[string]string, body io.Reader) (*http.Request, error) {
+func (c *iamClient) NewRequestWithParameters(method, path string, parameters map[string]string, body io.Reader) (*http.Request, error) {
 	pathURL, err := url.Parse(path)
 	if err != nil {
 		return nil, err
@@ -243,7 +243,7 @@ func (c *bepaClient) NewRequestWithParameters(method, path string, parameters ma
 		pathURL.RawQuery = params.Encode()
 	}
 
-	serverAddress, err := c.GetBepaURL()
+	serverAddress, err := c.GetBaseURL()
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +257,7 @@ func (c *bepaClient) NewRequestWithParameters(method, path string, parameters ma
 
 }
 
-func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
+func getHealthCheckValue(c *iamClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
 	err := healthCheck(c, serverUrl)
 	resp := types.HealthCheckResponse{ServerUrl: serverUrl.String(), Err: err}
 	if err != nil {
@@ -268,14 +268,14 @@ func getHealthCheckValue(c *bepaClient, serverUrl *url.URL, resultChannel chan *
 		case resultChannel <- serverUrl:
 			c.log("healthCheck successful: %v\n", resp)
 			return nil
-		case <-time.After(c.bepaTimeout):
+		case <-time.After(c.timeout):
 			c.log("healthCheck not used: %v", resp)
 			return nil
 		}
 	}
 }
 
-func (c *bepaClient) GetHealthyBepaURL() (*url.URL, error) {
+func (c *iamClient) GetHealthyIamURL() (*url.URL, error) {
 	/*
 		A Note about the channelSize := 0
 		The channel size for a healthy server is set to zero (0) because we want to block the execution until the first response is received.
@@ -293,24 +293,24 @@ func (c *bepaClient) GetHealthyBepaURL() (*url.URL, error) {
 	select {
 	case res := <-serverUrlChannel:
 		return res, nil
-	case <-time.After(c.bepaTimeout):
-		return nil, errors.New("no available BEPA servers found")
+	case <-time.After(c.timeout):
+		return nil, errors.New("no available iam servers found")
 	}
 }
 
-func (c *bepaClient) GetBepaURL() (*url.URL, error) {
+func (c *iamClient) GetBaseURL() (*url.URL, error) {
 	if !c.isReliable {
 		return &c.baseURL, nil
 	}
-	if cached, found := c.cache.Get(HealthyBepaURLCachedKey); found {
-		bepaURL := cached.(*url.URL)
-		return bepaURL, nil
+	if cached, found := c.cache.Get(HealthyIamURLCachedKey); found {
+		iamURL := cached.(*url.URL)
+		return iamURL, nil
 	}
-	bepaURL, err := c.GetHealthyBepaURL()
+	iamURL, err := c.GetHealthyIamURL()
 	if err == nil {
-		c.cache.Set(HealthyBepaURLCachedKey, bepaURL, cache.DefaultExpiration)
+		c.cache.Set(HealthyIamURLCachedKey, iamURL, cache.DefaultExpiration)
 	}
-	return bepaURL, err
+	return iamURL, err
 }
 
 func createServerURL(serverURL string) (*url.URL, error) {
@@ -328,12 +328,12 @@ func createServerURL(serverURL string) (*url.URL, error) {
 	return u, nil
 }
 
-func (c *bepaClient) GetServerURL() string {
+func (c *iamClient) GetServerURL() string {
 	url := c.baseURL.String()
 	return strings.Replace(url, APIURI, "", -1)
 }
 
-func (c *bepaClient) SetConfigDefaultUserData(context, token, userUUID, email string) error {
+func (c *iamClient) SetConfigDefaultUserData(context, token, userUUID, email string) error {
 	if context == "" {
 		context = "default"
 	}
@@ -346,7 +346,7 @@ func (c *bepaClient) SetConfigDefaultUserData(context, token, userUUID, email st
 	return persistClientConfigFile()
 }
 
-func (c *bepaClient) SetCurrentContext(context string) error {
+func (c *iamClient) SetCurrentContext(context string) error {
 	contexts := viper.GetStringMap("contexts")
 	if _, ok := contexts[context]; ok {
 		viper.Set("current-context", context)
@@ -358,21 +358,21 @@ func (c *bepaClient) SetCurrentContext(context string) error {
 	return fmt.Errorf("could not find context %s", context)
 }
 
-func (c *bepaClient) IsHealthy() (bool, error) {
-	serverUrl, err := c.GetBepaURL()
+func (c *iamClient) IsHealthy() (bool, error) {
+	serverUrl, err := c.GetBaseURL()
 	if c.isReliable {
-		// there is no need to check health of bepa in reliable client, the GetBepaUrl has already did it
+		// there is no need to check health of iam in reliable client, the GetIamUrl has already did it
 		if err == nil {
 			return true, nil
 		}
 		return false, err
 	}
-	// we should check the health of bepa endpoint, in simple client (when c.isReliable is false)
+	// we should check the health of iam endpoint, in simple client (when c.isReliable is false)
 	err = healthCheck(c, serverUrl)
 	return err == nil, err
 }
 
-func (c *bepaClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
+func (c *iamClient) SetConfigDefaultWorkspace(uuid *uuid.UUID) error {
 	context := viper.GetString("current-context")
 	viper.Set(fmt.Sprintf("contexts.%s.workspace", context), uuid.String())
 	c.defaultWorkspace = uuid.String()
@@ -383,7 +383,7 @@ func getDefaultLogger() *log.Logger {
 	return log.Default()
 }
 
-func (c *bepaClient) log(messageFmt string, objects ...interface{}) {
+func (c *iamClient) log(messageFmt string, objects ...interface{}) {
 	if c.logger == nil {
 		c.logger = getDefaultLogger()
 	}

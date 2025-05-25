@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
-	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
+func (c *iamClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
 	ruleRequest := &types.RuleReq{
 		Name:    ruleName,
 		Actions: ruleActions,
@@ -28,7 +28,7 @@ func (c *bepaClient) CreateRule(ruleName string, workspaceUUID *uuid.UUID, ruleA
 	return createdRule, nil
 }
 
-func (c *bepaClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
+func (c *iamClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceUUID *uuid.UUID, ruleActions []string, object string, deny bool) (*types.Rule, error) {
 	ruleRequest := &types.RuleReq{
 		Name:    ruleName,
 		Actions: ruleActions,
@@ -49,7 +49,7 @@ func (c *bepaClient) UpdateRule(ruleUUID *uuid.UUID, ruleName string, workspaceU
 	return updatedRule, nil
 }
 
-func (c *bepaClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
@@ -58,7 +58,7 @@ func (c *bepaClient) DeleteRule(ruleUUID, workspaceUUID *uuid.UUID) error {
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.Role, error) {
+func (c *iamClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
@@ -72,7 +72,7 @@ func (c *bepaClient) GetRuleRoles(ruleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	return roles, nil
 }
 
-func (c *bepaClient) BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
@@ -83,7 +83,7 @@ func (c *bepaClient) BindRuleToRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID
 	return err
 }
 
-func (c *bepaClient) UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
@@ -94,7 +94,7 @@ func (c *bepaClient) UnbindRuleFromRole(roleUUID, ruleUUID, workspaceUUID *uuid.
 	return err
 }
 
-func (c *bepaClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, error) {
+func (c *iamClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		ruleUUIDPlaceholder:      ruleUUID.String(),
@@ -108,7 +108,7 @@ func (c *bepaClient) GetRule(ruleUUID, workspaceUUID *uuid.UUID) (*types.Rule, e
 	return rule, nil
 }
 
-func (c *bepaClient) GetRuleByName(ruleName, workspaceName string) (*types.Rule, error) {
+func (c *iamClient) GetRuleByName(ruleName, workspaceName string) (*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: workspaceName,
 		ruleNamePlaceholder:      ruleName,
@@ -122,7 +122,7 @@ func (c *bepaClient) GetRuleByName(ruleName, workspaceName string) (*types.Rule,
 	return rule, nil
 }
 
-func (c *bepaClient) GetAllRules() ([]*types.Rule, error) {
+func (c *iamClient) GetAllRules() ([]*types.Rule, error) {
 	replaceDict := map[string]string{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRuleGetAll), replaceDict)
 
@@ -133,7 +133,7 @@ func (c *bepaClient) GetAllRules() ([]*types.Rule, error) {
 	return rules, nil
 }
 
-func (c *bepaClient) GetAllUserRules(userUUID *uuid.UUID) ([]*types.Rule, error) {
+func (c *iamClient) GetAllUserRules(userUUID *uuid.UUID) ([]*types.Rule, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}

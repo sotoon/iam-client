@@ -14,7 +14,7 @@ import (
 )
 
 type IAMWebhookServer struct {
-	BepaSecret string
+	IamSecret string
 
 	IP                                net.IP
 	Port                              uint16
@@ -100,7 +100,7 @@ func (s *IAMWebhookServer) authenticateRequest(h http.Header, payload string) er
 		return nil
 	}
 
-	signatureList, ok := h["X-Bepa-Signature"]
+	signatureList, ok := h["X-Iam-Signature"]
 	if !ok {
 		return errors.New("signature header not found")
 	}
@@ -109,7 +109,7 @@ func (s *IAMWebhookServer) authenticateRequest(h http.Header, payload string) er
 	}
 	signature := signatureList[0]
 
-	timestampList, ok := h["X-Bepa-Timestamp"]
+	timestampList, ok := h["X-Iam-Timestamp"]
 	if !ok {
 		return errors.New("timestamp header not found")
 	}
@@ -118,7 +118,7 @@ func (s *IAMWebhookServer) authenticateRequest(h http.Header, payload string) er
 	}
 	timestamp := timestampList[0]
 
-	if !isBepaSignatureValid(payload, s.BepaSecret, timestamp, signature) {
+	if !isIamSignatureValid(payload, s.IamSecret, timestamp, signature) {
 		return errors.New("invalid signature")
 	}
 
@@ -130,7 +130,7 @@ func (s *IAMWebhookServer) validateRequestTimestamp(h http.Header) error {
 		return nil
 	}
 
-	timestampList, ok := h["X-Bepa-Timestamp"]
+	timestampList, ok := h["X-Iam-Timestamp"]
 	if !ok {
 		return errors.New("timestamp header not found")
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) Identify(token string) (*types.UserRes, error) {
+func (c *iamClient) Identify(token string) (*types.UserRes, error) {
 	idenReq := &types.UserTokenReq{
 		Secret: token,
 	}
