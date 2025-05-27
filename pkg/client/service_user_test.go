@@ -6,7 +6,7 @@ import (
 
 	"github.com/bxcodec/faker"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
 )
 

@@ -3,11 +3,11 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) Authorize(identity, userType, action, object string) error {
+func (c *iamClient) Authorize(identity, userType, action, object string) error {
 	c.log("authorizing %v", identity)
 	req, err := c.NewRequest(http.MethodGet, trimURLSlash(routes.RouteAuthz), nil)
 
@@ -22,7 +22,7 @@ func (c *bepaClient) Authorize(identity, userType, action, object string) error 
 	query.Set("action", action)
 
 	req.URL.RawQuery = query.Encode()
-	data, statusCode, errRes := proccessRequest(req, 0)
+	data, statusCode, errRes := processRequest(req, 0)
 	if errRes == nil {
 		c.log("user %v is authorized", identity)
 		return nil
@@ -36,7 +36,7 @@ func (c *bepaClient) Authorize(identity, userType, action, object string) error 
 	}
 }
 
-func (c *bepaClient) IdentifyAndAuthorize(token, action, object string) error {
+func (c *iamClient) IdentifyAndAuthorize(token, action, object string) error {
 	c.log("identifying and authorizing")
 
 	req := &types.IdentifyAndAuthorizeReq{

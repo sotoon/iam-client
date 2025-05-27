@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) GetOrganizations() ([]*types.Organization, error) {
+func (c *iamClient) GetOrganizations() ([]*types.Organization, error) {
 	apiURL := trimURLSlash(routes.RouteOrganizationGetAll)
 	organizations := []*types.Organization{}
 	err := c.Do(http.MethodGet, apiURL, 0, nil, &organizations)
@@ -18,7 +18,7 @@ func (c *bepaClient) GetOrganizations() ([]*types.Organization, error) {
 	return organizations, nil
 }
 
-func (c *bepaClient) GetOrganization(organizationUUID *uuid.UUID) (*types.Organization, error) {
+func (c *iamClient) GetOrganization(organizationUUID *uuid.UUID) (*types.Organization, error) {
 	replaceDict := map[string]string{
 		organizationUUIDPlaceholder: organizationUUID.String(),
 	}
@@ -31,7 +31,7 @@ func (c *bepaClient) GetOrganization(organizationUUID *uuid.UUID) (*types.Organi
 	return organization, nil
 }
 
-func (c *bepaClient) GetOrganizationWorkspaces(organizationUUID *uuid.UUID) ([]*types.Workspace, error) {
+func (c *iamClient) GetOrganizationWorkspaces(organizationUUID *uuid.UUID) ([]*types.Workspace, error) {
 	replaceDict := map[string]string{
 		organizationUUIDPlaceholder: organizationUUID.String(),
 	}
@@ -44,7 +44,7 @@ func (c *bepaClient) GetOrganizationWorkspaces(organizationUUID *uuid.UUID) ([]*
 	return workspaces, nil
 }
 
-func (c *bepaClient) GetOrganizationWorkspace(organizationUUID, workspaceUUID *uuid.UUID) (*types.Workspace, error) {
+func (c *iamClient) GetOrganizationWorkspace(organizationUUID, workspaceUUID *uuid.UUID) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		organizationUUIDPlaceholder: organizationUUID.String(),
 		workspaceUUIDPlaceholder:    workspaceUUID.String(),

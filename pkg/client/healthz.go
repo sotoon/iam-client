@@ -3,7 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/routes"
 	"net/http"
 	"net/url"
 )
@@ -16,8 +16,8 @@ func checkResponse(response *http.Response) (bool, error) {
 	return true, nil
 }
 
-func healthCheck(c *bepaClient, serverUrl *url.URL) error {
-	client := &http.Client{Timeout: c.bepaTimeout}
+func healthCheck(c *iamClient, serverUrl *url.URL) error {
+	client := &http.Client{Timeout: c.timeout}
 	healthCheckPath, err := url.Parse(trimURLSlash(routes.RouteHealthCheck))
 	if err != nil {
 		return err

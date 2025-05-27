@@ -41,13 +41,13 @@ func NewTestReliableClient(serverList []string, cache Cache) Client {
 		client, _ := NewReliableClient(TestAccessToken, serverList, TestWorkspace, TestUserUUID, MIN_TIMEOUT)
 		return client
 	}
-	client := &bepaClient{}
+	client := &iamClient{}
 	client.logLevel = LogLevel(DEBUG)
 	client.accessToken = TestAccessToken
 	client.defaultWorkspace = TestWorkspace
 	client.userUUID = TestUserUUID
 	client.isReliable = true
-	client.bepaTimeout = tuneTimeout(MIN_TIMEOUT)
+	client.timeout = tuneTimeout(MIN_TIMEOUT)
 	for _, serverUrl := range serverList {
 		serverUrl = organizeUrl(serverUrl)
 		fullUrl, err := url.Parse(serverUrl + APIURI)

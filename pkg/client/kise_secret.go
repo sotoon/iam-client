@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {
+func (c *iamClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:       c.userUUID,
 		kiseSecretUUIDPlaceholder: kiseSecretUUID.String(),
@@ -23,7 +23,7 @@ func (c *bepaClient) DeleteUserKiseSecret(kiseSecretUUID *uuid.UUID) error {
 	return nil
 }
 
-func (c *bepaClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
+func (c *iamClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		workspaceUUIDPlaceholder: c.defaultWorkspace,
@@ -38,7 +38,7 @@ func (c *bepaClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
 	return kiseSecret, nil
 }
 
-func (c *bepaClient) CreateKiseSecretForDefaultUser() (*types.KiseSecret, error) {
+func (c *iamClient) CreateKiseSecretForDefaultUser() (*types.KiseSecret, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		workspaceUUIDPlaceholder: c.defaultWorkspace,

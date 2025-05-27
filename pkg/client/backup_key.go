@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"os"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) DeleteDefaultWorkspaceBackupKey(backupKeyUUID *uuid.UUID) error {
+func (c *iamClient) DeleteDefaultWorkspaceBackupKey(backupKeyUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: c.defaultWorkspace,
 		backupKeyUUIDPlaceholder: backupKeyUUID.String(),
@@ -26,7 +26,7 @@ func (c *bepaClient) DeleteDefaultWorkspaceBackupKey(backupKeyUUID *uuid.UUID) e
 	return nil
 }
 
-func (c *bepaClient) GetOneDefaultBackupKey(BackupKeyUUID *uuid.UUID) (*types.BackupKey, error) {
+func (c *iamClient) GetOneDefaultBackupKey(BackupKeyUUID *uuid.UUID) (*types.BackupKey, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: c.defaultWorkspace,
 		backupKeyUUIDPlaceholder: BackupKeyUUID.String(),
@@ -41,7 +41,7 @@ func (c *bepaClient) GetOneDefaultBackupKey(BackupKeyUUID *uuid.UUID) (*types.Ba
 	return backupKey, nil
 }
 
-func (c *bepaClient) GetAllDefaultBackupKeys() ([]*types.BackupKey, error) {
+func (c *iamClient) GetAllDefaultBackupKeys() ([]*types.BackupKey, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: c.defaultWorkspace,
 	}
@@ -55,7 +55,7 @@ func (c *bepaClient) GetAllDefaultBackupKeys() ([]*types.BackupKey, error) {
 	return backupKeys, nil
 }
 
-func (c *bepaClient) CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error) {
+func (c *iamClient) CreateBackupKeyForDefaultWorkspace(title, keyType, key string) (*types.BackupKey, error) {
 	backupKeyReq := &types.BackupKeyReq{
 		Title: title,
 		Key:   fmt.Sprintf("%s %s", keyType, key),
@@ -73,7 +73,7 @@ func (c *bepaClient) CreateBackupKeyForDefaultWorkspace(title, keyType, key stri
 	return createdBackupKey, nil
 }
 
-func (c *bepaClient) CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error) {
+func (c *iamClient) CreateBackupKeyFromFileForDefaultUser(title, fileAdd string) (*types.BackupKey, error) {
 	if fileAdd == "" {
 		fileAdd = os.Getenv("HOME") + "/.ssh/id_rsa.pub"
 	}

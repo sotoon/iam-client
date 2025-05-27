@@ -3,13 +3,13 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-func (c *bepaClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
+func (c *iamClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
 	roleRequest := &types.RoleReq{
 		Name:      roleName,
 		Workspace: workspaceUUID.String(),
@@ -27,7 +27,7 @@ func (c *bepaClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*typ
 	return createdRole, nil
 }
 
-func (c *bepaClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
+func (c *iamClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
 	roleRequest := &types.RoleReq{
 		Name:      roleName,
 		Workspace: workspaceUUID.String(),
@@ -46,7 +46,7 @@ func (c *bepaClient) UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceU
 	return updatedRole, nil
 }
 
-func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error) {
+func (c *iamClient) GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: workspaceName,
 		roleNamePlaceholder:      roleName,
@@ -60,7 +60,7 @@ func (c *bepaClient) GetRoleByName(roleName, workspaceName string) (*types.RoleR
 	return roleResponse, nil
 }
 
-func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes, error) {
+func (c *iamClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -74,7 +74,7 @@ func (c *bepaClient) GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes
 	return role, nil
 }
 
-func (c *bepaClient) GetRoleUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.User, error) {
+func (c *iamClient) GetRoleUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.User, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -88,7 +88,7 @@ func (c *bepaClient) GetRoleUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	return users, nil
 }
 
-func (c *bepaClient) GetRoleRules(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Rule, error) {
+func (c *iamClient) GetRoleRules(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -102,7 +102,7 @@ func (c *bepaClient) GetRoleRules(roleUUID, workspaceUUID *uuid.UUID) ([]*types.
 	return rules, nil
 }
 
-func (c *bepaClient) GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error) {
+func (c *iamClient) GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
@@ -115,7 +115,7 @@ func (c *bepaClient) GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, er
 	return roles, nil
 }
 
-func (c *bepaClient) DeleteRole(roleUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) DeleteRole(roleUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -124,7 +124,7 @@ func (c *bepaClient) DeleteRole(roleUUID, workspaceUUID *uuid.UUID) error {
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) GetAllRoles() ([]*types.Role, error) {
+func (c *iamClient) GetAllRoles() ([]*types.Role, error) {
 	replaceDict := map[string]string{}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleGetAll), replaceDict)
 
@@ -135,7 +135,7 @@ func (c *bepaClient) GetAllRoles() ([]*types.Role, error) {
 	return roles, nil
 }
 
-func (c *bepaClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
+func (c *iamClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID *uuid.UUID) (map[string]string, error) {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
 		userUUIDPlaceholder:      userUUID.String(),
@@ -153,7 +153,7 @@ func (c *bepaClient) GetBindedRoleToUserItems(workspaceUUID, roleUUID, userUUID 
 	return roleBindingRes.Items[0], nil
 }
 
-func (c *bepaClient) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, groupUUID *uuid.UUID) (map[string]string, error) {
+func (c *iamClient) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, groupUUID *uuid.UUID) (map[string]string, error) {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
@@ -171,7 +171,7 @@ func (c *bepaClient) GetBindedRoleToGroupItems(workspaceUUID, roleUUID, groupUUI
 	return roleBindingRes.Items[0], nil
 }
 
-func (c *bepaClient) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID) (map[string]string, error) {
+func (c *iamClient) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID) (map[string]string, error) {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:        roleUUID.String(),
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -189,7 +189,7 @@ func (c *bepaClient) GetBindedRoleToServiceUserItems(workspaceUUID, roleUUID, se
 	return roleBindingRes.Items[0], nil
 }
 
-func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
 		userUUIDPlaceholder:      userUUID.String(),
@@ -200,7 +200,7 @@ func (c *bepaClient) BindRoleToUser(workspaceUUID, roleUUID, userUUID *uuid.UUID
 	return c.Do(http.MethodPost, apiURL, 0, values, nil)
 }
 
-func (c *bepaClient) UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
 		userUUIDPlaceholder:      userUUID.String(),
@@ -213,7 +213,7 @@ func (c *bepaClient) UnbindRoleFromUser(workspaceUUID, roleUUID, userUUID *uuid.
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:        roleUUID.String(),
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -225,7 +225,7 @@ func (c *bepaClient) BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserU
 }
 
 // Is it right?
-func (c *bepaClient) UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:        roleUUID.String(),
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -238,7 +238,7 @@ func (c *bepaClient) UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceU
 	}
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
-func (c *bepaClient) GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+func (c *iamClient) GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -251,7 +251,7 @@ func (c *bepaClient) GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]
 	}
 	return serviceUsers, nil
 }
-func (c *bepaClient) GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error) {
+func (c *iamClient) GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
@@ -265,7 +265,7 @@ func (c *bepaClient) GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types
 	return groups, nil
 }
 
-func (c *bepaClient) BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error {
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
@@ -277,7 +277,7 @@ func (c *bepaClient) BindRoleToGroup(workspaceUUID, roleUUID, groupUUID *uuid.UU
 }
 
 // Is it right?
-func (c *bepaClient) UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error {
+func (c *iamClient) UnbindRoleFromGroup(workspaceUUID, roleUUID, groupUUID *uuid.UUID, items map[string]string) error {
 
 	replaceDict := map[string]string{
 		roleUUIDPlaceholder:      roleUUID.String(),

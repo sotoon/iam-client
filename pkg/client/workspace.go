@@ -4,12 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
+func (c *iamClient) GetWorkspaces() ([]*types.Workspace, error) {
 	apiURL := trimURLSlash(routes.RouteWorkspaceGetAll)
 
 	workspaces := []*types.Workspace{}
@@ -21,7 +21,7 @@ func (c *bepaClient) GetWorkspaces() ([]*types.Workspace, error) {
 }
 
 // todo deprecate and remove this functoin
-func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
+func (c *iamClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		workspaceNamePlaceholder: name,
 		userUUIDPlaceholder:      c.userUUID,
@@ -36,7 +36,7 @@ func (c *bepaClient) GetWorkspaceByName(name string) (*types.Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.WorkspaceWithOrganization, error) {
+func (c *iamClient) GetWorkspaceByNameAndOrgName(name string, organizationName string) (*types.WorkspaceWithOrganization, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -60,7 +60,7 @@ func (c *bepaClient) GetWorkspaceByNameAndOrgName(name string, organizationName 
 	}
 }
 
-func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {
+func (c *iamClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
@@ -74,7 +74,7 @@ func (c *bepaClient) GetWorkspace(uuid *uuid.UUID) (*types.Workspace, error) {
 	return workspace, nil
 }
 
-func (c *bepaClient) GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error) {
+func (c *iamClient) GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -88,7 +88,7 @@ func (c *bepaClient) GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, erro
 	return workspaces, nil
 }
 
-func (c *bepaClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*types.User, error) {
+func (c *iamClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*types.User, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
@@ -102,7 +102,7 @@ func (c *bepaClient) GetWorkspaceUsers(uuid *uuid.UUID) ([]*types.User, error) {
 	return users, nil
 }
 
-func (c *bepaClient) CreateWorkspace(name string) (*types.Workspace, error) {
+func (c *iamClient) CreateWorkspace(name string) (*types.Workspace, error) {
 	workspaceRequest := &types.WorkspaceReq{
 		Name: name,
 	}
@@ -116,7 +116,7 @@ func (c *bepaClient) CreateWorkspace(name string) (*types.Workspace, error) {
 	return createdWorkspace, nil
 }
 
-func (c *bepaClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*types.Rule, error) {
+func (c *iamClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*types.Rule, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
@@ -129,7 +129,7 @@ func (c *bepaClient) GetWorkspaceRules(uuid *uuid.UUID) ([]*types.Rule, error) {
 	return rules, nil
 }
 
-func (c *bepaClient) GetWorkspaceRoles(uuid *uuid.UUID) ([]*types.Role, error) {
+func (c *iamClient) GetWorkspaceRoles(uuid *uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}
@@ -143,7 +143,7 @@ func (c *bepaClient) GetWorkspaceRoles(uuid *uuid.UUID) ([]*types.Role, error) {
 
 }
 
-func (c *bepaClient) DeleteWorkspace(uuid *uuid.UUID) error {
+func (c *iamClient) DeleteWorkspace(uuid *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: uuid.String(),
 	}

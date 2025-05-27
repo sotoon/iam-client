@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"os"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 var defaultSSHKeyType = "ssh-rsa"
 
-func (c *bepaClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error {
+func (c *iamClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		publicKeyUUIDPlaceholder: publicKeyUUID.String(),
@@ -28,7 +28,7 @@ func (c *bepaClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error 
 	return nil
 }
 
-func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types.PublicKey, error) {
+func (c *iamClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types.PublicKey, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		publicKeyUUIDPlaceholder: publicKeyUUID.String(),
@@ -43,7 +43,7 @@ func (c *bepaClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*type
 	return publicKey, nil
 }
 
-func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
+func (c *iamClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -57,7 +57,7 @@ func (c *bepaClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
 	return publicKeys, nil
 }
 
-func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error) {
+func (c *iamClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error) {
 	publicKeyReq := &types.PublicKeyReq{
 		Title: title,
 		Key:   fmt.Sprintf("%s %s", keyType, key),
@@ -75,7 +75,7 @@ func (c *bepaClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (
 	return createdPublicKey, nil
 }
 
-func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error) {
+func (c *iamClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error) {
 	if fileAdd == "" {
 		fileAdd = os.Getenv("HOME") + "/.ssh/id_rsa.pub"
 	}
@@ -86,7 +86,7 @@ func (c *bepaClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string
 	return c.CreatePublicKeyForDefaultUser(title, defaultSSHKeyType, string(key))
 }
 
-func (c *bepaClient) VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error) {
+func (c *iamClient) VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error) {
 	publicKeyVerifyReq := &types.PublicKeyVerifyReq{
 		KeyType:        keyType,
 		Key:            key,

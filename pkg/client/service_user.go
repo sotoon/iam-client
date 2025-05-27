@@ -3,12 +3,12 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
+func (c *iamClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
@@ -22,7 +22,7 @@ func (c *bepaClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (
 	return service, nil
 }
 
-func (c *bepaClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+func (c *iamClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
@@ -34,7 +34,7 @@ func (c *bepaClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.Service
 	return serviceUsers, nil
 }
 
-func (c *bepaClient) DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error {
+func (c *iamClient) DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
@@ -43,7 +43,7 @@ func (c *bepaClient) DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error) {
+func (c *iamClient) GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		serviceUserNamePlaceholder: serviceUserName,
 		workspaceNamePlaceholder:   workspaceName,
@@ -57,7 +57,7 @@ func (c *bepaClient) GetServiceUserByName(workspaceName string, serviceUserName 
 	}
 	return serviceUser, nil
 }
-func (c *bepaClient) CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error) {
+func (c *iamClient) CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error) {
 	userRequest := &types.ServiceUserReq{
 		Name:      serviceUserName,
 		Workspace: workspace.String(),
@@ -73,7 +73,7 @@ func (c *bepaClient) CreateServiceUser(serviceUserName string, workspace *uuid.U
 	return createdServiceUser, nil
 }
 
-func (c *bepaClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error) {
+func (c *iamClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error) {
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
@@ -84,7 +84,7 @@ func (c *bepaClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid
 	return ServiceUserToken, err
 }
 
-func (c *bepaClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
+func (c *iamClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
 
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -96,7 +96,7 @@ func (c *bepaClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid
 	return ServiceUserTokens, err
 }
 
-func (c *bepaClient) DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error {
+func (c *iamClient) DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder:      serviceUserUUID.String(),

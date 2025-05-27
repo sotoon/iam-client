@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"

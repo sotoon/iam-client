@@ -1,5 +1,5 @@
-# Bepa Client
-> A simple yet powerful library that empowers you using [Bepa2 APIs](https://bepa.sotoon.ir/swagger).
+# IAM Client
+> A simple yet powerful library that empowers you using IAM APIs.
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -17,8 +17,8 @@
 
 
 ## General Information
-- There are so many products that need to use Sotoon **IAM Service** aka **Bepa** as their **Identity and Access Management** engine.
-- Bepa-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
+- There are so many products that need to use Sotoon **IAM Service** as their **Identity and Access Management** engine.
+- IAM-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
 - It is under active development and support of Sotoon Integration Tribe.
 
 ## Technologies Used
@@ -26,26 +26,24 @@
 
 ## Quick Start🏎 
 
-Simply add bepa-client library latest stable version to your `go.mod` file:
-> **Note!** Please check latest version tag [hear](https://git.platform.sotoon.ir/iam/golang-bepa-client/-/tags).
+Simply add iam-client library latest stable version to your `go.mod` file:
+> **Note!** Please check latest version tag [here](https://github.com/sotoon/iam-client/tags).
 
 ### Installation
 
 In to `go.mod` file add:
 ```mod
-module git.cafebazaar.ir/infrastructure/kraken/commander
+module your-module-path
 
 go 1.19
 
 require (
-	git.cafebazaar.ir/infrastructure/bepa-client v1.0.14
+	github.com/sotoon/iam-client v1.0.14
 )
 ```
-Resolve Golang library from private repository.
+Resolve Golang library:
 
 ```bash
-# you should have ssh access to gitlab repo of bepa-client
-export GOPRIVATE=git.cafebazaar.ir 
 go mod tidy
 go mod vendor
 ```
@@ -55,24 +53,24 @@ Then simply use the client in your code:
 
 ```golang
 import (
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func SimpleBepaClientExample() {
-    // ... initialize BEPA_URL, accessToken, defaultWorkspaceId, userId
-    client, err := client.NewClient(accessToken, BEPA_URL, defaultWorkspaceId, userId)
+func SimpleIamClientExample() {
+    // ... initialize IAM_URL, accessToken, defaultWorkspaceId, userId
+    client, err := client.NewClient(accessToken, IAM_URL, defaultWorkspaceId, userId)
     if err != nil {
-        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
         // handle error or kill the process
         return
     }
 }
 
-func ReliableBepaClientExample() {
-    // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, bepaTimeout
-    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, bepaTimeout)
+func ReliableIamClientExample() {
+    // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, iamTimeout
+    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, iamTimeout)
     if err != nil {
-        logger.Error("Cannot make a Bepa client.", zap.Error(err))
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
         // handle error or kill the process
         return
     }
@@ -110,13 +108,13 @@ if err != nil {
 
 ## Features
 
-1. Almost all services of Sotoon IAM System (aka Bepa)
+1. Almost all services of Sotoon IAM System
 2. Client-Side Fail-over.
 
 ## Architecture
 Brief overview of projects deployment architecture.
 
-![Bepa Client Failover](./docs/bepa_client_failover.png)
+![IAM Client Failover](./docs/client_failover.png)
 
 
 ## Setup
@@ -142,12 +140,11 @@ Nothing yet :)
 
 ## External Links
 
-- [Commander](https://git.cafebazaar.ir/infrastructure/integration/sib/commander): a successful example usage of the library with *Mocking and Testing*
-- [Bepa2](https://git.cafebazaar.ir/infrastructure/integration/sib/bepa2): Sotoon IAM System Repository (Bepa2)
+- [IAM](https://github.com/sotoon/iam-client): Sotoon Identity and Access Management System Repository
 
 ## Acknowledgements
 Please refer to **Contributors** Section.
 
 
 ## Contact
-Please contact to [Sotoon Integration Backend Team](https://git.cafebazaar.ir/infrastructure/integration/sib/documents)!
+Please contact to [Sotoon Integration Backend Team](https://github.com/sotoon)!

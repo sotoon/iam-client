@@ -3,11 +3,11 @@ package client
 import (
 	"net/http"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *bepaClient) Identify(token string) (*types.UserRes, error) {
+func (c *iamClient) Identify(token string) (*types.UserRes, error) {
 	idenReq := &types.UserTokenReq{
 		Secret: token,
 	}

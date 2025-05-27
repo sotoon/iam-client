@@ -1,4 +1,4 @@
-module git.platform.sotoon.ir/iam/golang-bepa-client
+module github.com/sotoon/iam-client
 
 go 1.19
 

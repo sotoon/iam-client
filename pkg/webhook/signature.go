@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func isBepaSignatureValid(payload, secret, timestamp, sentSignature string) bool {
+func isIamSignatureValid(payload, secret, timestamp, sentSignature string) bool {
 	payload = fmt.Sprintf("%s\n%s", timestamp, payload)
 	h := hmac.New(sha256.New, []byte(secret))
 	h.Write([]byte(payload))

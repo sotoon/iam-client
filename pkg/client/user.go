@@ -3,13 +3,13 @@ package client
 import (
 	"encoding/json"
 	"errors"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/routes"
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 	"net/http"
 )
 
-func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, error) {
+func (c *iamClient) CreateUser(userName, email, password string) (*types.User, error) {
 	userRequest := &types.UserReq{
 		Name:     userName,
 		Email:    email,
@@ -24,7 +24,7 @@ func (c *bepaClient) CreateUser(userName, email, password string) (*types.User, 
 	return createdUser, nil
 }
 
-func (c *bepaClient) GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error) {
+func (c *iamClient) GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
@@ -37,7 +37,7 @@ func (c *bepaClient) GetSecret(userUUID *uuid.UUID) (*types.UserSecret, error) {
 	return &secret, nil
 }
 
-func (c *bepaClient) RevokeSecret(userUUID *uuid.UUID) error {
+func (c *iamClient) RevokeSecret(userUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
@@ -46,7 +46,7 @@ func (c *bepaClient) RevokeSecret(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodPost, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
+func (c *iamClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
 	tokenRequest := &types.UserTokenByCredsReq{
 		Email:    email,
 		Password: password,
@@ -71,7 +71,7 @@ func (c *bepaClient) CreateUserTokenByCreds(email, password string) (*types.User
 	return createdToken, nil
 }
 
-func (c *bepaClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
+func (c *iamClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
 	tokenRequest := &types.AuthnChallengeRequest{
 		ChallengeToken:  challengeToken,
 		ChallengeAnswer: challengeAnswer,
@@ -96,7 +96,7 @@ func (c *bepaClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer 
 	return createdToken, nil
 }
 
-func (c *bepaClient) UpdateUser(userUUID *uuid.UUID, name, email, password string) error {
+func (c *iamClient) UpdateUser(userUUID *uuid.UUID, name, email, password string) error {
 	userUpdateReq := &types.UserUpdateReq{
 		Name:     name,
 		Email:    email,
@@ -111,7 +111,7 @@ func (c *bepaClient) UpdateUser(userUUID *uuid.UUID, name, email, password strin
 	return c.Do(http.MethodPatch, apiURL, 0, userUpdateReq, nil)
 }
 
-func (c *bepaClient) GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*types.User, error) {
+func (c *iamClient) GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
@@ -132,7 +132,7 @@ func (c *bepaClient) GetUserByEmail(email string, workspaceUUID *uuid.UUID) (*ty
 	}
 }
 
-func (c *bepaClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error) {
+func (c *iamClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		userEmailPlaceholder:     userName,
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -146,7 +146,7 @@ func (c *bepaClient) GetUserByName(userName string, workspaceUUID *uuid.UUID) (*
 	return user, nil
 }
 
-func (c *bepaClient) GetMySelf() (*types.User, error) {
+func (c *iamClient) GetMySelf() (*types.User, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -159,7 +159,7 @@ func (c *bepaClient) GetMySelf() (*types.User, error) {
 	return user, nil
 }
 
-func (c *bepaClient) GetUser(userUUID *uuid.UUID) (*types.User, error) {
+func (c *iamClient) GetUser(userUUID *uuid.UUID) (*types.User, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
@@ -172,7 +172,7 @@ func (c *bepaClient) GetUser(userUUID *uuid.UUID) (*types.User, error) {
 	return user, nil
 }
 
-func (c *bepaClient) GetUsers() ([]*types.User, error) {
+func (c *iamClient) GetUsers() ([]*types.User, error) {
 	users := []*types.User{}
 	apiURL := trimURLSlash(routes.RouteUserGetAll)
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, &users); err != nil {
@@ -181,7 +181,7 @@ func (c *bepaClient) GetUsers() ([]*types.User, error) {
 	return users, nil
 }
 
-func (c *bepaClient) DeleteUser(userUUID *uuid.UUID) error {
+func (c *iamClient) DeleteUser(userUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
 	}
@@ -189,7 +189,7 @@ func (c *bepaClient) DeleteUser(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) DeleteMySelf() error {
+func (c *iamClient) DeleteMySelf() error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -201,7 +201,7 @@ func (c *bepaClient) DeleteMySelf() error {
 	return nil
 }
 
-func (c *bepaClient) AddUserToWorkspace(userUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) AddUserToWorkspace(userUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      userUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -210,7 +210,7 @@ func (c *bepaClient) AddUserToWorkspace(userUUID, workspaceUUID *uuid.UUID) erro
 	return c.Do(http.MethodPost, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) RemoveUserFromWorkspace(userUUID, workspaceUUID *uuid.UUID) error {
+func (c *iamClient) RemoveUserFromWorkspace(userUUID, workspaceUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      userUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -219,7 +219,7 @@ func (c *bepaClient) RemoveUserFromWorkspace(userUUID, workspaceUUID *uuid.UUID)
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) SetMyPassword(password string) error {
+func (c *iamClient) SetMyPassword(password string) error {
 	userUpdateReq := &types.UserUpdateReq{
 		Password: password,
 	}
@@ -230,7 +230,7 @@ func (c *bepaClient) SetMyPassword(password string) error {
 	return c.Do(http.MethodPatch, apiURL, 0, userUpdateReq, nil)
 }
 
-func (c *bepaClient) SetMyName(name string) error {
+func (c *iamClient) SetMyName(name string) error {
 	userUpdateReq := &types.UserUpdateReq{
 		Name: name,
 	}
@@ -241,7 +241,7 @@ func (c *bepaClient) SetMyName(name string) error {
 	return c.Do(http.MethodPatch, apiURL, 0, userUpdateReq, nil)
 }
 
-func (c *bepaClient) SetMyEmail(email string) error {
+func (c *iamClient) SetMyEmail(email string) error {
 	userUpdateReq := &types.UserUpdateReq{
 		Email: email,
 	}
@@ -252,7 +252,7 @@ func (c *bepaClient) SetMyEmail(email string) error {
 	return c.Do(http.MethodPatch, apiURL, 0, userUpdateReq, nil)
 }
 
-func (c *bepaClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error) {
+func (c *iamClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error) {
 	inviteReq := &types.InviteUserReq{
 		Email: email,
 	}
@@ -265,7 +265,7 @@ func (c *bepaClient) InviteUser(workspaceUUID *uuid.UUID, email string) (*types.
 	return invitationInfo, err
 }
 
-func (c *bepaClient) JoinByInvitationToken(name, password, invitationToken string) (*types.User, error) {
+func (c *iamClient) JoinByInvitationToken(name, password, invitationToken string) (*types.User, error) {
 	joinReq := &types.UserAcceptInvitationReq{
 		Name:     name,
 		Password: password,
@@ -280,7 +280,7 @@ func (c *bepaClient) JoinByInvitationToken(name, password, invitationToken strin
 	return joinedUser, err
 }
 
-func (c *bepaClient) SuspendUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
+func (c *iamClient) SuspendUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -291,7 +291,7 @@ func (c *bepaClient) SuspendUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *
 	return c.DoMinimal(http.MethodPut, apiURL, nil)
 }
 
-func (c *bepaClient) ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
+func (c *iamClient) ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -302,7 +302,7 @@ func (c *bepaClient) ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID 
 	return c.DoMinimal(http.MethodPut, apiURL, nil)
 }
 
-func (c *bepaClient) SuspendUser(userUUID *uuid.UUID) error {
+func (c *iamClient) SuspendUser(userUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),
@@ -312,7 +312,7 @@ func (c *bepaClient) SuspendUser(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodPut, apiURL, 0, nil, nil)
 }
 
-func (c *bepaClient) ActivateUser(userUUID *uuid.UUID) error {
+func (c *iamClient) ActivateUser(userUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: userUUID.String(),

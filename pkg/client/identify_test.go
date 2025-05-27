@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"git.platform.sotoon.ir/iam/golang-bepa-client/pkg/types"
+	"github.com/sotoon/iam-client/pkg/types"
 
 	"github.com/stretchr/testify/require"
 )
@@ -95,13 +95,13 @@ func TestIdentification(t *testing.T) {
 }
 
 var concurrentIdentifyRequests int = 100
-var identifyBepaEndpoint string = os.Getenv("BENCHMARK_BEPA_ENDPOINT")
-var identifyBepaBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
+var identifyIamEndpoint string = os.Getenv("BENCHMARK_IAM_ENDPOINT")
+var identifyIamBenchmarkToken string = os.Getenv("BENCHMARK_TOKEN")
 var identifyTimeoutDuration time.Duration = 10 * time.Second
 
 func DoSingleBenchmarkIdentify(token string, wg *sync.WaitGroup) {
-	serverList := []string{identifyBepaEndpoint, identifyBepaEndpoint, identifyBepaEndpoint}
-	c, _ := NewReliableClient(identifyBepaBenchmarkToken, serverList, "", "", identifyTimeoutDuration)
+	serverList := []string{identifyIamEndpoint, identifyIamEndpoint, identifyIamEndpoint}
+	c, _ := NewReliableClient(identifyIamBenchmarkToken, serverList, "", "", identifyTimeoutDuration)
 	c.Identify(token)
 	wg.Done()
 }
@@ -113,7 +113,7 @@ func BenchmarkMultipleValidIdentify(b *testing.B) {
 		for j := 0; j < b.N; j++ {
 			wg.Add(iters)
 			for i := 0; i < iters; i++ {
-				go DoSingleBenchmarkIdentify(identifyBepaBenchmarkToken, &wg)
+				go DoSingleBenchmarkIdentify(identifyIamBenchmarkToken, &wg)
 			}
 			wg.Wait()
 		}
