@@ -705,21 +705,6 @@ func (mr *MockClientMockRecorder) GetAllServiceUserToken(serviceUserUUID, worksp
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllServiceUserToken", reflect.TypeOf((*MockClient)(nil).GetAllServiceUserToken), serviceUserUUID, workspaceUUID)
 }
 
-// GetAllServices mocks base method.
-func (m *MockClient) GetAllServices() (*[]types.Service, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllServices")
-	ret0, _ := ret[0].(*[]types.Service)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAllServices indicates an expected call of GetAllServices.
-func (mr *MockClientMockRecorder) GetAllServices() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllServices", reflect.TypeOf((*MockClient)(nil).GetAllServices))
-}
-
 // GetAllUserKiseSecret mocks base method.
 func (m *MockClient) GetAllUserKiseSecret() ([]*types.KiseSecret, error) {
 	m.ctrl.T.Helper()
@@ -1167,21 +1152,6 @@ func (m *MockClient) GetServerURL() string {
 func (mr *MockClientMockRecorder) GetServerURL() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServerURL", reflect.TypeOf((*MockClient)(nil).GetServerURL))
-}
-
-// GetService mocks base method.
-func (m *MockClient) GetService(name string) (*types.Service, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetService", name)
-	ret0, _ := ret[0].(*types.Service)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetService indicates an expected call of GetService.
-func (mr *MockClientMockRecorder) GetService(name interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetService", reflect.TypeOf((*MockClient)(nil).GetService), name)
 }
 
 // GetServiceUser mocks base method.

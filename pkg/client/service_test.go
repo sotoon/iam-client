@@ -24,15 +24,3 @@ func TestGetService(t *testing.T) {
 
 	DoTestReadAPI(t, config)
 }
-
-func TestGetAllServices(t *testing.T) {
-
-	services := []types.Service{}
-	config := TestConfig{
-		Object:           &services,
-		URLregexp:        regexp.MustCompile(`/service/`),
-		ClientMethodName: "GetAllServices",
-	}
-	DoTestListingAPI(t, config)
-
-}

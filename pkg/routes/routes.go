@@ -84,6 +84,7 @@ const (
 	RouteWorkspaceGetUsers       = "/workspace/{workspace_uuid}/user/"
 	RouteWorkspaceGetAllRoles    = "/workspace/{workspace_uuid}/role/"
 	RouteWorkspaceGetAllRules    = "/workspace/{workspace_uuid}/rule/"
+	RouteWorkspaceService        = "/workspace/{workspace_uuid}/service/"
 
 	RouteServiceUserGetOne      = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
 	RouteServiceUserCreate      = "/workspace/{workspace_uuid}/service-user/"
