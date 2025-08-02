@@ -34,6 +34,7 @@ type Client interface {
 	AddUserToWorkspace(userUUID, workspaceUUID *uuid.UUID) error
 	RemoveUserFromWorkspace(userUUID, workspaceUUID *uuid.UUID) error
 	SetConfigDefaultWorkspace(uuid *uuid.UUID) error
+	GetWorkspaceServices(workspaceUUID uuid.UUID) ([]types.Service, error)
 
 	CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
 	UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
