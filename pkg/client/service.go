@@ -19,13 +19,6 @@ func (c *iamClient) GetService(name string) (*types.Service, error) {
 	err := c.Do(http.MethodGet, apiURL, 0, nil, service)
 	return service, err
 }
-func (c *iamClient) GetAllServices() (*[]types.Service, error) {
-
-	services := &[]types.Service{}
-	apiURL := substringReplace(trimURLSlash(routes.RouteServiceGetAll), nil)
-	err := c.Do(http.MethodGet, apiURL, 0, nil, services)
-	return services, err
-}
 
 func (c *iamClient) GetWorkspaceServices(workspaceUUID uuid.UUID) ([]types.Service, error) {
 	replaceDict := map[string]string{

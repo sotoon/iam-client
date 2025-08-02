@@ -113,7 +113,6 @@ type Client interface {
 	GetAllMyUserTokens() (*[]types.UserToken, error)
 	DeleteMyUserToken(UserTokenUUID *uuid.UUID) error
 
-	GetAllServices() (*[]types.Service, error)
 	GetService(name string) (*types.Service, error)
 
 	DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error
