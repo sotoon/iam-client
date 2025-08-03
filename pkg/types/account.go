@@ -257,6 +257,15 @@ type KiseSecret struct {
 	Title  string `json:"title"`
 	Secret string `json:"secret"`
 	User   string `json:"user"`
+	ServiceUser string `json:"service_user,omitempty"`
+}
+
+type OpenIDToken struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	Scope        string `json:"scope,omitempty"`
 }
 type BackupKey struct {
 	UUID      string `json:"uuid"`

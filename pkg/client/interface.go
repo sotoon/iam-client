@@ -101,9 +101,13 @@ type Client interface {
 	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error)
 	VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error)
 
-	GetAllUserKiseSecret() ([]*types.KiseSecret, error)
+	GetUserKiseSecrets(userUUID *uuid.UUID, workspaceUUID *uuid.UUID) ([]*types.KiseSecret, error)
+	CreateUserKiseSecret(userUUID *uuid.UUID, workspaceUUID *uuid.UUID, title string) (*types.KiseSecret, error)
 	DeleteUserKiseSecret(KiseSecretUUID *uuid.UUID) error
 	CreateKiseSecretForDefaultUser() (*types.KiseSecret, error)
+	GetServiceUserKiseSecrets(workspaceUUID uuid.UUID) ([]*types.KiseSecret, error)
+	CreateServiceUserKiseSecret(workspaceUUID, serviceUserUUID uuid.UUID, title string) (*types.KiseSecret, error)
+	DeleteServiceUserKiseSecret(workspaceUUID, serviceUserUUID, kiseSecretUUID uuid.UUID) error
 
 	Authorize(identity, userType, action, rriObject string) error
 	Identify(token string) (*types.UserRes, error)

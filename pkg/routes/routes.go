@@ -104,6 +104,15 @@ const (
 	RouteUserOtpPost             = "/user/{user_uuid}/otp/"
 	RouteUserOtpDelete           = "/user/{user_uuid}/otp/"
 
+	// Storage Key
+	RouteKiseSecretCreate            = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
+	RouteKiseSecretGetAll            = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
+	RouteKiseSecretDelete            = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/{kise_secret_uuid}/"
+	RouteKiseSecretServiceUserList   = "/workspace/{workspace_uuid}/kise/key/service-user/"
+	RouteKiseSecretServiceUserCreate = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/kise/key/"
+	RouteKiseSecretServiceUserDelete = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/kise/key/{kise_secret_uuid}/"
+
+
 	RouteUserCreate      = "/user/"
 	RouteUserSecretGet   = "/user/{user_uuid}/secret/"
 	RouteUserSecretPost  = "/user/{user_uuid}/secret/"
@@ -119,9 +128,6 @@ const (
 
 	RouteRuleGetAll = "/rule/"
 
-	RouteKiseSecretCreate         = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
-	RouteKiseSecretGetAll         = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
-	RouteKiseSecretDelete         = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/{kise_secret_uuid}/"
 	RouteRoleGetAll               = "/role/"
 	RouteServiceUserGetBindedRole = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/{service_user_uuid}/"
 
