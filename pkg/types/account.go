@@ -229,6 +229,14 @@ type InvitationInfo struct {
 	Token string `json:"invitation_token"`
 }
 
+type UserOtp struct {
+	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	User      string     `json:"user"`
+	Secret    string     `json:"secret,omitempty"`
+	CreatedAt string     `json:"created_at,omitempty"`
+	UpdatedAt string     `json:"updated_at,omitempty"`
+}
+
 type UserSecret struct {
 	Secret string `json:"secret"`
 }

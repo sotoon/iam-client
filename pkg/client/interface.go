@@ -69,6 +69,11 @@ type Client interface {
 	GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error)
 	GetUsers() ([]*types.User, error)
 	DeleteUser(userUUID *uuid.UUID) error
+	GetUserDetailList(workspaceUUID uuid.UUID) ([]*types.User, error)
+	GetUserDetail(workspaceUUID, userUUID uuid.UUID) (*types.User, error)
+	GetUserOtp(userUUID uuid.UUID) (*types.UserOtp, error)
+	CreateUserOtp(userUUID uuid.UUID) (*types.UserOtp, error)
+	DeleteUserOtp(userUUID uuid.UUID) error
 	UpdateUser(userUUID *uuid.UUID, name, email, password string) error
 	SetMyPassword(password string) error
 	SetMyEmail(email string) error
