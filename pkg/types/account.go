@@ -267,6 +267,27 @@ type OpenIDToken struct {
 	RefreshToken string `json:"refresh_token,omitempty"`
 	Scope        string `json:"scope,omitempty"`
 }
+
+type ThirdPartyBulkRefreshToken struct {
+	UUID            string     `json:"uuid"`
+	RefreshToken    string     `json:"refresh_token"`
+	ExpiresAt       *time.Time `json:"expires_at,omitempty"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+	ServiceUserUUID string     `json:"service_user_uuid"`
+	ThirdPartyUUID  string     `json:"third_party_uuid"`
+	WorkspaceUUID   string     `json:"workspace_uuid"`
+}
+
+type ThirdPartyAccessToken struct {
+	UUID           string     `json:"uuid"`
+	AccessToken    string     `json:"access_token"`
+	ExpiresAt      *time.Time `json:"expires_at,omitempty"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	ThirdPartyUUID string     `json:"third_party_uuid"`
+	OrganizationUUID string   `json:"organization_uuid"`
+}
 type BackupKey struct {
 	UUID      string `json:"uuid"`
 	Title     string `json:"title"`

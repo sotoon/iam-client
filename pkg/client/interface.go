@@ -108,6 +108,12 @@ type Client interface {
 	GetServiceUserKiseSecrets(workspaceUUID uuid.UUID) ([]*types.KiseSecret, error)
 	CreateServiceUserKiseSecret(workspaceUUID, serviceUserUUID uuid.UUID, title string) (*types.KiseSecret, error)
 	DeleteServiceUserKiseSecret(workspaceUUID, serviceUserUUID, kiseSecretUUID uuid.UUID) error
+	
+	GetThirdPartyBulkRefreshTokens(workspaceUUID, thirdPartyUUID, serviceUserUUID uuid.UUID) ([]*types.ThirdPartyBulkRefreshToken, error)
+	CreateThirdPartyBulkRefreshToken(workspaceUUID, thirdPartyUUID, serviceUserUUID uuid.UUID, refreshToken string, expiresAt *time.Time) (*types.ThirdPartyBulkRefreshToken, error)
+	
+	GetThirdPartyAccessTokens(organizationUUID, thirdPartyUUID uuid.UUID) ([]*types.ThirdPartyAccessToken, error)
+	CreateThirdPartyAccessToken(organizationUUID, thirdPartyUUID uuid.UUID, accessToken string, expiresAt *time.Time) (*types.ThirdPartyAccessToken, error)
 
 	Authorize(identity, userType, action, rriObject string) error
 	Identify(token string) (*types.UserRes, error)

@@ -18,6 +18,7 @@ const (
 	serviceUserUUIDPlaceholder      = "{service_user_uuid}"
 	serviceUserTokenUUIDPlaceholder = "{service_user_token_uuid}"
 	groupUUIDPlaceholder            = "{group_uuid}"
+	thirdPartyUUIDPlaceholder       = "{third_party_uuid}"
 	groupNamePlaceholder            = "{group_name}"
 	serviceUserNamePlaceholder      = "{service_user_name}"
 	backupKeyUUIDPlaceholder        = "{backup_key_uuid}"
