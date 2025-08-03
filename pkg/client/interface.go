@@ -128,6 +128,9 @@ type Client interface {
 	BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
+	BulkAddServiceUsersToRole(workspaceUUID, roleUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) error
+	BulkAddUsersToRole(workspaceUUID, roleUUID uuid.UUID, userUUIDs []uuid.UUID) error
+	BulkAddRulesToRole(workspaceUUID, roleUUID uuid.UUID, ruleUUIDs []uuid.UUID) error
 
 	GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error)
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
