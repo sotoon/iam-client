@@ -3,10 +3,11 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
-	"net/http"
 )
 
 func (c *iamClient) CreateUser(userName, email, password string) (*types.User, error) {
@@ -275,7 +276,7 @@ func (c *iamClient) JoinByInvitationToken(name, password, invitationToken string
 	}
 
 	joinedUser := &types.User{}
-	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
+	apiURL := substringReplace(trimURLSlash(routes.RouteAcceptInvitation), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, 0, joinReq, joinedUser)
 	return joinedUser, err
 }
@@ -320,4 +321,13 @@ func (c *iamClient) ActivateUser(userUUID *uuid.UUID) error {
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserActivate), replaceDict)
 
 	return c.Do(http.MethodPut, apiURL, 0, nil, nil)
+}
+
+func (c *iamClient) ResetPassword(email string) error {
+	resetRequest := &types.ResetPasswordReq{
+		Email: email,
+	}
+
+	apiURL := trimURLSlash(routes.RouteUserResetPassword)
+	return c.Do(http.MethodPost, apiURL, 0, resetRequest, nil)
 }

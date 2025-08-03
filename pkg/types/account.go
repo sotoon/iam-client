@@ -58,6 +58,10 @@ type UserAcceptInvitationReq struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
+type ResetPasswordReq struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
 type UserCanReq struct {
 	Path string `json:"path" validate:"required"`
 }

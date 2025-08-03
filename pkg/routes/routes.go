@@ -1,7 +1,19 @@
 package routes
 
 const (
-	RouteAuthz = "/authz/"
+	// healthz
+	RouteHealthCheck = "/healthz/"
+
+	//Helper
+	RouteUserBulkCan = "/user/{user_uuid}/bulk-can/workspace/{workspace_uuid}/"
+
+	// Auth
+	RouteAuthz                  = "/authz/"
+	RouteUserTokenCreateByCreds = "/authn/"
+	RouteUserTokenByChallenge   = "/authn/challenge/"
+	RouteUserResetPassword      = "/user/reset-password/"
+	RouteUserChangePassword     = "/user/change-password/{token}/"
+	RouteAcceptInvitation       = "/accept-invitation/{user_invitation_token}/"
 
 	RoutePublicKeyCreate = "/user/{user_uuid}/public-key/"
 	RoutePublicKeyGetOne = "/user/{user_uuid}/public-key/{public_key_uuid}/"
@@ -38,7 +50,6 @@ const (
 	RouteServiceGetAll = "/service/"
 	RouteServiceGetOne = "/service/{name}/"
 
-	RouteUserSetPassword      = "/accept-invitation/{user_invitation_token}/"
 	RouteUserCreate           = "/user/"
 	RouteUserSecretGet        = "/user/{user_uuid}/secret/"
 	RouteUserSecretPost       = "/user/{user_uuid}/secret/"
@@ -68,12 +79,11 @@ const (
 	RouteUserSuspend               = "/user/{user_uuid}/suspend/"
 	RouteUserTokenIdentify         = "/identify/"
 	RouteIdentifyAndAuthorize      = "/identify-and-authz/"
-	RouteUserTokenCreateByCreds    = "/authn/"
-	RouteUserTokenByChallenge      = "/authn/challenge/"
-	RouteUserTokenCreateByToken    = "/user/{user_uuid}/user-token/"
-	RouteUserTokenGetOne           = "/user/{user_uuid}/user-token/{user_token_uuid}/"
-	RouteUserTokenGetAll           = "/user/{user_uuid}/user-token/"
-	RouteUserTokenDelete           = "/user/{user_uuid}/user-token/{user_token_uuid}/"
+
+	RouteUserTokenCreateByToken = "/user/{user_uuid}/user-token/"
+	RouteUserTokenGetOne        = "/user/{user_uuid}/user-token/{user_token_uuid}/"
+	RouteUserTokenGetAll        = "/user/{user_uuid}/user-token/"
+	RouteUserTokenDelete        = "/user/{user_uuid}/user-token/{user_token_uuid}/"
 
 	RouteWorkspaceInvite         = "/workspace/{workspace_uuid}/invite/"
 	RouteWorkspaceCreate         = "/workspace/"
@@ -119,6 +129,4 @@ const (
 	RouteOrganizationGetOne           = "/organization/{organization_uuid}/"
 	RouteOrganizationWorkspacesGetAll = "/organization/{organization_uuid}/workspace/"
 	RouteOrganizationWorkspacesGetOne = "/organization/{organization_uuid}/workspace/{workspace_uuid}/"
-
-	RouteHealthCheck = "/healthz/"
 )
