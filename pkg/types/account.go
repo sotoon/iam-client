@@ -203,6 +203,9 @@ type ServiceUser struct {
 	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	Name      string     `json:"name"`
 	Workspace string     `json:"workspace"`
+	CreatedAt string     `json:"created_at,omitempty"`
+	UpdatedAt string     `json:"updated_at,omitempty"`
+	Roles     []*Role    `json:"roles,omitempty"`
 }
 type ServiceUserReq struct {
 	Name      string `json:"name"`
@@ -212,6 +215,14 @@ type ServiceUserToken struct {
 	UUID        *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	ServiceUser string     `json:"service_user"`
 	Secret      string     `json:"secret"`
+}
+
+type ServiceUserPublicKey struct {
+	UUID        *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	ServiceUser string     `json:"service_user"`
+	PublicKey   string     `json:"public_key"`
+	Name        string     `json:"name"`
+	CreatedAt   string     `json:"created_at,omitempty"`
 }
 
 type InvitationInfo struct {

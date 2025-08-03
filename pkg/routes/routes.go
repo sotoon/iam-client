@@ -57,7 +57,33 @@ const (
 	RouteRoleGetAllUsers         = "/workspace/{workspace_uuid}/role/{role_uuid}/user/"
 	RouteUserDropRole            = "/workspace/{workspace_uuid}/role/{role_uuid}/user/{user_uuid}/"
 
-	
+	//Rule
+	RouteRuleCreate           = "/workspace/{workspace_uuid}/rule/"
+	RouteWorkspaceGetAllRules = "/workspace/{workspace_uuid}/rule/"
+	RouteRuleUpdate           = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
+	RouteRuleDelete           = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
+	RouteRuleGetOne           = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
+	RouteWorkspaceService     = "/workspace/{workspace_uuid}/service/"
+	RouteRuleGetAllRoles      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/role/"
+
+	// Service User
+	RouteServiceUserCreate          = "/workspace/{workspace_uuid}/service-user/"
+	RouteServiceUserGetALL          = "/workspace/{workspace_uuid}/service-user/"
+	RouteServiceUserGetOne          = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
+	RouteServiceUserDelete          = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
+	RouteServiceUserDetailList      = "/detailed/workspace/{workspace_uuid}/service-user/"
+	RouteServiceUserDetailGetOne    = "/detailed/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
+	RouteServiceUserPublicKeyList   = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/service-user-public-key/"
+	RouteServiceUserPublicKeyCreate = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/service-user-public-key/"
+	RouteServiceUserPublicKeyDelete = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/service-user-public-key/{public_key_uuid}/"
+	RouteServiceUserTokenGetALL     = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
+	RouteServiceUserTokenCreate     = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
+	RouteServiceUserTokenDelete     = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/{service_user_token_uuid}/"
+
+	RouteServiceUserGetByName = "/workspace/workspace={workspace_name}/service-user/name={service_user_name}/"
+
+	RouteRuleGetAll = "/rule/"
+
 	RouteKiseSecretCreate = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
 	RouteKiseSecretGetAll = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/"
 	RouteKiseSecretDelete = "/workspace/{workspace_uuid}/user/{user_uuid}/kise/key/{kise_secret_uuid}/"
@@ -71,13 +97,6 @@ const (
 	RouteBackupKeyGetOne = "/workspace/{workspace_uuid}/backup-key/{backup_key_uuid}/"
 	RouteBackupKeyGetAll = "/workspace/{workspace_uuid}/backup-key/"
 	RouteBackupKeyDelete = "/workspace/{workspace_uuid}/backup-key/{backup_key_uuid}/"
-
-	RouteRuleCreate      = "/workspace/{workspace_uuid}/rule/"
-	RouteRuleUpdate      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
-	RouteRuleDelete      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
-	RouteRuleGetOne      = "/workspace/{workspace_uuid}/rule/{rule_uuid}/"
-	RouteRuleGetAll      = "/rule/"
-	RouteRuleGetAllRoles = "/workspace/{workspace_uuid}/rule/{rule_uuid}/role/"
 
 	RouteServiceGetAll = "/service/"
 	RouteServiceGetOne = "/service/{name}/"
@@ -121,17 +140,6 @@ const (
 	RouteWorkspaceDelete         = "/workspace/{workspace_uuid}/"
 	RouteWorkspaceUserGetByEmail = "/workspace/{workspace_uuid}/user/?email={user_email}"
 	RouteWorkspaceGetUsers       = "/workspace/{workspace_uuid}/user/"
-	RouteWorkspaceGetAllRules    = "/workspace/{workspace_uuid}/rule/"
-	RouteWorkspaceService        = "/workspace/{workspace_uuid}/service/"
-
-	RouteServiceUserGetOne      = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
-	RouteServiceUserCreate      = "/workspace/{workspace_uuid}/service-user/"
-	RouteServiceUserGetALL      = "/workspace/{workspace_uuid}/service-user/"
-	RouteServiceUserDelete      = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
-	RouteServiceUserTokenGetALL = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
-	RouteServiceUserTokenCreate = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/"
-	RouteServiceUserTokenDelete = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/token/{service_user_token_uuid}/"
-	RouteServiceUserGetByName   = "/workspace/workspace={workspace_name}/service-user/name={service_user_name}/"
 
 	RouteGroupUserGetOne        = "/workspace/{workspace_uuid}/group/{group_uuid}/user/{user_uuid}/"
 	RouteGroupServiceUserGetOne = "/workspace/{workspace_uuid}/group/{group_uuid}/service-user/{service_user_uuid}/"

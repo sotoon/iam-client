@@ -125,6 +125,11 @@ type Client interface {
 	DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error
 	GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
 	GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
+	GetServiceUserDetailList(workspaceUUID uuid.UUID) ([]*types.ServiceUser, error)
+	GetServiceUserDetail(workspaceUUID, serviceUserUUID uuid.UUID) (*types.ServiceUser, error)
+	GetServiceUserPublicKeys(workspaceUUID, serviceUserUUID uuid.UUID) ([]*types.ServiceUserPublicKey, error)
+	CreateServiceUserPublicKey(workspaceUUID, serviceUserUUID uuid.UUID, name, publicKey string) (*types.ServiceUserPublicKey, error)
+	DeleteServiceUserPublicKey(workspaceUUID, serviceUserUUID, publicKeyUUID uuid.UUID) error
 	BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)

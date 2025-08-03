@@ -338,7 +338,7 @@ func (c *iamClient) ChangePassword(token, password string) error {
 	}
 
 	replaceDict := map[string]string{
-		"token": token,
+		userTokenUUIDPlaceholder: token,
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserChangePassword), replaceDict)
 	return c.Do(http.MethodPost, apiURL, 0, changeRequest, nil)

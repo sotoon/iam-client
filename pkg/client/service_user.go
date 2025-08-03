@@ -96,6 +96,76 @@ func (c *iamClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.
 	return ServiceUserTokens, err
 }
 
+func (c *iamClient) GetServiceUserDetailList(workspaceUUID uuid.UUID) ([]*types.ServiceUser, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDetailList), replaceDict)
+
+	serviceUsers := []*types.ServiceUser{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &serviceUsers); err != nil {
+		return nil, err
+	}
+	return serviceUsers, nil
+}
+
+func (c *iamClient) GetServiceUserDetail(workspaceUUID, serviceUserUUID uuid.UUID) (*types.ServiceUser, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDetailGetOne), replaceDict)
+
+	serviceUser := &types.ServiceUser{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, serviceUser); err != nil {
+		return nil, err
+	}
+	return serviceUser, nil
+}
+
+func (c *iamClient) GetServiceUserPublicKeys(workspaceUUID, serviceUserUUID uuid.UUID) ([]*types.ServiceUserPublicKey, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserPublicKeyList), replaceDict)
+
+	publicKeys := []*types.ServiceUserPublicKey{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &publicKeys); err != nil {
+		return nil, err
+	}
+	return publicKeys, nil
+}
+
+func (c *iamClient) CreateServiceUserPublicKey(workspaceUUID, serviceUserUUID uuid.UUID, name, publicKey string) (*types.ServiceUserPublicKey, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+	}
+
+	req := map[string]string{
+		serviceNamePlaceholder:   name,
+		publicKeyUUIDPlaceholder: publicKey,
+	}
+
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserPublicKeyCreate), replaceDict)
+	createdPublicKey := &types.ServiceUserPublicKey{}
+	if err := c.Do(http.MethodPost, apiURL, 0, req, createdPublicKey); err != nil {
+		return nil, err
+	}
+	return createdPublicKey, nil
+}
+
+func (c *iamClient) DeleteServiceUserPublicKey(workspaceUUID, serviceUserUUID, publicKeyUUID uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+		publicKeyUUIDPlaceholder:   publicKeyUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserPublicKeyDelete), replaceDict)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
+}
+
 func (c *iamClient) DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error {
 
 	replaceDict := map[string]string{
