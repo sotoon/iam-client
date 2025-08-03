@@ -80,6 +80,7 @@ type Client interface {
 	InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error)
 	JoinByInvitationToken(name, password, invitationToken string) (*types.User, error)
 	ResetPassword(email string) error
+	ChangePassword(token, password string) error
 	GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error)
 	GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error)
 	CreateUserTokenByCreds(email, password string) (*types.UserToken, error)
@@ -130,9 +131,16 @@ type Client interface {
 
 	GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error)
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
+	GetWorkspaceGroupList(workspaceUUID uuid.UUID) ([]*types.Group, error)
+	GetWorkspaceGroupDetail(workspaceUUID, groupUUID uuid.UUID) (*types.Group, error)
+	GetWorkspaceGroupRoles(workspaceUUID, groupUUID uuid.UUID) ([]*types.Role, error)
+	BulkAddUsersToGroup(workspaceUUID, groupUUID uuid.UUID, userUUIDs []uuid.UUID) error
+	BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) error
+	BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, roleUUIDs []uuid.UUID) error
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
 	GetGroupByName(workspaceName string, groupName string) (*types.Group, error)
 	CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error)
+	UpdateGroup(workspaceUUID, groupUUID *uuid.UUID, name, description string, workspaceInfo ...types.WorkspaceUpdateReq) error
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
 	GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
 	GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error)

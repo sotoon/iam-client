@@ -331,3 +331,15 @@ func (c *iamClient) ResetPassword(email string) error {
 	apiURL := trimURLSlash(routes.RouteUserResetPassword)
 	return c.Do(http.MethodPost, apiURL, 0, resetRequest, nil)
 }
+
+func (c *iamClient) ChangePassword(token, password string) error {
+	changeRequest := &types.ChangePasswordReq{
+		Password: password,
+	}
+
+	replaceDict := map[string]string{
+		"token": token,
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserChangePassword), replaceDict)
+	return c.Do(http.MethodPost, apiURL, 0, changeRequest, nil)
+}

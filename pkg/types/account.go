@@ -62,6 +62,10 @@ type ResetPasswordReq struct {
 	Email string `json:"email" validate:"required,email"`
 }
 
+type ChangePasswordReq struct {
+	Password string `json:"password" validate:"required,min=8"`
+}
+
 type UserCanReq struct {
 	Path string `json:"path" validate:"required"`
 }
@@ -158,13 +162,32 @@ type User struct {
 	InvitationToken string     `json:"invitation_token,omitempty"`
 }
 type Group struct {
-	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
-	Name      string     `json:"name"`
-	Workspace Workspace  `json:"workspace"`
+	UUID              *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	Name              string     `json:"name"`
+	Description       string     `json:"description"`
+	Workspace         Workspace  `json:"workspace"`
+	CreatedAt         time.Time  `json:"created_at"`
+	UpdatedAt         time.Time  `json:"updated_at"`
+	UsersNumber       int        `json:"users_number,omitempty"`
+	ServiceUsersNumber int        `json:"service_users_number,omitempty"`
+	Roles             []Role     `json:"roles,omitempty"`
 }
 type GroupReq struct {
 	Name      string `json:"name"`
 	Workspace string `json:"workspace"`
+}
+
+type GroupUpdateReq struct {
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Workspace   WorkspaceUpdateReq `json:"workspace"`
+}
+
+type WorkspaceUpdateReq struct {
+	Name         string `json:"name"`
+	Namespace    string `json:"namespace"`
+	Organization string `json:"organization"`
+	IsSuspended  bool   `json:"is_suspended"`
 }
 type GroupRes struct {
 	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`

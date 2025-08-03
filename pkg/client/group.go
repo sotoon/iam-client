@@ -182,3 +182,124 @@ func (c *iamClient) GetGroupServiceUser(workspaceUUID, groupUUID, serviceUserUUI
 	}
 	return serviceUser, nil
 }
+
+func (c *iamClient) UpdateGroup(workspaceUUID, groupUUID uuid.UUID, name, description *string, workspaceInfo *types.WorkspaceUpdateReq) error {
+	groupUpdateReq := new(types.GroupUpdateReq)
+	if name == nil && description == nil && workspaceInfo == nil {
+		return nil
+	}
+
+	if name != nil {
+		groupUpdateReq.Name = *name
+	}
+
+	if description != nil {
+		groupUpdateReq.Description = *description
+	}
+
+	if workspaceInfo != nil {
+		groupUpdateReq.Workspace = *workspaceInfo
+	}
+
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupUpdate), replaceDict)
+	return c.Do(http.MethodPut, apiURL, 0, groupUpdateReq, nil)
+}
+
+func (c *iamClient) GetWorkspaceGroupList(workspaceUUID uuid.UUID) ([]*types.Group, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	groups := []*types.Group{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGroupList), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &groups); err != nil {
+		return nil, err
+	}
+	return groups, nil
+}
+
+func (c *iamClient) GetWorkspaceGroupDetail(workspaceUUID, groupUUID uuid.UUID) (*types.Group, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	group := &types.Group{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGroupDetail), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, group); err != nil {
+		return nil, err
+	}
+	return group, nil
+}
+
+func (c *iamClient) GetWorkspaceGroupRoles(workspaceUUID, groupUUID uuid.UUID) ([]*types.Role, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	roles := []*types.Role{}
+	apiURL := substringReplace(trimURLSlash(routes.RouteWorkspaceGroupRoles), replaceDict)
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &roles); err != nil {
+		return nil, err
+	}
+	return roles, nil
+}
+
+func (c *iamClient) BulkAddUsersToGroup(workspaceUUID, groupUUID uuid.UUID, userUUIDs []uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	
+	userUUIDStrings := make([]string, len(userUUIDs))
+	for i, uuid := range userUUIDs {
+		userUUIDStrings[i] = uuid.String()
+	}
+	
+	req := map[string][]string{
+		"users": userUUIDStrings,
+	}
+	
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddUsers), replaceDict)
+	return c.Do(http.MethodPost, apiURL, 0, req, nil)
+}
+
+func (c *iamClient) BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	
+	serviceUserUUIDStrings := make([]string, len(serviceUserUUIDs))
+	for i, uuid := range serviceUserUUIDs {
+		serviceUserUUIDStrings[i] = uuid.String()
+	}
+	
+	req := map[string][]string{
+		"service_users": serviceUserUUIDStrings,
+	}
+	
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddServiceUsers), replaceDict)
+	return c.Do(http.MethodPost, apiURL, 0, req, nil)
+}
+
+func (c *iamClient) BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, roleUUIDs []uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+	}
+	
+	roleUUIDStrings := make([]string, len(roleUUIDs))
+	for i, uuid := range roleUUIDs {
+		roleUUIDStrings[i] = uuid.String()
+	}
+	
+	req := map[string][]string{
+		"roles": roleUUIDStrings,
+	}
+	
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddRoles), replaceDict)
+	return c.Do(http.MethodPost, apiURL, 0, req, nil)
+}

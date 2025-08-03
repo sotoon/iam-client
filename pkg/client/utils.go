@@ -82,7 +82,7 @@ func ensureStatusOK(resp *http.Response, successCode int) error {
 
 func substringReplace(str string, dict map[string]string) string {
 	for pattern, value := range dict {
-		str = strings.Replace(str, pattern, value, -1)
+		str = strings.ReplaceAll(str, pattern, value)
 	}
 	return str
 }
