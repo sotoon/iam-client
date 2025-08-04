@@ -4,12 +4,12 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func TestCreateMyUserTokenWithToken(t *testing.T) {
+func TestCreateMyUserToken(t *testing.T) {
 	var object types.UserToken
 	var secret string
 	faker.FakeData(&secret)
@@ -18,7 +18,7 @@ func TestCreateMyUserTokenWithToken(t *testing.T) {
 		Object:           &object,
 		Params:           []interface{}{secret},
 		URLregexp:        regexp.MustCompile(`/user/(.+)/user-token/`),
-		ClientMethodName: "CreateMyUserTokenWithToken",
+		ClientMethodName: "CreateMyUserToken",
 	}
 	DoTestCreateAPI(t, config)
 }
@@ -37,10 +37,10 @@ func TestGetMyUserToken(t *testing.T) {
 	DoTestReadAPI(t, config)
 }
 
-func TestGetAllMyUserTokens(t *testing.T) {
+func TestGetAllMyUserTokenList(t *testing.T) {
 	var objects []types.UserToken
 	conf := TestConfig{
-		ClientMethodName: "GetAllMyUserTokens",
+		ClientMethodName: "GetAllMyUserTokenList",
 		Object:           &objects,
 		URLregexp:        regexp.MustCompile(`/user/.+/user-token/`),
 	}

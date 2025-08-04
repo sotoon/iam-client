@@ -6,8 +6,8 @@ import (
 
 	"github.com/bxcodec/faker"
 
-	"github.com/sotoon/iam-client/pkg/types"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
 func TestGetServiceUser(t *testing.T) {
@@ -102,12 +102,12 @@ func TestCreateServiceUserToken(t *testing.T) {
 	DoTestCreateAPI(t, config)
 }
 
-func TestGetAllServiceUserToken(t *testing.T) {
+func TestGetWorkspaceServiceUserTokenList(t *testing.T) {
 	var objects []types.ServiceUserToken
 	workspaceUUID := uuid.NewV4()
 	serviceUserUUID := uuid.NewV4()
 	conf := TestConfig{
-		ClientMethodName: "GetAllServiceUserToken",
+		ClientMethodName: "GetWorkspaceServiceUserTokenList",
 		Params:           []interface{}{&serviceUserUUID, &workspaceUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &serviceUserUUID},
 		Object:           &objects,

@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/sotoon/iam-client/pkg/routes"
-	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/routes"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -58,7 +58,7 @@ func TestRevokeSecret(t *testing.T) {
 	DoTestUpdateAPI(t, config, http.MethodPost)
 }
 
-func TestCreateUserTokenByCreds(t *testing.T) {
+func TestCreateMyUserTokenWithTokenByCreds(t *testing.T) {
 	var object types.UserToken
 	var email, password string
 	faker.FakeData(&email)
@@ -68,7 +68,7 @@ func TestCreateUserTokenByCreds(t *testing.T) {
 		Object:           &object,
 		Params:           []interface{}{email, password},
 		URLregexp:        regexp.MustCompile(`/api/v1/authn/`),
-		ClientMethodName: "CreateUserTokenByCreds",
+		ClientMethodName: "CreateMyUserTokenWithTokenByCreds",
 	}
 
 	DoTestCreateAPI(t, config)

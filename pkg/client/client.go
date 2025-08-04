@@ -167,11 +167,13 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 		body = bytes.NewBuffer(data)
 	}
 
+	
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
 
 	if err != nil {
 		return err
 	}
+	
 
 	// do not log whole request containing authorization secret
 	c.log("iam-client performing request method:%v", httpRequest.Method)

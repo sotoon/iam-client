@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/sotoon/iam-client/pkg/client"
 	"os"
+
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/client"
 )
 
 func main() {
-	accessToken := "{accessToken}"
+	accessToken := "{your_access_token}"
 	IAM_URL := "https://bepa.sotoon.ir"
 	workspaceId := "{workspace_uuid}"
+
+	groupId := "{group_uuid}"
 
 	client, err := client.NewClient(accessToken, IAM_URL, "", "")
 	if err != nil {
@@ -24,14 +27,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	services, err := client.GetWorkspaceServices(workspaceUUID)
+	groupUUID, err := uuid.FromString(groupId)
 	if err != nil {
-		fmt.Println("error getting workspace services:", err)
+		fmt.Println("invalid group UUID:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Workspace Services:")
-	for _, s := range services {
-		fmt.Printf("- %s\n", s.Name)
+	err = client.DeleteGroup(&workspaceUUID, &groupUUID)
+	if err != nil {
+		fmt.Println("error deleting group:", err)
+		os.Exit(1)
 	}
+
+	fmt.Printf("Successfully deleted group %s from workspace %s\n", groupId, workspaceId)
 }

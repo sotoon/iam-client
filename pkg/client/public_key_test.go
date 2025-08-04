@@ -12,11 +12,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func TestDeleteDefaultUserPublicKey(t *testing.T) {
+func TestDeleteMyUserPublicKey(t *testing.T) {
 	publicKeyUUID := uuid.NewV4()
 	conf := TestConfig{
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/(.+)/`),
-		ClientMethodName: "DeleteDefaultUserPublicKey",
+		ClientMethodName: "DeleteMyUserPublicKey",
 		Params:           []interface{}{&publicKeyUUID},
 		ParamsInURL:      []interface{}{&publicKeyUUID},
 	}
@@ -37,18 +37,18 @@ func TestGetOneDefaultUserPublicKey(t *testing.T) {
 	DoTestReadAPI(t, config)
 }
 
-func TestGetAllDefaultUserPublicKeys(t *testing.T) {
+func TestGetAllMyUserPublicKeyList(t *testing.T) {
 	var object []types.PublicKey
 	config := TestConfig{
 		Object:           &object,
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
-		ClientMethodName: "GetAllDefaultUserPublicKeys",
+		ClientMethodName: "GetAllMyUserPublicKeyList",
 	}
 
 	DoTestListingAPI(t, config)
 }
 
-func TestCreatePublicKeyForDefaultUser(t *testing.T) {
+func TestCreateMyUserPublicKey(t *testing.T) {
 	var object types.PublicKey
 	var title, keyType, key string
 	faker.FakeData(&title)
@@ -59,7 +59,7 @@ func TestCreatePublicKeyForDefaultUser(t *testing.T) {
 		Object:           &object,
 		Params:           []interface{}{title, keyType, key},
 		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
-		ClientMethodName: "CreatePublicKeyForDefaultUser",
+		ClientMethodName: "CreateMyUserPublicKey",
 	}
 	DoTestCreateAPI(t, config)
 }

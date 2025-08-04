@@ -238,34 +238,34 @@ func (mr *MockClientMockRecorder) CreateKiseSecretForDefaultUser() *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateKiseSecretForDefaultUser", reflect.TypeOf((*MockClient)(nil).CreateKiseSecretForDefaultUser))
 }
 
-// CreateMyUserTokenWithToken mocks base method.
-func (m *MockClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken, error) {
+// CreateMyUserToken mocks base method.
+func (m *MockClient) CreateMyUserToken(secret string) (*types.UserToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateMyUserTokenWithToken", secret)
+	ret := m.ctrl.Call(m, "CreateMyUserToken", secret)
 	ret0, _ := ret[0].(*types.UserToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateMyUserTokenWithToken indicates an expected call of CreateMyUserTokenWithToken.
-func (mr *MockClientMockRecorder) CreateMyUserTokenWithToken(secret interface{}) *gomock.Call {
+// CreateMyUserToken indicates an expected call of CreateMyUserToken.
+func (mr *MockClientMockRecorder) CreateMyUserToken(secret interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMyUserTokenWithToken", reflect.TypeOf((*MockClient)(nil).CreateMyUserTokenWithToken), secret)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMyUserToken", reflect.TypeOf((*MockClient)(nil).CreateMyUserToken), secret)
 }
 
-// CreatePublicKeyForDefaultUser mocks base method.
-func (m *MockClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error) {
+// CreateMyUserPublicKey mocks base method.
+func (m *MockClient) CreateMyUserPublicKey(title, keyType, key string) (*types.PublicKey, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePublicKeyForDefaultUser", title, keyType, key)
+	ret := m.ctrl.Call(m, "CreateMyUserPublicKey", title, keyType, key)
 	ret0, _ := ret[0].(*types.PublicKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreatePublicKeyForDefaultUser indicates an expected call of CreatePublicKeyForDefaultUser.
-func (mr *MockClientMockRecorder) CreatePublicKeyForDefaultUser(title, keyType, key interface{}) *gomock.Call {
+// CreateMyUserPublicKey indicates an expected call of CreateMyUserPublicKey.
+func (mr *MockClientMockRecorder) CreateMyUserPublicKey(title, keyType, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePublicKeyForDefaultUser", reflect.TypeOf((*MockClient)(nil).CreatePublicKeyForDefaultUser), title, keyType, key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMyUserPublicKey", reflect.TypeOf((*MockClient)(nil).CreateMyUserPublicKey), title, keyType, key)
 }
 
 // CreatePublicKeyFromFileForDefaultUser mocks base method.
@@ -358,19 +358,19 @@ func (mr *MockClientMockRecorder) CreateUser(userName, email, password interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockClient)(nil).CreateUser), userName, email, password)
 }
 
-// CreateUserTokenByCreds mocks base method.
-func (m *MockClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
+// CreateMyUserTokenWithTokenByCreds mocks base method.
+func (m *MockClient) CreateMyUserTokenWithTokenByCreds(email, password string) (*types.UserToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUserTokenByCreds", email, password)
+	ret := m.ctrl.Call(m, "CreateMyUserTokenWithTokenByCreds", email, password)
 	ret0, _ := ret[0].(*types.UserToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateUserTokenByCreds indicates an expected call of CreateUserTokenByCreds.
-func (mr *MockClientMockRecorder) CreateUserTokenByCreds(email, password interface{}) *gomock.Call {
+// CreateMyUserTokenWithTokenByCreds indicates an expected call of CreateMyUserTokenWithTokenByCreds.
+func (mr *MockClientMockRecorder) CreateMyUserTokenWithTokenByCreds(email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserTokenByCreds", reflect.TypeOf((*MockClient)(nil).CreateUserTokenByCreds), email, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMyUserTokenWithTokenByCreds", reflect.TypeOf((*MockClient)(nil).CreateMyUserTokenWithTokenByCreds), email, password)
 }
 
 // CreateWorkspace mocks base method.
@@ -388,18 +388,18 @@ func (mr *MockClientMockRecorder) CreateWorkspace(name interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWorkspace", reflect.TypeOf((*MockClient)(nil).CreateWorkspace), name)
 }
 
-// DeleteDefaultUserPublicKey mocks base method.
-func (m *MockClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error {
+// DeleteMyUserPublicKey mocks base method.
+func (m *MockClient) DeleteMyUserPublicKey(publicKeyUUID *uuid.UUID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteDefaultUserPublicKey", publicKeyUUID)
+	ret := m.ctrl.Call(m, "DeleteMyUserPublicKey", publicKeyUUID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteDefaultUserPublicKey indicates an expected call of DeleteDefaultUserPublicKey.
-func (mr *MockClientMockRecorder) DeleteDefaultUserPublicKey(publicKeyUUID interface{}) *gomock.Call {
+// DeleteMyUserPublicKey indicates an expected call of DeleteMyUserPublicKey.
+func (mr *MockClientMockRecorder) DeleteMyUserPublicKey(publicKeyUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDefaultUserPublicKey", reflect.TypeOf((*MockClient)(nil).DeleteDefaultUserPublicKey), publicKeyUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMyUserPublicKey", reflect.TypeOf((*MockClient)(nil).DeleteMyUserPublicKey), publicKeyUUID)
 }
 
 // DeleteDefaultWorkspaceBackupKey mocks base method.
@@ -585,49 +585,49 @@ func (mr *MockClientMockRecorder) GetAllDefaultBackupKeys() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllDefaultBackupKeys", reflect.TypeOf((*MockClient)(nil).GetAllDefaultBackupKeys))
 }
 
-// GetAllDefaultUserPublicKeys mocks base method.
-func (m *MockClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
+// GetAllMyUserPublicKeyList mocks base method.
+func (m *MockClient) GetAllMyUserPublicKeyList() ([]*types.PublicKey, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllDefaultUserPublicKeys")
+	ret := m.ctrl.Call(m, "GetAllMyUserPublicKeyList")
 	ret0, _ := ret[0].([]*types.PublicKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllDefaultUserPublicKeys indicates an expected call of GetAllDefaultUserPublicKeys.
-func (mr *MockClientMockRecorder) GetAllDefaultUserPublicKeys() *gomock.Call {
+// GetAllMyUserPublicKeyList indicates an expected call of GetAllMyUserPublicKeyList.
+func (mr *MockClientMockRecorder) GetAllMyUserPublicKeyList() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllDefaultUserPublicKeys", reflect.TypeOf((*MockClient)(nil).GetAllDefaultUserPublicKeys))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMyUserPublicKeyList", reflect.TypeOf((*MockClient)(nil).GetAllMyUserPublicKeyList))
 }
 
-// GetAllGroupServiceUsers mocks base method.
-func (m *MockClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+// GetAllGroupServiceUserList mocks base method.
+func (m *MockClient) GetAllGroupServiceUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllGroupServiceUsers", workspaceUUID, groupUUID)
+	ret := m.ctrl.Call(m, "GetAllGroupServiceUserList", workspaceUUID, groupUUID)
 	ret0, _ := ret[0].([]*types.ServiceUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllGroupServiceUsers indicates an expected call of GetAllGroupServiceUsers.
-func (mr *MockClientMockRecorder) GetAllGroupServiceUsers(workspaceUUID, groupUUID interface{}) *gomock.Call {
+// GetAllGroupServiceUserList indicates an expected call of GetAllGroupServiceUserList.
+func (mr *MockClientMockRecorder) GetAllGroupServiceUserList(workspaceUUID, groupUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroupServiceUsers", reflect.TypeOf((*MockClient)(nil).GetAllGroupServiceUsers), workspaceUUID, groupUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroupServiceUserList", reflect.TypeOf((*MockClient)(nil).GetAllGroupServiceUserList), workspaceUUID, groupUUID)
 }
 
-// GetAllGroupUsers mocks base method.
-func (m *MockClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
+// GetAllGroupUserList mocks base method.
+func (m *MockClient) GetAllGroupUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllGroupUsers", workspaceUUID, groupUUID)
+	ret := m.ctrl.Call(m, "GetAllGroupUserList", workspaceUUID, groupUUID)
 	ret0, _ := ret[0].([]*types.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllGroupUsers indicates an expected call of GetAllGroupUsers.
-func (mr *MockClientMockRecorder) GetAllGroupUsers(workspaceUUID, groupUUID interface{}) *gomock.Call {
+// GetAllGroupUserList indicates an expected call of GetAllGroupUserList.
+func (mr *MockClientMockRecorder) GetAllGroupUserList(workspaceUUID, groupUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroupUsers", reflect.TypeOf((*MockClient)(nil).GetAllGroupUsers), workspaceUUID, groupUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroupUserList", reflect.TypeOf((*MockClient)(nil).GetAllGroupUserList), workspaceUUID, groupUUID)
 }
 
 // GetAllGroups mocks base method.
@@ -645,19 +645,19 @@ func (mr *MockClientMockRecorder) GetAllGroups(workspaceUUID interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGroups", reflect.TypeOf((*MockClient)(nil).GetAllGroups), workspaceUUID)
 }
 
-// GetAllMyUserTokens mocks base method.
-func (m *MockClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
+// GetAllMyUserTokenList mocks base method.
+func (m *MockClient) GetAllMyUserTokenList() (*[]types.UserToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllMyUserTokens")
+	ret := m.ctrl.Call(m, "GetAllMyUserTokenList")
 	ret0, _ := ret[0].(*[]types.UserToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllMyUserTokens indicates an expected call of GetAllMyUserTokens.
-func (mr *MockClientMockRecorder) GetAllMyUserTokens() *gomock.Call {
+// GetAllMyUserTokenList indicates an expected call of GetAllMyUserTokenList.
+func (mr *MockClientMockRecorder) GetAllMyUserTokenList() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMyUserTokens", reflect.TypeOf((*MockClient)(nil).GetAllMyUserTokens))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMyUserTokenList", reflect.TypeOf((*MockClient)(nil).GetAllMyUserTokenList))
 }
 
 // GetAllRoles mocks base method.
@@ -690,19 +690,19 @@ func (mr *MockClientMockRecorder) GetAllRules() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRules", reflect.TypeOf((*MockClient)(nil).GetAllRules))
 }
 
-// GetAllServiceUserToken mocks base method.
-func (m *MockClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
+// GetWorkspaceServiceUserTokenList mocks base method.
+func (m *MockClient) GetWorkspaceServiceUserTokenList(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllServiceUserToken", serviceUserUUID, workspaceUUID)
+	ret := m.ctrl.Call(m, "GetWorkspaceServiceUserTokenList", serviceUserUUID, workspaceUUID)
 	ret0, _ := ret[0].(*[]types.ServiceUserToken)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAllServiceUserToken indicates an expected call of GetAllServiceUserToken.
-func (mr *MockClientMockRecorder) GetAllServiceUserToken(serviceUserUUID, workspaceUUID interface{}) *gomock.Call {
+// GetWorkspaceServiceUserTokenList indicates an expected call of GetWorkspaceServiceUserTokenList.
+func (mr *MockClientMockRecorder) GetWorkspaceServiceUserTokenList(serviceUserUUID, workspaceUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllServiceUserToken", reflect.TypeOf((*MockClient)(nil).GetAllServiceUserToken), serviceUserUUID, workspaceUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWorkspaceServiceUserTokenList", reflect.TypeOf((*MockClient)(nil).GetWorkspaceServiceUserTokenList), serviceUserUUID, workspaceUUID)
 }
 
 // GetAllUserKiseSecret mocks base method.

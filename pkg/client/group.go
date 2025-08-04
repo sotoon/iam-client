@@ -88,7 +88,7 @@ func (c *iamClient) GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) 
 	return user, nil
 }
 
-func (c *iamClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
+func (c *iamClient) GetAllGroupUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error) {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -102,7 +102,7 @@ func (c *iamClient) GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*ty
 	return users, nil
 }
 
-func (c *iamClient) GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
+func (c *iamClient) GetAllGroupServiceUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -234,7 +234,7 @@ func (c *iamClient) GetWorkspaceGroupDetail(workspaceUUID, groupUUID uuid.UUID) 
 	return group, nil
 }
 
-func (c *iamClient) GetWorkspaceGroupRoles(workspaceUUID, groupUUID uuid.UUID) ([]*types.Role, error) {
+func (c *iamClient) GetWorkspaceGroupRoleList(workspaceUUID, groupUUID uuid.UUID) ([]*types.Role, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
@@ -247,42 +247,50 @@ func (c *iamClient) GetWorkspaceGroupRoles(workspaceUUID, groupUUID uuid.UUID) (
 	return roles, nil
 }
 
-func (c *iamClient) BulkAddUsersToGroup(workspaceUUID, groupUUID uuid.UUID, userUUIDs []uuid.UUID) error {
+func (c *iamClient) BulkAddUsersToGroup(workspaceUUID, groupUUID uuid.UUID, userUUIDs []uuid.UUID) ([]*types.GroupUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
 	}
-	
+
 	userUUIDStrings := make([]string, len(userUUIDs))
 	for i, uuid := range userUUIDs {
 		userUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"users": userUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddUsers), replaceDict)
-	return c.Do(http.MethodPost, apiURL, 0, req, nil)
+	groupUsers := []*types.GroupUser{}
+	if err := c.Do(http.MethodPost, apiURL, 0, req, &groupUsers); err != nil {
+		return nil, err
+	}
+	return groupUsers, nil
 }
 
-func (c *iamClient) BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) error {
+func (c *iamClient) BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) ([]*types.GroupServiceUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
 	}
-	
+
 	serviceUserUUIDStrings := make([]string, len(serviceUserUUIDs))
 	for i, uuid := range serviceUserUUIDs {
 		serviceUserUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"service_users": serviceUserUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddServiceUsers), replaceDict)
-	return c.Do(http.MethodPost, apiURL, 0, req, nil)
+	groupServiceUsers := []*types.GroupServiceUser{}
+	if err := c.Do(http.MethodPost, apiURL, 0, req, &groupServiceUsers); err != nil {
+		return nil, err
+	}
+	return groupServiceUsers, nil
 }
 
 func (c *iamClient) BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, roleUUIDs []uuid.UUID) error {
@@ -290,16 +298,16 @@ func (c *iamClient) BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, role
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
 	}
-	
+
 	roleUUIDStrings := make([]string, len(roleUUIDs))
 	for i, uuid := range roleUUIDs {
 		roleUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"roles": roleUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddRoles), replaceDict)
 	return c.Do(http.MethodPost, apiURL, 0, req, nil)
 }

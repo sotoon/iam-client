@@ -95,7 +95,7 @@ const (
 	RouteWorkspaceGetUsers       = "/workspace/{workspace_uuid}/user/"
 	RouteUserLeaveWorkspace      = "/workspace/{workspace_uuid}/user/{user_uuid}/"
 	RouteUserDetailedList        = "/detailed/workspace/{workspace_uuid}/user/"
-	RouteUserDetailedDetail      = "/detailed/workspace/{workspace_uuid}/user/{user_uuid}/"
+	RouteGetWorkspaceUserDetail  = "/detailed/workspace/{workspace_uuid}/user/{user_uuid}/"
 	RouteUserGetOne              = "/user/{user_uuid}/"
 	RouteWorkspaceInvite         = "/workspace/{workspace_uuid}/invite/"
 	RouteActivateUserInWorkspace = "/workspace/{workspace_uuid}/user/{user_uuid}/allow/"

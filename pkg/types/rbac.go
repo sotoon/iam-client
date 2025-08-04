@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -25,10 +27,38 @@ type RoleRes struct {
 	Name      string     `json:"name" validate:"required"`
 	Workspace *Workspace `json:"workspace"`
 }
+
 type Role struct {
-	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
-	Workspace *uuid.UUID `json:"workspace" faker:"uuidObject"`
-	Name      string     `json:"name"`
+	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	DescriptionFa string     `json:"description_fa"`
+	DescriptionEn string     `json:"description_en"`
+	Workspace     *Workspace `json:"workspace"`
+	Name          string     `json:"name"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	Items         []any      `json:"items"`
+}
+
+type RoleWithCompactWorkspace struct {
+	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	DescriptionFa string     `json:"description_fa"`
+	DescriptionEn string     `json:"description_en"`
+	Workspace     *uuid.UUID `json:"workspace"`
+	Name          string     `json:"name"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	Items         []any      `json:"items"`
+}
+
+type RoleCompactWorkspace struct {
+	UUID          *uuid.UUID `json:"uuid" faker:"uuidObject"`
+	DescriptionFa string     `json:"description_fa"`
+	DescriptionEn string     `json:"description_en"`
+	Workspace     *uuid.UUID `json:"workspace"`
+	Name          string     `json:"name"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	Items         []any      `json:"items"`
 }
 
 type RoleBinding struct {

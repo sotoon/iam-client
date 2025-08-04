@@ -2,15 +2,17 @@ package client
 
 import (
 	"net/http"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
 )
 
-func (c *iamClient) CreateMyUserTokenWithToken(secret string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserToken(name string, expiresAt *time.Time) (*types.UserToken, error) {
 	userTokenreq := &types.UserTokenReq{
-		Secret: secret,
+		Name:      name,
+		ExpiresAt: expiresAt,
 	}
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
@@ -34,7 +36,7 @@ func (c *iamClient) GetMyUserToken(userTokenUUID *uuid.UUID) (*types.UserToken, 
 	err := c.Do(http.MethodGet, apiURL, 0, nil, userToken)
 	return userToken, err
 }
-func (c *iamClient) GetAllMyUserTokens() (*[]types.UserToken, error) {
+func (c *iamClient) GetAllMyUserTokenList() (*[]types.UserToken, error) {
 
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,

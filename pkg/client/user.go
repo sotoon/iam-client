@@ -47,7 +47,7 @@ func (c *iamClient) RevokeSecret(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodPost, apiURL, 0, nil, nil)
 }
 
-func (c *iamClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserTokenWithTokenByCreds(email, password string) (*types.UserToken, error) {
 	tokenRequest := &types.UserTokenByCredsReq{
 		Email:    email,
 		Password: password,
@@ -72,7 +72,7 @@ func (c *iamClient) CreateUserTokenByCreds(email, password string) (*types.UserT
 	return createdToken, nil
 }
 
-func (c *iamClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserTokenWithTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
 	tokenRequest := &types.AuthnChallengeRequest{
 		ChallengeToken:  challengeToken,
 		ChallengeAnswer: challengeAnswer,
@@ -344,27 +344,27 @@ func (c *iamClient) ChangePassword(token, password string) error {
 	return c.Do(http.MethodPost, apiURL, 0, changeRequest, nil)
 }
 
-func (c *iamClient) GetUserDetailList(workspaceUUID uuid.UUID) ([]*types.User, error) {
+func (c *iamClient) GetWorkspaceUserList(workspaceUUID uuid.UUID) ([]*types.UserWithCompactRole, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserDetailedList), replaceDict)
 
-	users := []*types.User{}
+	users := []*types.UserWithCompactRole{}
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, &users); err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-func (c *iamClient) GetUserDetail(workspaceUUID, userUUID uuid.UUID) (*types.User, error) {
+func (c *iamClient) GetWorkspaceUserDetail(workspaceUUID, userUUID uuid.UUID) (*types.UserWithCompactRole, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		userUUIDPlaceholder:      userUUID.String(),
 	}
-	apiURL := substringReplace(trimURLSlash(routes.RouteUserDetailedDetail), replaceDict)
+	apiURL := substringReplace(trimURLSlash(routes.RouteGetWorkspaceUserDetail), replaceDict)
 
-	user := &types.User{}
+	user := &types.UserWithCompactRole{}
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, user); err != nil {
 		return nil, err
 	}

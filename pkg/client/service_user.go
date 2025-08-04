@@ -84,7 +84,7 @@ func (c *iamClient) CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.
 	return ServiceUserToken, err
 }
 
-func (c *iamClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
+func (c *iamClient) GetWorkspaceServiceUserTokenList(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error) {
 
 	replaceDict := map[string]string{
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -96,34 +96,34 @@ func (c *iamClient) GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.
 	return ServiceUserTokens, err
 }
 
-func (c *iamClient) GetServiceUserDetailList(workspaceUUID uuid.UUID) ([]*types.ServiceUser, error) {
+func (c *iamClient) GetWorkspaceServiceUserList(workspaceUUID uuid.UUID) ([]*types.ServiceUserWithCompactRole, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDetailList), replaceDict)
 
-	serviceUsers := []*types.ServiceUser{}
+	serviceUsers := []*types.ServiceUserWithCompactRole{}
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, &serviceUsers); err != nil {
 		return nil, err
 	}
 	return serviceUsers, nil
 }
 
-func (c *iamClient) GetServiceUserDetail(workspaceUUID, serviceUserUUID uuid.UUID) (*types.ServiceUser, error) {
+func (c *iamClient) GetWorkspaceServiceUserDetail(workspaceUUID, serviceUserUUID uuid.UUID) (*types.ServiceUserWithCompactRole, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserDetailGetOne), replaceDict)
 
-	serviceUser := &types.ServiceUser{}
+	serviceUser := &types.ServiceUserWithCompactRole{}
 	if err := c.Do(http.MethodGet, apiURL, 0, nil, serviceUser); err != nil {
 		return nil, err
 	}
 	return serviceUser, nil
 }
 
-func (c *iamClient) GetServiceUserPublicKeys(workspaceUUID, serviceUserUUID uuid.UUID) ([]*types.ServiceUserPublicKey, error) {
+func (c *iamClient) GetWorkspaceServiceUserPublicKeyList(workspaceUUID, serviceUserUUID uuid.UUID) ([]*types.ServiceUserPublicKey, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
 		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
@@ -144,8 +144,8 @@ func (c *iamClient) CreateServiceUserPublicKey(workspaceUUID, serviceUserUUID uu
 	}
 
 	req := map[string]string{
-		serviceNamePlaceholder:   name,
-		publicKeyUUIDPlaceholder: publicKey,
+		"title": name,
+		"key":   publicKey,
 	}
 
 	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserPublicKeyCreate), replaceDict)
