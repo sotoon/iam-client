@@ -27,7 +27,7 @@ type RoleRes struct {
 }
 type Role struct {
 	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
-	Workspace *uuid.UUID `json:"workspace" faker:"uuidObject"`
+	Workspace *Workspace `json:"workspace" faker:"uuidObject"`
 	Name      string     `json:"name"`
 }
 
