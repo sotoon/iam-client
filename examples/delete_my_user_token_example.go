@@ -14,7 +14,7 @@ func main() {
 	userUUID := "{user_uuid}"
 	tokenId := "{token_uuid}"
 
-	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID)
+	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID, client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
 		os.Exit(1)

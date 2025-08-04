@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	accessToken := "{your_access_token}"
+	accessToken := "8b7d01d141038287c977995fc3048c4f9a5a00c5fce0889876e834e478d1af0b14f7269a3e3767e93fe8f142349fe9c662ad070e22bd18d9b9ca4c17ffbdc714"
 	IAM_URL := "https://bepa.sotoon.ir"
-	workspaceId := "{workspace_uuid}"
+	workspaceId := "d750a6ac-65bf-498c-80cf-a87d52c911a1"
 
-	client, err := client.NewClient(accessToken, IAM_URL, "", "")
+	client, err := client.NewClient(accessToken, IAM_URL, "", "", client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
 		os.Exit(1)

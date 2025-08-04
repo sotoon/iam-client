@@ -13,7 +13,7 @@ func main() {
 	IAM_URL := "https://bepa.sotoon.ir"
 	userUUID := "{user_uuid}"
 
-	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID)
+	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID, client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
 		os.Exit(1)

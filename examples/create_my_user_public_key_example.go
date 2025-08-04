@@ -17,7 +17,7 @@ func main() {
 	keyType := "{key_type_of_key}"
 	key := "{key}"
 
-	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID)
+	client, err := client.NewClient(accessToken, IAM_URL, "", userUUID, client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
 		os.Exit(1)

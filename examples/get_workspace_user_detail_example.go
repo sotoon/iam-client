@@ -15,7 +15,7 @@ func main() {
 	workspaceId := "{workspace_uuid}"
 	userId := "{user_uuid}"
 
-	client, err := client.NewClient(accessToken, IAM_URL, "", "")
+	client, err := client.NewClient(accessToken, IAM_URL, "", "", client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
 		os.Exit(1)
