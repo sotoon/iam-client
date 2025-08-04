@@ -24,9 +24,9 @@ const APIURI = "/api/v1/"
 type LogLevel int
 
 const (
-	DEBUG int = 0
-	INFO  int = 1
-	ERROR int = 2
+	DEBUG LogLevel = 0
+	INFO  LogLevel = 1
+	ERROR LogLevel = 2
 )
 
 const HealthyIamURLCachedKey = "healthy_iam_url"
@@ -49,13 +49,13 @@ type iamClient struct {
 var _ Client = &iamClient{}
 
 func NewMinimalClient(baseURL string) (Client, error) {
-	return NewClient("", baseURL, "", "")
+	return NewClient("", baseURL, "", "", DEBUG)
 }
 
 // NewClient creates a new client to interact with iam server
-func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string) (Client, error) {
+func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string, logLevel LogLevel) (Client, error) {
 	client := &iamClient{}
-	client.logLevel = LogLevel(DEBUG)
+	client.logLevel = logLevel
 	client.accessToken = accessToken
 	client.defaultWorkspace = defaultWorkspace
 	client.userUUID = userUUID
@@ -167,13 +167,11 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 		body = bytes.NewBuffer(data)
 	}
 
-	
 	httpRequest, err := c.NewRequestWithParameters(method, path, parameters, body)
 
 	if err != nil {
 		return err
 	}
-	
 
 	// do not log whole request containing authorization secret
 	c.log("iam-client performing request method:%v", httpRequest.Method)

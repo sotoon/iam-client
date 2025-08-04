@@ -2,18 +2,23 @@
 > A simple yet powerful library that empowers you using IAM APIs.
 
 ## Table of Contents
-* [General Info](#general-information)
-* [Quick Start🏎️](#quick-start)
-* [Technologies Used](#technologies-used)
-* [Features](#features)
-* [Architecture](#architecture)
-* [Setup](#setup)
-* [Project Status](#project-status)
-* [Room for Improvement](#room-for-improvement)
-* [Acknowledgements](#acknowledgements)
-* [Support Notes](#support-notes)
-* [External Links](#external-links)
-* [Contact](#contact)
+- [IAM Client](#iam-client)
+  - [Table of Contents](#table-of-contents)
+  - [General Information](#general-information)
+  - [Technologies Used](#technologies-used)
+  - [Quick Start🏎](#quick-start)
+    - [Installation](#installation)
+    - [Initialization](#initialization)
+    - [Usage](#usage)
+  - [Features](#features)
+  - [Architecture](#architecture)
+  - [Setup](#setup)
+  - [Project Status](#project-status)
+  - [Room for Improvement](#room-for-improvement)
+  - [Support Notes](#support-notes)
+  - [External Links](#external-links)
+  - [Acknowledgements](#acknowledgements)
+  - [Contact](#contact)
 
 
 ## General Information
@@ -58,7 +63,7 @@ import (
 
 func SimpleIamClientExample() {
     // ... initialize IAM_URL, accessToken, defaultWorkspaceId, userId
-    client, err := client.NewClient(accessToken, IAM_URL, defaultWorkspaceId, userId)
+    client, err := client.NewClient(accessToken, IAM_URL, defaultWorkspaceId, userId, client.INFO)
     if err != nil {
         logger.Error("Cannot make a IAM client.", zap.Error(err))
         // handle error or kill the process
