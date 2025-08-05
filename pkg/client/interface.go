@@ -69,6 +69,11 @@ type Client interface {
 	GetUserByName(userName string, workspaceUUID *uuid.UUID) (*types.User, error)
 	GetUsers() ([]*types.User, error)
 	DeleteUser(userUUID *uuid.UUID) error
+	GetWorkspaceUserList(workspaceUUID uuid.UUID) ([]*types.UserWithCompactRole, error)
+	GetWorkspaceUserDetail(workspaceUUID, userUUID uuid.UUID) (*types.UserWithCompactRole, error)
+	GetUserOtp(userUUID uuid.UUID) (*types.UserOtp, error)
+	CreateUserOtp(userUUID uuid.UUID) (*types.UserOtp, error)
+	DeleteUserOtp(userUUID uuid.UUID) error
 	UpdateUser(userUUID *uuid.UUID, name, email, password string) error
 	SetMyPassword(password string) error
 	SetMyEmail(email string) error
@@ -79,24 +84,36 @@ type Client interface {
 	ActivateUserInWorkspace(workspaceUUID *uuid.UUID, userUUID *uuid.UUID) error
 	InviteUser(workspaceUUID *uuid.UUID, email string) (*types.InvitationInfo, error)
 	JoinByInvitationToken(name, password, invitationToken string) (*types.User, error)
+	ResetPassword(email string) error
+	ChangePassword(token, password string) error
 	GetMyWorkspaces() ([]*types.WorkspaceWithOrganization, error)
 	GetUserRoles(userUUID *uuid.UUID) ([]*types.RoleBinding, error)
-	CreateUserTokenByCreds(email, password string) (*types.UserToken, error)
+	CreateMyUserTokenWithTokenByCreds(email, password string) (*types.UserToken, error)
 	SetConfigDefaultUserData(context, token, userUUID, email string) error
 	SetCurrentContext(context string) error
 	SuspendUser(userUUID *uuid.UUID) error
 	ActivateUser(userUUID *uuid.UUID) error
 
-	CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error)
+	CreateMyUserPublicKey(title, keyType, key string) (*types.PublicKey, error)
 	GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types.PublicKey, error)
-	GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error)
-	DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error
+	GetAllMyUserPublicKeyList() ([]*types.PublicKey, error)
+	DeleteMyUserPublicKey(publicKeyUUID *uuid.UUID) error
 	CreatePublicKeyFromFileForDefaultUser(title, fileAdd string) (*types.PublicKey, error)
 	VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error)
 
-	GetAllUserKiseSecret() ([]*types.KiseSecret, error)
+	GetUserKiseSecrets(userUUID *uuid.UUID, workspaceUUID *uuid.UUID) ([]*types.KiseSecret, error)
+	CreateUserKiseSecret(userUUID *uuid.UUID, workspaceUUID *uuid.UUID, title string) (*types.KiseSecret, error)
 	DeleteUserKiseSecret(KiseSecretUUID *uuid.UUID) error
 	CreateKiseSecretForDefaultUser() (*types.KiseSecret, error)
+	GetServiceUserKiseSecrets(workspaceUUID uuid.UUID) ([]*types.KiseSecret, error)
+	CreateServiceUserKiseSecret(workspaceUUID, serviceUserUUID uuid.UUID, title string) (*types.KiseSecret, error)
+	DeleteServiceUserKiseSecret(workspaceUUID, serviceUserUUID, kiseSecretUUID uuid.UUID) error
+
+	GetThirdPartyBulkRefreshTokens(workspaceUUID, thirdPartyUUID, serviceUserUUID uuid.UUID) ([]*types.ThirdPartyBulkRefreshToken, error)
+	CreateThirdPartyBulkRefreshToken(workspaceUUID, thirdPartyUUID, serviceUserUUID uuid.UUID, refreshToken string, expiresAt *time.Time) (*types.ThirdPartyBulkRefreshToken, error)
+
+	GetThirdPartyAccessTokens(organizationUUID, thirdPartyUUID uuid.UUID) ([]*types.ThirdPartyAccessToken, error)
+	CreateThirdPartyAccessToken(organizationUUID, thirdPartyUUID uuid.UUID, accessToken string, expiresAt *time.Time) (*types.ThirdPartyAccessToken, error)
 
 	Authorize(identity, userType, action, rriObject string) error
 	Identify(token string) (*types.UserRes, error)
@@ -108,33 +125,48 @@ type Client interface {
 	SetDefaultWorkspace(workspace string)
 	SetUser(userUUID string)
 
-	CreateMyUserTokenWithToken(secret string) (*types.UserToken, error)
+	CreateMyUserToken(name string, expiresAt *time.Time) (*types.UserToken, error)
 	GetMyUserToken(UserTokenUUID *uuid.UUID) (*types.UserToken, error)
-	GetAllMyUserTokens() (*[]types.UserToken, error)
+	GetAllMyUserTokenList() (*[]types.UserToken, error)
 	DeleteMyUserToken(UserTokenUUID *uuid.UUID) error
 
 	GetService(name string) (*types.Service, error)
 
 	DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error
-	GetAllServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error)
+	GetWorkspaceServiceUserTokenList(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error)
 	CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error)
 	CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error)
 	GetServiceUserByName(workspaceName string, serviceUserName string) (*types.ServiceUser, error)
 	DeleteServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) error
 	GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
 	GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*types.ServiceUser, error)
+	GetWorkspaceServiceUserList(workspaceUUID uuid.UUID) ([]*types.ServiceUserWithCompactRole, error)
+	GetWorkspaceServiceUserDetail(workspaceUUID, serviceUserUUID uuid.UUID) (*types.ServiceUserWithCompactRole, error)
+	GetWorkspaceServiceUserPublicKeyList(workspaceUUID, serviceUserUUID uuid.UUID) ([]*types.ServiceUserPublicKey, error)
+	CreateServiceUserPublicKey(workspaceUUID, serviceUserUUID uuid.UUID, name, publicKey string) (*types.ServiceUserPublicKey, error)
+	DeleteServiceUserPublicKey(workspaceUUID, serviceUserUUID, publicKeyUUID uuid.UUID) error
 	BindRoleToServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	UnbindRoleFromServiceUser(workspaceUUID, roleUUID, serviceUserUUID *uuid.UUID, items map[string]string) error
 	GetRoleServiceUsers(roleUUID, workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error)
+	BulkAddServiceUsersToRole(workspaceUUID, roleUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) error
+	BulkAddUsersToRole(workspaceUUID, roleUUID uuid.UUID, userUUIDs []uuid.UUID) error
+	BulkAddRulesToRole(workspaceUUID, roleUUID uuid.UUID, ruleUUIDs []uuid.UUID) error
 
 	GetGroup(workspaceUUID, groupUUID *uuid.UUID) (*types.Group, error)
 	GetAllGroups(workspaceUUID *uuid.UUID) ([]*types.Group, error)
+	GetWorkspaceGroupList(workspaceUUID uuid.UUID) ([]*types.Group, error)
+	GetWorkspaceGroupDetail(workspaceUUID, groupUUID uuid.UUID) (*types.Group, error)
+	GetWorkspaceGroupRoleList(workspaceUUID, groupUUID uuid.UUID) ([]*types.Role, error)
+	BulkAddUsersToGroup(workspaceUUID, groupUUID uuid.UUID, userUUIDs []uuid.UUID) ([]*types.GroupUser, error)
+	BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUID, serviceUserUUIDs []uuid.UUID) ([]*types.GroupServiceUser, error)
+	BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, roleUUIDs []uuid.UUID) error
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
 	GetGroupByName(workspaceName string, groupName string) (*types.Group, error)
 	CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error)
+	UpdateGroup(workspaceUUID, groupUUID uuid.UUID, name, description *string, workspaceInfo *types.WorkspaceUpdateReq) error
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
-	GetAllGroupUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
-	GetAllGroupServiceUsers(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error)
+	GetAllGroupUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
+	GetAllGroupServiceUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.ServiceUser, error)
 	UnbindUserFromGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error
 	BindGroup(groupName string, workspace, groupUUID, userUUID *uuid.UUID) error
 	GetRoleGroups(roleUUID, workspaceUUID *uuid.UUID) ([]*types.Group, error)

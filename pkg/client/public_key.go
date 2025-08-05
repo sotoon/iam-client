@@ -14,7 +14,7 @@ import (
 
 var defaultSSHKeyType = "ssh-rsa"
 
-func (c *iamClient) DeleteDefaultUserPublicKey(publicKeyUUID *uuid.UUID) error {
+func (c *iamClient) DeleteMyUserPublicKey(publicKeyUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder:      c.userUUID,
 		publicKeyUUIDPlaceholder: publicKeyUUID.String(),
@@ -43,7 +43,7 @@ func (c *iamClient) GetOneDefaultUserPublicKey(publicKeyUUID *uuid.UUID) (*types
 	return publicKey, nil
 }
 
-func (c *iamClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
+func (c *iamClient) GetAllMyUserPublicKeyList() ([]*types.PublicKey, error) {
 	replaceDict := map[string]string{
 		userUUIDPlaceholder: c.userUUID,
 	}
@@ -57,7 +57,7 @@ func (c *iamClient) GetAllDefaultUserPublicKeys() ([]*types.PublicKey, error) {
 	return publicKeys, nil
 }
 
-func (c *iamClient) CreatePublicKeyForDefaultUser(title, keyType, key string) (*types.PublicKey, error) {
+func (c *iamClient) CreateMyUserPublicKey(title, keyType, key string) (*types.PublicKey, error) {
 	publicKeyReq := &types.PublicKeyReq{
 		Title: title,
 		Key:   fmt.Sprintf("%s %s", keyType, key),
@@ -83,7 +83,7 @@ func (c *iamClient) CreatePublicKeyFromFileForDefaultUser(title, fileAdd string)
 	if err != nil {
 		return nil, err
 	}
-	return c.CreatePublicKeyForDefaultUser(title, defaultSSHKeyType, string(key))
+	return c.CreateMyUserPublicKey(title, defaultSSHKeyType, string(key))
 }
 
 func (c *iamClient) VerifyPublicKey(keyType string, key string, workspaceUUID string, username string, hostname string) (bool, error) {

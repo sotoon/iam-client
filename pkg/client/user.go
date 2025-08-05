@@ -3,10 +3,11 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/sotoon/iam-client/pkg/routes"
 	"github.com/sotoon/iam-client/pkg/types"
-	"net/http"
 )
 
 func (c *iamClient) CreateUser(userName, email, password string) (*types.User, error) {
@@ -46,7 +47,7 @@ func (c *iamClient) RevokeSecret(userUUID *uuid.UUID) error {
 	return c.Do(http.MethodPost, apiURL, 0, nil, nil)
 }
 
-func (c *iamClient) CreateUserTokenByCreds(email, password string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserTokenWithTokenByCreds(email, password string) (*types.UserToken, error) {
 	tokenRequest := &types.UserTokenByCredsReq{
 		Email:    email,
 		Password: password,
@@ -71,7 +72,7 @@ func (c *iamClient) CreateUserTokenByCreds(email, password string) (*types.UserT
 	return createdToken, nil
 }
 
-func (c *iamClient) CreateUserTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
+func (c *iamClient) CreateMyUserTokenWithTokenByChallenge(challengeToken, challengeAnswer string) (*types.UserToken, error) {
 	tokenRequest := &types.AuthnChallengeRequest{
 		ChallengeToken:  challengeToken,
 		ChallengeAnswer: challengeAnswer,
@@ -215,7 +216,7 @@ func (c *iamClient) RemoveUserFromWorkspace(userUUID, workspaceUUID *uuid.UUID) 
 		userUUIDPlaceholder:      userUUID.String(),
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 	}
-	apiURL := substringReplace(trimURLSlash(routes.RouteUserDropWorkspace), replaceDict)
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserLeaveWorkspace), replaceDict)
 	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }
 
@@ -275,7 +276,7 @@ func (c *iamClient) JoinByInvitationToken(name, password, invitationToken string
 	}
 
 	joinedUser := &types.User{}
-	apiURL := substringReplace(trimURLSlash(routes.RouteUserSetPassword), replaceDict)
+	apiURL := substringReplace(trimURLSlash(routes.RouteAcceptInvitation), replaceDict)
 	err := c.Do(http.MethodPost, apiURL, 0, joinReq, joinedUser)
 	return joinedUser, err
 }
@@ -320,4 +321,86 @@ func (c *iamClient) ActivateUser(userUUID *uuid.UUID) error {
 	apiURL := substringReplace(trimURLSlash(routes.RouteUserActivate), replaceDict)
 
 	return c.Do(http.MethodPut, apiURL, 0, nil, nil)
+}
+
+func (c *iamClient) ResetPassword(email string) error {
+	resetRequest := &types.ResetPasswordReq{
+		Email: email,
+	}
+
+	apiURL := trimURLSlash(routes.RouteUserResetPassword)
+	return c.Do(http.MethodPost, apiURL, 0, resetRequest, nil)
+}
+
+func (c *iamClient) ChangePassword(token, password string) error {
+	changeRequest := &types.ChangePasswordReq{
+		Password: password,
+	}
+
+	replaceDict := map[string]string{
+		userTokenUUIDPlaceholder: token,
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserChangePassword), replaceDict)
+	return c.Do(http.MethodPost, apiURL, 0, changeRequest, nil)
+}
+
+func (c *iamClient) GetWorkspaceUserList(workspaceUUID uuid.UUID) ([]*types.UserWithCompactRole, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserDetailedList), replaceDict)
+
+	users := []*types.UserWithCompactRole{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, &users); err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (c *iamClient) GetWorkspaceUserDetail(workspaceUUID, userUUID uuid.UUID) (*types.UserWithCompactRole, error) {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGetWorkspaceUserDetail), replaceDict)
+
+	user := &types.UserWithCompactRole{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, user); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (c *iamClient) GetUserOtp(userUUID uuid.UUID) (*types.UserOtp, error) {
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserOtpGet), replaceDict)
+
+	otp := &types.UserOtp{}
+	if err := c.Do(http.MethodGet, apiURL, 0, nil, otp); err != nil {
+		return nil, err
+	}
+	return otp, nil
+}
+
+func (c *iamClient) CreateUserOtp(userUUID uuid.UUID) (*types.UserOtp, error) {
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserOtpPost), replaceDict)
+
+	otp := &types.UserOtp{}
+	if err := c.Do(http.MethodPost, apiURL, 0, nil, otp); err != nil {
+		return nil, err
+	}
+	return otp, nil
+}
+
+func (c *iamClient) DeleteUserOtp(userUUID uuid.UUID) error {
+	replaceDict := map[string]string{
+		userUUIDPlaceholder: userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteUserOtpDelete), replaceDict)
+	return c.Do(http.MethodDelete, apiURL, 0, nil, nil)
 }

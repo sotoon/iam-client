@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/bxcodec/faker v2.0.1+incompatible
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.6.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.8.1

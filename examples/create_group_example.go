@@ -1,16 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/sotoon/iam-client/pkg/client"
 	"os"
+
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/client"
 )
 
 func main() {
-	accessToken := "{accessToken}"
+	accessToken := "{your_access_token}"
 	IAM_URL := "https://bepa.sotoon.ir"
 	workspaceId := "{workspace_uuid}"
+
+	// Group name to create
+	groupName := "Test Group "
 
 	client, err := client.NewClient(accessToken, IAM_URL, "", "", client.DEBUG)
 	if err != nil {
@@ -24,14 +29,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	services, err := client.GetWorkspaceServices(workspaceUUID)
+	createdGroup, err := client.CreateGroup(groupName, &workspaceUUID)
 	if err != nil {
-		fmt.Println("error getting workspace services:", err)
+		fmt.Println("error creating group:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Workspace Services:")
-	for _, s := range services {
-		fmt.Printf("- %s\n", s.Name)
+	fmt.Println("Group created successfully!")
+
+	jsonData, err := json.MarshalIndent(createdGroup, "", "  ")
+	if err != nil {
+		fmt.Println("error marshaling group data:", err)
+		os.Exit(1)
 	}
+	fmt.Println(string(jsonData))
 }

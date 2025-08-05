@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/types"
 )
 
 func TestGetGroup(t *testing.T) {
@@ -99,7 +99,7 @@ func TestGetGroupUser(t *testing.T) {
 	DoTestReadAPI(t, config)
 }
 
-func TestGetAllGroupUsers(t *testing.T) {
+func TestGetAllGroupUserList(t *testing.T) {
 	var object []types.User
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
@@ -109,12 +109,12 @@ func TestGetAllGroupUsers(t *testing.T) {
 		Params:           []interface{}{&workspaceUUID, &groupUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/user/`),
-		ClientMethodName: "GetAllGroupUsers",
+		ClientMethodName: "GetAllGroupUserList",
 	}
 	DoTestListingAPI(t, config)
 }
 
-func TestGetAllGroupServiceUsers(t *testing.T) {
+func TestGetAllGroupServiceUserList(t *testing.T) {
 	var object []types.ServiceUser
 	workspaceUUID := uuid.NewV4()
 	groupUUID := uuid.NewV4()
@@ -124,7 +124,7 @@ func TestGetAllGroupServiceUsers(t *testing.T) {
 		Params:           []interface{}{&workspaceUUID, &groupUUID},
 		ParamsInURL:      []interface{}{&workspaceUUID, &groupUUID},
 		URLregexp:        regexp.MustCompile(`/workspace/(.+)/group/(.+)/service-user/`),
-		ClientMethodName: "GetAllGroupServiceUsers",
+		ClientMethodName: "GetAllGroupServiceUserList",
 	}
 	DoTestListingAPI(t, config)
 }
