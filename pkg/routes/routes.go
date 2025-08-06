@@ -56,6 +56,8 @@ const (
 	RouteServiceUserDropRole     = "/workspace/{workspace_uuid}/role/{role_uuid}/service-user/{service_user_uuid}/"
 	RouteRoleGetAllUsers         = "/workspace/{workspace_uuid}/role/{role_uuid}/user/"
 	RouteUserDropRole            = "/workspace/{workspace_uuid}/role/{role_uuid}/user/{user_uuid}/"
+	RouteGroupDropRole           = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
+	RouteGroupAppendRole         = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
 
 	//Rule
 	RouteRuleCreate           = "/workspace/{workspace_uuid}/rule/"
@@ -69,7 +71,7 @@ const (
 	// Service User
 	RouteServiceUserCreate          = "/workspace/{workspace_uuid}/service-user/"
 	RouteServiceUserGetALL          = "/workspace/{workspace_uuid}/service-user/"
-	RouteServiceUserGetOne          = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
+	RouteServiceUserUpdate          = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
 	RouteServiceUserDelete          = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
 	RouteServiceUserDetailList      = "/detailed/workspace/{workspace_uuid}/service-user/"
 	RouteServiceUserDetailGetOne    = "/detailed/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
@@ -156,10 +158,9 @@ const (
 	RouteGroupServiceUserGetOne       = "/workspace/{workspace_uuid}/group/{group_uuid}/service-user/{service_user_uuid}/"
 	RouteGroupGetByName               = "/user/{user_uuid}/workspace/name={workspace_name}/group/name={group_name}/"
 	RouteRoleGetAllGroups             = "/workspace/{workspace_uuid}/role/{role_uuid}/group/"
-	RouteGroupAppendRole              = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
-	RouteGroupDropRole                = "/workspace/{workspace_uuid}/role/{role_uuid}/group/{group_uuid}/"
 	RouteOrganizationGetAll           = "/organization/"
 	RouteOrganizationGetOne           = "/organization/{organization_uuid}/"
 	RouteOrganizationWorkspacesGetAll = "/organization/{organization_uuid}/workspace/"
 	RouteOrganizationWorkspacesGetOne = "/organization/{organization_uuid}/workspace/{workspace_uuid}/"
+	RouteServiceUserGetOne            = "/workspace/{workspace_uuid}/service-user/{service_user_uuid}/"
 )

@@ -14,6 +14,9 @@ func main() {
 	IAM_URL := "https://bepa.sotoon.ir"
 	workspaceId := "{workspace_id}"
 
+	// Service user name to create
+	serviceUserName := "{service_user_name}"
+
 	client, err := client.NewClient(accessToken, IAM_URL, "", "", client.DEBUG)
 	if err != nil {
 		fmt.Println("cannot create client:", err)
@@ -26,26 +29,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	users, err := client.GetWorkspaceUserList(workspaceUUID)
+	createdServiceUser, err := client.CreateServiceUser(serviceUserName, &workspaceUUID)
 	if err != nil {
-		fmt.Println("error getting workspace users:", err)
+		fmt.Println("error creating service user:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Workspace Users:")
-	if len(users) == 0 {
-		fmt.Println("No users found in this workspace")
-	} else {
-		fmt.Printf("Found %d users in the workspace\n", len(users))
+	fmt.Println("Service User created successfully!")
 
-		if len(users) > 0 {
-			fmt.Println("\nExample User (Full Details):")
-			jsonData, err := json.MarshalIndent(users[0], "", "  ")
-			if err != nil {
-				fmt.Println("error marshaling user data:", err)
-				os.Exit(1)
-			}
-			fmt.Println(string(jsonData))
-		}
+	jsonData, err := json.MarshalIndent(createdServiceUser, "", "  ")
+	if err != nil {
+		fmt.Println("error marshaling service user data:", err)
+		os.Exit(1)
 	}
+	fmt.Println(string(jsonData))
 }

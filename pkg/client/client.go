@@ -161,6 +161,7 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 	var body io.Reader
 	if req != nil {
 		data, err := json.Marshal(req)
+		c.log("iam-client marshaling request body:%v", string(data))
 		if err != nil {
 			return err
 		}
