@@ -281,6 +281,11 @@ type ServiceUserReq struct {
 	Workspace string `json:"workspace"`
 }
 
+type ServiceUserUpdateReq struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type ServiceUserToken struct {
 	UUID        *uuid.UUID `json:"uuid" faker:"uuidObject"`
 	ServiceUser string     `json:"service_user"`
@@ -290,6 +295,11 @@ type ServiceUserToken struct {
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 	ExpiresAt   *time.Time `json:"expires_at"`
+}
+
+type RoleWithItems struct {
+	RoleUUID string              `json:"role_uuid"`
+	Items    []map[string]string `json:"items_list"`
 }
 
 type ServiceUserPublicKey struct {

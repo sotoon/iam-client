@@ -22,6 +22,25 @@ func (c *iamClient) GetServiceUser(workspaceUUID, serviceUserUUID *uuid.UUID) (*
 	return service, nil
 }
 
+func (c *iamClient) UpdateServiceUser(workspaceUUID, serviceUserUUID uuid.UUID, name, description string) (*types.ServiceUser, error) {
+	updateReq := &types.ServiceUserUpdateReq{
+		Name:        name,
+		Description: description,
+	}
+
+	replaceDict := map[string]string{
+		serviceUserUUIDPlaceholder: serviceUserUUID.String(),
+		workspaceUUIDPlaceholder:   workspaceUUID.String(),
+	}
+
+	apiURL := substringReplace(trimURLSlash(routes.RouteServiceUserUpdate), replaceDict)
+	serviceUser := &types.ServiceUser{}
+	if err := c.Do(http.MethodPut, apiURL, 0, updateReq, serviceUser); err != nil {
+		return nil, err
+	}
+	return serviceUser, nil
+}
+
 func (c *iamClient) GetServiceUsers(workspaceUUID *uuid.UUID) ([]*types.ServiceUser, error) {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
@@ -57,6 +76,7 @@ func (c *iamClient) GetServiceUserByName(workspaceName string, serviceUserName s
 	}
 	return serviceUser, nil
 }
+
 func (c *iamClient) CreateServiceUser(serviceUserName string, workspace *uuid.UUID) (*types.ServiceUser, error) {
 	userRequest := &types.ServiceUserReq{
 		Name:      serviceUserName,

@@ -143,6 +143,19 @@ func (c *iamClient) BindGroup(groupName string, workspace, groupUUID, userUUID *
 	return nil
 }
 
+func (c *iamClient) BindUserToGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error {
+	replaceDict := map[string]string{
+		workspaceUUIDPlaceholder: workspaceUUID.String(),
+		groupUUIDPlaceholder:     groupUUID.String(),
+		userUUIDPlaceholder:      userUUID.String(),
+	}
+	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBindUser), replaceDict)
+	if err := c.Do(http.MethodPost, apiURL, 0, nil, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *iamClient) BindServiceUserToGroup(workspaceUUID, groupUUID, serviceUserUUID *uuid.UUID) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder:   workspaceUUID.String(),
@@ -293,19 +306,14 @@ func (c *iamClient) BulkAddServiceUsersToGroup(workspaceUUID, groupUUID uuid.UUI
 	return groupServiceUsers, nil
 }
 
-func (c *iamClient) BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, roleUUIDs []uuid.UUID) error {
+func (c *iamClient) BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, rolesWithItems []types.RoleWithItems) error {
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		groupUUIDPlaceholder:     groupUUID.String(),
 	}
 
-	roleUUIDStrings := make([]string, len(roleUUIDs))
-	for i, uuid := range roleUUIDs {
-		roleUUIDStrings[i] = uuid.String()
-	}
-
-	req := map[string][]string{
-		"roles": roleUUIDStrings,
+	req := map[string]interface{}{
+		"roles": rolesWithItems,
 	}
 
 	apiURL := substringReplace(trimURLSlash(routes.RouteGroupBulkAddRoles), replaceDict)
