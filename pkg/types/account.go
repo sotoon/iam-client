@@ -222,8 +222,9 @@ type GroupServiceUser struct {
 	ServiceUser *ServiceUser `json:"service_user"`
 }
 type GroupReq struct {
-	Name      string `json:"name"`
-	Workspace string `json:"workspace"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Workspace   string `json:"workspace"`
 }
 
 type GroupUpdateReq struct {

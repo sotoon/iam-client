@@ -58,10 +58,11 @@ func (c *iamClient) GetGroupByName(workspaceName string, groupName string) (*typ
 	}
 	return group, nil
 }
-func (c *iamClient) CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error) {
+func (c *iamClient) CreateGroup(groupName, description string, workspace *uuid.UUID) (*types.GroupRes, error) {
 	userRequest := &types.GroupReq{
-		Name:      groupName,
-		Workspace: workspace.String(),
+		Name:        groupName,
+		Description: description,
+		Workspace:   workspace.String(),
 	}
 	replaceDict := map[string]string{
 		workspaceUUIDPlaceholder: workspace.String(),

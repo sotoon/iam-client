@@ -133,7 +133,7 @@ type Client interface {
 	GetService(name string) (*types.Service, error)
 
 	BindUserToGroup(workspaceUUID, groupUUID, userUUID *uuid.UUID) error
-	
+
 	DeleteServiceUserToken(serviceUserUUID, workspaceUUID, serviceUserTokenUUID *uuid.UUID) error
 	GetWorkspaceServiceUserTokenList(serviceUserUUID, workspaceUUID *uuid.UUID) (*[]types.ServiceUserToken, error)
 	CreateServiceUserToken(serviceUserUUID, workspaceUUID *uuid.UUID) (*types.ServiceUserToken, error)
@@ -164,7 +164,7 @@ type Client interface {
 	BulkAddRolesToGroup(workspaceUUID, groupUUID uuid.UUID, rolesWithItems []types.RoleWithItems) error
 	DeleteGroup(workspaceUUID, groupUUID *uuid.UUID) error
 	GetGroupByName(workspaceName string, groupName string) (*types.Group, error)
-	CreateGroup(groupName string, workspace *uuid.UUID) (*types.GroupRes, error)
+	CreateGroup(groupName, description string, workspace *uuid.UUID) (*types.GroupRes, error)
 	UpdateGroup(workspaceUUID, groupUUID uuid.UUID, name, description *string, workspaceInfo *types.WorkspaceUpdateReq) error
 	GetGroupUser(workspaceUUID, groupUUID, userUUID *uuid.UUID) (*types.User, error)
 	GetAllGroupUserList(workspaceUUID, groupUUID *uuid.UUID) ([]*types.User, error)
