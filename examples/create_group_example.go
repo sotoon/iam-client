@@ -13,7 +13,7 @@ func main() {
 	accessToken := "{your_access_token}"
 	IAM_URL := "https://bepa.sotoon.ir"
 	workspaceId := "{workspace_uuid}"
-
+	description := "Test Group Description"
 	// Group name to create
 	groupName := "Test Group "
 
@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	createdGroup, err := client.CreateGroup(groupName, &workspaceUUID)
+	createdGroup, err := client.CreateGroup(groupName, description, &workspaceUUID)
 	if err != nil {
 		fmt.Println("error creating group:", err)
 		os.Exit(1)
