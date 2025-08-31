@@ -1,0 +1,85 @@
+package client
+
+import (
+	"fmt"
+	"net/http"
+	"regexp"
+	"testing"
+
+	"github.com/sotoon/iam-client/pkg/types"
+
+	"github.com/bxcodec/faker"
+	uuid "github.com/satori/go.uuid"
+)
+
+func TestDeleteMyUserPublicKey(t *testing.T) {
+	publicKeyUUID := uuid.NewV4()
+	conf := TestConfig{
+		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/(.+)/`),
+		ClientMethodName: "DeleteMyUserPublicKey",
+		Params:           []interface{}{&publicKeyUUID},
+		ParamsInURL:      []interface{}{&publicKeyUUID},
+	}
+	DoTestDeleteAPI(t, conf)
+}
+
+func TestGetOneDefaultUserPublicKey(t *testing.T) {
+	var object types.PublicKey
+	publicKeyUUID := uuid.NewV4()
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{&publicKeyUUID},
+		ParamNames:       []string{"UUID"},
+		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/(.+)/`),
+		ClientMethodName: "GetOneDefaultUserPublicKey",
+	}
+
+	DoTestReadAPI(t, config)
+}
+
+func TestGetAllMyUserPublicKeyList(t *testing.T) {
+	var object []types.PublicKey
+	config := TestConfig{
+		Object:           &object,
+		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
+		ClientMethodName: "GetAllMyUserPublicKeyList",
+	}
+
+	DoTestListingAPI(t, config)
+}
+
+func TestCreateMyUserPublicKey(t *testing.T) {
+	var object types.PublicKey
+	var title, keyType, key string
+	faker.FakeData(&title)
+	faker.FakeData(&keyType)
+	faker.FakeData(&key)
+
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{title, keyType, key},
+		URLregexp:        regexp.MustCompile(`/api/v1/user/.+/public-key/`),
+		ClientMethodName: "CreateMyUserPublicKey",
+	}
+	DoTestCreateAPI(t, config)
+}
+
+func TestCreatePublicKeyFromFileForDefaultUser(t *testing.T) {
+	fmt.Println("TestCreatePublicKeyFromFileForDefaultUser not implemented.")
+}
+
+func TestVerifyPublicKey(t *testing.T) {
+	var keyType, key, workspaceUUID, username, hostname string
+	faker.FakeData(&keyType)
+	faker.FakeData(&key)
+	faker.FakeData(&workspaceUUID)
+	faker.FakeData(&username)
+	faker.FakeData(&hostname)
+	config := TestConfig{
+		Params:           []interface{}{keyType, key, workspaceUUID, username, hostname},
+		URLregexp:        regexp.MustCompile(`/api/v1/public-key/verify/`),
+		ClientMethodName: "VerifyPublicKey",
+	}
+	DoTestUpdateAPI(t, config, http.MethodPost)
+
+}

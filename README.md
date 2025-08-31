@@ -1,0 +1,155 @@
+# IAM Client
+> A simple yet powerful library that empowers you using IAM APIs.
+
+## Table of Contents
+- [IAM Client](#iam-client)
+  - [Table of Contents](#table-of-contents)
+  - [General Information](#general-information)
+  - [Technologies Used](#technologies-used)
+  - [Quick Start🏎](#quick-start)
+    - [Installation](#installation)
+    - [Initialization](#initialization)
+    - [Usage](#usage)
+  - [Features](#features)
+  - [Architecture](#architecture)
+  - [Setup](#setup)
+  - [Project Status](#project-status)
+  - [Room for Improvement](#room-for-improvement)
+  - [Support Notes](#support-notes)
+  - [External Links](#external-links)
+  - [Acknowledgements](#acknowledgements)
+  - [Contact](#contact)
+
+
+## General Information
+- There are so many products that need to use Sotoon **IAM Service** as their **Identity and Access Management** engine.
+- IAM-Client is a **Golang Library** you can use it to control **the risk of API changes** and other support issues.
+- It is under active development and support of Sotoon Integration Tribe.
+
+## Technologies Used
+- Golang :)
+
+## Quick Start🏎 
+
+Simply add iam-client library latest stable version to your `go.mod` file:
+> **Note!** Please check latest version tag [here](https://github.com/sotoon/iam-client/tags).
+
+### Installation
+
+In to `go.mod` file add:
+```mod
+module your-module-path
+
+go 1.19
+
+require (
+	github.com/sotoon/iam-client v1.0.14
+)
+```
+Resolve Golang library:
+
+```bash
+go mod tidy
+go mod vendor
+```
+### Initialization
+
+Then simply use the client in your code:
+
+```golang
+import (
+	"github.com/sotoon/iam-client/pkg/types"
+)
+
+func SimpleIamClientExample() {
+    // ... initialize IAM_URL, accessToken, defaultWorkspaceId, userId
+    client, err := client.NewClient(accessToken, IAM_URL, defaultWorkspaceId, userId, client.INFO)
+    if err != nil {
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
+        // handle error or kill the process
+        return
+    }
+}
+
+func ReliableIamClientExample() {
+    // ... initialize serverUrls, accessToken, defaultWorkspaceId, userId, iamTimeout
+    client, err := return client.NewReliableClient(accessToken, serverUrls, defaultWorkspace, userUUID, iamTimeout)
+    if err != nil {
+        logger.Error("Cannot make a IAM client.", zap.Error(err))
+        // handle error or kill the process
+        return
+    }
+}
+
+```
+
+### Usage
+
+See the [interface.go](pkg/client/interface.go) file to see the full list of API functions. The usage is so simple, just call the function with your intended parameters:
+
+```golang
+// Get Workspace Data by name
+workspace, err := client.GetWorkspaceByName(workspaceName)
+
+// authorize user with Sotoon IAM System
+err := client.Authorize(identity, userType, action, object string)
+
+// identify token with Sotoon IAM System
+subject, err := client.Identify(token)
+
+
+// check if a token's owner has the permission to perform the action on the RRI object
+// example: checking if the token's owner has the permission to list compute nodes?
+action := "list"
+rriObject := "rri:v1:cafebazaar.cloud:d386c6d8-0a0a-4251-b478-2dc03241927d:compute:/core/v1/_/nodes"
+err := client.IdentifyAndAuthorize(token, action, rriObject)
+
+if err != nil {
+    // the owner of token is Not Authorized to do the action
+    return
+}
+
+```
+
+## Features
+
+1. Almost all services of Sotoon IAM System
+2. Client-Side Fail-over.
+
+## Architecture
+Brief overview of projects deployment architecture.
+
+![IAM Client Failover](./docs/client_failover.png)
+
+
+## Setup
+Please refer to [Makefile](Makefile).
+
+```bash
+make build
+
+make test
+```
+
+## Project Status
+
+Actively developing and supported.
+
+## Room for Improvement
+- Cache health-check result
+- Developer API Guide
+- Internal Mock Object in the library
+
+## Support Notes
+Nothing yet :)
+
+## External Links
+
+- [IAM](https://github.com/sotoon/iam-client): Sotoon Identity and Access Management System Repository
+
+## Acknowledgements
+Please refer to **Contributors** Section.
+
+
+## Contact
+Please contact to [Sotoon Integration Backend Team](https://github.com/sotoon)!

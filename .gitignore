@@ -1,0 +1,8 @@
+.vscode
+*.o
+*.swp
+.idea
+*.out
+bin
+config/config.yaml
+swarm/.vaultpass

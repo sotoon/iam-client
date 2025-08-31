@@ -1,0 +1,26 @@
+package client
+
+import (
+	"regexp"
+	"testing"
+
+	"github.com/sotoon/iam-client/pkg/types"
+
+	"github.com/bxcodec/faker"
+)
+
+func TestGetService(t *testing.T) {
+	var object types.Service
+	var serviceName string
+	faker.FakeData(&serviceName)
+	config := TestConfig{
+		Object:           &object,
+		Params:           []interface{}{serviceName},
+		ParamNames:       []string{"Name"},
+		ParamsInURL:      []interface{}{serviceName},
+		URLregexp:        regexp.MustCompile(`^/api/v1/service/(.+)/$`),
+		ClientMethodName: "GetService",
+	}
+
+	DoTestReadAPI(t, config)
+}
