@@ -303,7 +303,7 @@ func (c *iamClient) BulkAddRulesToRole(workspaceUUID, roleUUID uuid.UUID, ruleUU
 	}
 
 	req := map[string][]string{
-		"rules": ruleUUIDStrings,
+		"rules_uuid_list": ruleUUIDStrings,
 	}
 
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleBulkAddRules), replaceDict)
