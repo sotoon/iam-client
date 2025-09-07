@@ -36,7 +36,7 @@ type Client interface {
 	SetConfigDefaultWorkspace(uuid *uuid.UUID) error
 	GetWorkspaceServices(workspaceUUID uuid.UUID) ([]types.Service, error)
 
-	CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
+	CreateRole(roleName, description string, workspaceUUID *uuid.UUID) (*types.RoleWithCompactWorkspace, error)
 	UpdateRole(roleUUID *uuid.UUID, roleName string, workspaceUUID *uuid.UUID) (*types.Role, error)
 	GetRole(roleUUID, workspaceUUID *uuid.UUID) (*types.RoleRes, error)
 	GetRoleByName(roleName, workspaceName string) (*types.RoleRes, error)

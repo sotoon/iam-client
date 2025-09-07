@@ -9,10 +9,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (c *iamClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*types.Role, error) {
+func (c *iamClient) CreateRole(roleName, description string, workspaceUUID *uuid.UUID) (*types.RoleWithCompactWorkspace, error) {
 	roleRequest := &types.RoleReq{
-		Name:      roleName,
-		Workspace: workspaceUUID.String(),
+		Name:        roleName,
+		Description: description,
+		Workspace:   workspaceUUID.String(),
 	}
 
 	replaceDict := map[string]string{
@@ -20,7 +21,7 @@ func (c *iamClient) CreateRole(roleName string, workspaceUUID *uuid.UUID) (*type
 	}
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleCreate), replaceDict)
 
-	createdRole := &types.Role{}
+	createdRole := &types.RoleWithCompactWorkspace{}
 	if err := c.Do(http.MethodPost, apiURL, 0, roleRequest, createdRole); err != nil {
 		return nil, err
 	}
@@ -257,16 +258,16 @@ func (c *iamClient) BulkAddServiceUsersToRole(workspaceUUID, roleUUID uuid.UUID,
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
-	
+
 	serviceUserUUIDStrings := make([]string, len(serviceUserUUIDs))
 	for i, uuid := range serviceUserUUIDs {
 		serviceUserUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"service_users": serviceUserUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleBulkAddServiceUsers), replaceDict)
 	return c.Do(http.MethodPost, apiURL, 0, req, nil)
 }
@@ -276,16 +277,16 @@ func (c *iamClient) BulkAddUsersToRole(workspaceUUID, roleUUID uuid.UUID, userUU
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
-	
+
 	userUUIDStrings := make([]string, len(userUUIDs))
 	for i, uuid := range userUUIDs {
 		userUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"users": userUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleBulkAddUsers), replaceDict)
 	return c.Do(http.MethodPost, apiURL, 0, req, nil)
 }
@@ -295,16 +296,16 @@ func (c *iamClient) BulkAddRulesToRole(workspaceUUID, roleUUID uuid.UUID, ruleUU
 		workspaceUUIDPlaceholder: workspaceUUID.String(),
 		roleUUIDPlaceholder:      roleUUID.String(),
 	}
-	
+
 	ruleUUIDStrings := make([]string, len(ruleUUIDs))
 	for i, uuid := range ruleUUIDs {
 		ruleUUIDStrings[i] = uuid.String()
 	}
-	
+
 	req := map[string][]string{
 		"rules": ruleUUIDStrings,
 	}
-	
+
 	apiURL := substringReplace(trimURLSlash(routes.RouteRoleBulkAddRules), replaceDict)
 	return c.Do(http.MethodPost, apiURL, 0, req, nil)
 }

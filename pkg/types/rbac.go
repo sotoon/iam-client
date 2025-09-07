@@ -19,8 +19,9 @@ type RuleReq struct {
 	Deny    bool     `json:"deny"`
 }
 type RoleReq struct {
-	Name      string `json:"name" validate:"required"`
-	Workspace string `json:"workspace" validate:"required"`
+	Description string `json:"description_fa"`
+	Name        string `json:"name" validate:"required"`
+	Workspace   string `json:"workspace" validate:"required"`
 }
 type RoleRes struct {
 	UUID      *uuid.UUID `json:"uuid" faker:"uuidObject"`
