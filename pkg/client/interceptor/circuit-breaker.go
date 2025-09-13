@@ -1,13 +1,13 @@
 package interceptor
 
 import (
+	"context"
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/sony/gobreaker"
-	"github.com/sotoon/iam-client/pkg/client"
+	"github.com/sotoon/iam-client/pkg/models"
 )
 
 type CircuitBreakerInterceptor struct {
@@ -15,22 +15,23 @@ type CircuitBreakerInterceptor struct {
 }
 
 // NewCircuitBreakerInterceptor creates a new circuit breaker interceptor
-func NewCircuitBreakerInterceptor() *CircuitBreakerInterceptor {
-	// Create circuit breaker settings
+// if no cb provided, will make a default one.
+func NewCircuitBreakerInterceptor(cb *gobreaker.CircuitBreaker) *CircuitBreakerInterceptor {
+
+	if cb != nil {
+		return &CircuitBreakerInterceptor{
+			cb: cb,
+		}
+	}
+	// Create Default circuit breaker
+
 	cbSettings := gobreaker.Settings{
 		Name:        "HTTP_REQUEST",
 		MaxRequests: 0,                // unlimited concurrent requests
 		Interval:    10 * time.Second, // check status every 10 seconds
 		Timeout:     20 * time.Second, // how long to wait before closing circuit after it's opened
 		ReadyToTrip: func(counts gobreaker.Counts) bool {
-			return counts.ConsecutiveFailures > 0
-		},
-		OnStateChange: func(name string, from gobreaker.State, to gobreaker.State) {
-			log.Printf("Circuit breaker '%s' changed from '%v' to '%v'", name, from, to)
-			// When circuit closes again, log a message
-			if from == gobreaker.StateOpen && to == gobreaker.StateHalfOpen {
-				log.Printf("Circuit breaker is testing the connection again after timeout")
-			}
+			return counts.ConsecutiveFailures > 0 // instant circute openinig
 		},
 	}
 
@@ -40,30 +41,39 @@ func NewCircuitBreakerInterceptor() *CircuitBreakerInterceptor {
 }
 
 // BeforeRequest checks if the circuit breaker is open
-func (c *CircuitBreakerInterceptor) BeforeRequest(req *http.Request) (*http.Request, error, bool) {
-	// Check if circuit breaker is open
+func (c *CircuitBreakerInterceptor) BeforeRequest(ctx context.Context, req *http.Request) BeforeRequestData {
 	if c.cb.State() == gobreaker.StateOpen {
-		// Return error with retry=true to indicate we should retry later
-		return req, errors.New("circuit breaker is open"), true
+		return BeforeRequestData{
+			Error:   errors.New("circuit breaker is open"),
+			Retry:   true,
+			Context: ctx,
+		}
 	}
 
-	// Pass the request through unchanged, no retry needed
-	return req, nil, false
+	return BeforeRequestData{
+		Request: req,
+		Retry:   false,
+		Context: ctx,
+	}
 }
 
 // AfterResponse records failures in the circuit breaker
-func (c *CircuitBreakerInterceptor) AfterResponse(resp *http.Response, successCode int) (*http.Response, error, bool) {
-	// Check for rate limit response
+func (c *CircuitBreakerInterceptor) AfterResponse(ctx context.Context, resp *http.Response, successCode int) AfterResponseData {
 	if resp != nil && resp.StatusCode == http.StatusTooManyRequests {
-		// Record failure in the circuit breaker
 		c.cb.Execute(func() (interface{}, error) {
-			return nil, client.ErrTooManyRequests
+			return nil, models.ErrTooManyRequests
 		})
 
-		// Return error with retry flag set to true
-		return resp, client.ErrCircuitBreakerOpen, true
+		return AfterResponseData{
+			Error:   models.ErrCircuitBreakerOpen,
+			Retry:   true,
+			Context: ctx,
+		}
 	}
 
-	// No retry needed for other responses
-	return resp, nil, false
+	return AfterResponseData{
+		Response: resp,
+		Retry:    false,
+		Context:  ctx,
+	}
 }

@@ -15,6 +15,7 @@ import (
 
 	"github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/client/interceptor"
 	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/spf13/viper"
 )
@@ -38,18 +39,9 @@ const (
 const HealthyIamURLCachedKey = "healthy_iam_url"
 const CacheExpirationDuration = 10 * time.Minute
 const CacheCleanupInterval = 10 * time.Minute
-
-type ClientInterceptor interface {
-	// BeforeRequest is called before executing an HTTP request
-	// It can modify the request or perform pre-request actions
-	// Returns: modified request, error, and a boolean indicating if retry is needed
-	BeforeRequest(req *http.Request) (*http.Request, error, bool)
-
-	// AfterResponse is called after receiving an HTTP response
-	// It can modify the response or perform post-response actions
-	// Returns: modified response, error, and a boolean indicating if retry is needed
-	AfterResponse(resp *http.Response, successCode int) (*http.Response, error, bool)
-}
+const DEFAULT_TIMEOUT time.Duration = 2 * time.Second
+const MIN_TIMEOUT time.Duration = 1 * time.Second
+const MAX_TIMEOUT time.Duration = 5 * time.Second
 
 type iamClient struct {
 	accessToken       string
@@ -62,16 +54,15 @@ type iamClient struct {
 	timeout           time.Duration
 	cache             Cache
 	logger            *log.Logger
-	interceptorsChain []ClientInterceptor
+	interceptorsChain []interceptor.ClientInterceptor
+	httpClient        *http.Client
+	workerPool        chan any
 }
-
-var _ Client = &iamClient{}
 
 // Global rate limiter and worker pool configuration
 var (
 	// Worker pool
 	workerPoolSize = 5
-	workerPool     = make(chan struct{}, workerPoolSize)
 
 	// Retry configuration
 	maxRetries     = 20               // Increase max retries
@@ -93,17 +84,11 @@ type Result struct {
 	Err        error
 }
 
-func init() {
-	for i := 0; i < workerPoolSize; i++ {
-		workerPool <- struct{}{}
-	}
-}
+type Option func(client *iamClient) *iamClient
 
 func NewMinimalClient(baseURL string) (Client, error) {
 	return NewClient("", baseURL, "", "", DEBUG)
 }
-
-type Option func(client *iamClient) *iamClient
 
 // NewClient creates a new client to interact with iam server
 func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string, logLevel LogLevel, options ...Option) (Client, error) {
@@ -119,31 +104,20 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 	}
 	client.baseURL = *url
 
+	client.httpClient = &http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	client.workerPool = make(chan any, workerPoolSize)
+	for i := 0; i < workerPoolSize; i++ {
+		client.workerPool <- struct{}{}
+	}
+
 	for _, doOption := range options {
 		client = doOption(client)
 	}
 
 	return client, nil
-}
-
-const DEFAULT_TIMEOUT time.Duration = 2 * time.Second
-const MIN_TIMEOUT time.Duration = 1 * time.Second
-const MAX_TIMEOUT time.Duration = 5 * time.Second
-
-// returns a reasonable timeout if user has set a bad value
-func tuneTimeout(userTimeout time.Duration) time.Duration {
-	if userTimeout < MIN_TIMEOUT {
-		return MIN_TIMEOUT
-	}
-	if userTimeout > MAX_TIMEOUT {
-		return MAX_TIMEOUT
-	}
-	return userTimeout
-}
-
-// returns a reasonable URL if user has set a bad value
-func organizeUrl(userUrl string) string {
-	return strings.TrimSpace(userUrl)
 }
 
 func (c *iamClient) SetLogger(logger *log.Logger) {
@@ -180,6 +154,7 @@ func NewReliableClient(accessToken string, serverUrls []string, defaultWorkspace
 	if err != nil {
 		return nil, err
 	}
+
 	client.cache = cache.New(CacheExpirationDuration, CacheCleanupInterval)
 	return client, nil
 }
@@ -242,7 +217,6 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 
 	data, statusCode, err := c.processRequest(httpRequest, successCode)
 
-	fmt.Println("ssss", string(data), statusCode, err)
 	c.log("iam-client received response code:%d", statusCode)
 	c.log("iam-client received response body:%s", data)
 
@@ -261,90 +235,66 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 	}
 }
 
-// exponentialBackoff calculates the backoff duration with jitter for retries
-func exponentialBackoff(retry int, initialBackoff, maxBackoff time.Duration) time.Duration {
-	if retry <= 0 {
-		return initialBackoff
-	}
-
-	backoff := initialBackoff * time.Duration(1<<uint(retry))
-
-	jitter := time.Duration(rand.Int63n(int64(backoff) / 2))
-	backoff = backoff + jitter
-
-	if backoff > maxBackoff {
-		backoff = maxBackoff
-	}
-
-	return backoff
-}
-
 func (c *iamClient) processRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
 	resultChan := make(chan Result, 1)
+	var finalError error
 
 	// Get a worker from the pool
-	<-workerPool
-
+	<-c.workerPool
 	go func() {
 		// Return the worker to the pool when done
 		defer func() {
-			workerPool <- struct{}{}
+			c.workerPool <- struct{}{}
 		}()
-
 		// Retry loop
 	retry:
 		for retries := 0; retries <= maxRetries; retries++ {
 			// Clone the request to ensure it can be sent again
 			reqClone := httpRequest.Clone(httpRequest.Context())
 
-			var beforeErr error
-			var shouldRetry bool
+			// Get context from the request
+			ctx := reqClone.Context()
 			for _, interceptor := range c.interceptorsChain {
-				reqClone, beforeErr, shouldRetry = interceptor.BeforeRequest(reqClone)
-				if beforeErr != nil {
-					// If retry is needed and we haven't exceeded max retries
-					if shouldRetry && retries < maxRetries {
+				InterceptorData := interceptor.BeforeRequest(ctx, reqClone)
+				ctx = InterceptorData.Context // to update any context modification inside the interceptor
+				if InterceptorData.Error != nil {
+					if InterceptorData.Retry {
 						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
-						log.Printf("%s. Retrying after %v (retry %d/%d)", beforeErr.Error(), backoffDuration, retries+1, maxRetries)
+						c.log("%s. Retrying after %v (retry %d/%d)", InterceptorData.Error.Error(), backoffDuration, retries+1, maxRetries)
 						time.Sleep(backoffDuration)
+						finalError = InterceptorData.Error
 						continue retry
 					}
-
-					// If no retry needed or max retries exceeded, return the error
-					resultChan <- Result{nil, 0, beforeErr}
+					// If no retry needed return the error
+					resultChan <- Result{nil, 0, InterceptorData.Error}
 					return
 				}
 			}
 
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
-
-			// Execute the request
-			httpResponse, err := client.Do(reqClone)
+			httpResponse, err := c.httpClient.Do(reqClone)
 			if err != nil {
 				resultChan <- Result{nil, 0, err}
 				return
 			}
 
-			var afterErr error
+			// Use the same context from the request
 			for _, interceptor := range c.interceptorsChain {
-				httpResponse, afterErr, shouldRetry = interceptor.AfterResponse(httpResponse, successCode)
-				if afterErr != nil {
+				afterErrData := interceptor.AfterResponse(ctx, httpResponse, successCode)
+				ctx = afterErrData.Context // to update any context modification inside the interceptor
+				if afterErrData.Error != nil {
 					// Close response body if there's an error
 					if httpResponse != nil && httpResponse.Body != nil {
 						httpResponse.Body.Close()
 					}
-					// Return error with information about whether to retry
-					if shouldRetry && retries < maxRetries {
+					if afterErrData.Retry {
 						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
-						log.Printf("%s. Retrying after %v (retry %d/%d)", afterErr.Error(), backoffDuration, retries+1, maxRetries)
+						c.log("%s. Retrying after %v (retry %d/%d)", afterErrData.Error.Error(), backoffDuration, retries+1, maxRetries)
 						time.Sleep(backoffDuration)
+						finalError = afterErrData.Error
 						continue retry
 					}
-
-					// If no retry needed or max retries exceeded, return the error
-					resultChan <- Result{nil, 0, afterErr}
+					// If no retry needed, return the error
+					resultChan <- Result{nil, 0, afterErrData.Error}
 					return
 				}
 			}
@@ -369,12 +319,12 @@ func (c *iamClient) processRequest(httpRequest *http.Request, successCode int) (
 				statusCode = httpResponse.StatusCode
 			}
 
-			resultChan <- Result{data, statusCode, afterErr}
+			resultChan <- Result{data, statusCode, nil}
 			return
 		}
 
 		// If we've exhausted all retries
-		resultChan <- Result{nil, 0, errors.New("max retries exceeded")}
+		resultChan <- Result{nil, 0, finalError}
 	}()
 
 	// Wait for the result
@@ -417,24 +367,6 @@ func (c *iamClient) NewRequestWithParameters(method, path string, parameters map
 
 }
 
-func getHealthCheckValue(c *iamClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
-	err := healthCheck(c, serverUrl)
-	resp := types.HealthCheckResponse{ServerUrl: serverUrl.String(), Err: err}
-	if err != nil {
-		c.log("healthCheck failed. error: %v\n", err)
-		return err
-	} else {
-		select {
-		case resultChannel <- serverUrl:
-			c.log("healthCheck successful: %v\n", resp)
-			return nil
-		case <-time.After(c.timeout):
-			c.log("healthCheck not used: %v", resp)
-			return nil
-		}
-	}
-}
-
 func (c *iamClient) GetHealthyIamURL() (*url.URL, error) {
 	/*
 		A Note about the channelSize := 0
@@ -471,21 +403,6 @@ func (c *iamClient) GetBaseURL() (*url.URL, error) {
 		c.cache.Set(HealthyIamURLCachedKey, iamURL, cache.DefaultExpiration)
 	}
 	return iamURL, err
-}
-
-func createServerURL(serverURL string) (*url.URL, error) {
-	u, err := url.Parse(serverURL)
-	if err != nil {
-		return nil, err
-	}
-
-	apiURL, err := url.Parse(APIURI)
-
-	if err != nil {
-		return nil, err
-	}
-	u = u.ResolveReference(apiURL)
-	return u, nil
 }
 
 func (c *iamClient) GetServerURL() string {
@@ -553,9 +470,61 @@ func (c *iamClient) log(messageFmt string, objects ...interface{}) {
 	}
 }
 
-func OptionWithInterceptor(interceptors []ClientInterceptor) Option {
+func OptionWithInterceptor(interceptors []interceptor.ClientInterceptor) Option {
 	return func(client *iamClient) *iamClient {
 		client.interceptorsChain = interceptors
 		return client
+	}
+}
+
+// returns a reasonable timeout if user has set a bad value
+func tuneTimeout(userTimeout time.Duration) time.Duration {
+	if userTimeout < MIN_TIMEOUT {
+		return MIN_TIMEOUT
+	}
+	if userTimeout > MAX_TIMEOUT {
+		return MAX_TIMEOUT
+	}
+	return userTimeout
+}
+
+// returns a reasonable URL if user has set a bad value
+func organizeUrl(userUrl string) string {
+	return strings.TrimSpace(userUrl)
+}
+
+// exponentialBackoff calculates the backoff duration with jitter for retries
+func exponentialBackoff(retry int, initialBackoff, maxBackoff time.Duration) time.Duration {
+	if retry <= 0 {
+		return initialBackoff
+	}
+
+	backoff := initialBackoff * time.Duration(1<<uint(retry))
+
+	jitter := time.Duration(rand.Int63n(int64(backoff) / 2))
+	backoff = backoff + jitter
+
+	if backoff > maxBackoff {
+		backoff = maxBackoff
+	}
+
+	return backoff
+}
+
+func getHealthCheckValue(c *iamClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
+	err := healthCheck(c, serverUrl)
+	resp := types.HealthCheckResponse{ServerUrl: serverUrl.String(), Err: err}
+	if err != nil {
+		c.log("healthCheck failed. error: %v\n", err)
+		return err
+	} else {
+		select {
+		case resultChannel <- serverUrl:
+			c.log("healthCheck successful: %v\n", resp)
+			return nil
+		case <-time.After(c.timeout):
+			c.log("healthCheck not used: %v", resp)
+			return nil
+		}
 	}
 }
