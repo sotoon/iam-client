@@ -15,10 +15,8 @@ import (
 
 	"github.com/patrickmn/go-cache"
 	uuid "github.com/satori/go.uuid"
-	"github.com/sony/gobreaker"
 	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/spf13/viper"
-	"golang.org/x/time/rate"
 )
 
 // APIURI represents api addr to be appended to server url
@@ -41,47 +39,36 @@ const HealthyIamURLCachedKey = "healthy_iam_url"
 const CacheExpirationDuration = 10 * time.Minute
 const CacheCleanupInterval = 10 * time.Minute
 
+type ClientInterceptor interface {
+	// BeforeRequest is called before executing an HTTP request
+	// It can modify the request or perform pre-request actions
+	// Returns: modified request, error, and a boolean indicating if retry is needed
+	BeforeRequest(req *http.Request) (*http.Request, error, bool)
+
+	// AfterResponse is called after receiving an HTTP response
+	// It can modify the response or perform post-response actions
+	// Returns: modified response, error, and a boolean indicating if retry is needed
+	AfterResponse(resp *http.Response, successCode int) (*http.Response, error, bool)
+}
+
 type iamClient struct {
-	accessToken      string
-	baseURL          url.URL
-	defaultWorkspace string
-	userUUID         string
-	logLevel         LogLevel
-	apiUrlsList      []*url.URL
-	isReliable       bool
-	timeout          time.Duration
-	cache            Cache
-	logger           *log.Logger
+	accessToken       string
+	baseURL           url.URL
+	defaultWorkspace  string
+	userUUID          string
+	logLevel          LogLevel
+	apiUrlsList       []*url.URL
+	isReliable        bool
+	timeout           time.Duration
+	cache             Cache
+	logger            *log.Logger
+	interceptorsChain []ClientInterceptor
 }
 
 var _ Client = &iamClient{}
 
 // Global rate limiter and worker pool configuration
 var (
-	// Rate limiter - 5 requests per second with burst of 10
-	// Higher burst allows for better handling of request spikes
-	requestLimiter = rate.NewLimiter(rate.Limit(7), 14)
-
-	// Circuit breaker settings
-	cbSettings = gobreaker.Settings{
-		Name:        "HTTP_REQUEST",
-		MaxRequests: 0,                // unlimited concurrent requests
-		Interval:    10 * time.Second, // check status every 10 seconds
-		Timeout:     20 * time.Second, // how long to wait before closing circuit after it's opened
-		ReadyToTrip: func(counts gobreaker.Counts) bool {
-			return counts.ConsecutiveFailures > 0
-		},
-		OnStateChange: func(name string, from gobreaker.State, to gobreaker.State) {
-			log.Printf("Circuit breaker '%s' changed from '%v' to '%v'", name, from, to)
-			// When circuit closes again, log a message
-			if from == gobreaker.StateOpen && to == gobreaker.StateHalfOpen {
-				log.Printf("Circuit breaker is testing the connection again after timeout")
-			}
-		},
-	}
-
-	cb = gobreaker.NewCircuitBreaker(cbSettings)
-
 	// Worker pool
 	workerPoolSize = 5
 	workerPool     = make(chan struct{}, workerPoolSize)
@@ -116,8 +103,10 @@ func NewMinimalClient(baseURL string) (Client, error) {
 	return NewClient("", baseURL, "", "", DEBUG)
 }
 
+type Option func(client *iamClient) *iamClient
+
 // NewClient creates a new client to interact with iam server
-func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string, logLevel LogLevel) (Client, error) {
+func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID string, logLevel LogLevel, options ...Option) (Client, error) {
 	client := &iamClient{}
 	client.logLevel = logLevel
 	client.accessToken = accessToken
@@ -129,6 +118,11 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 		panic(err)
 	}
 	client.baseURL = *url
+
+	for _, doOption := range options {
+		client = doOption(client)
+	}
+
 	return client, nil
 }
 
@@ -246,8 +240,9 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 		httpRequest.Header.Add("Content-Type", "application/json")
 	}
 
-	data, statusCode, err := processRequest(httpRequest, successCode)
+	data, statusCode, err := c.processRequest(httpRequest, successCode)
 
+	fmt.Println("ssss", string(data), statusCode, err)
 	c.log("iam-client received response code:%d", statusCode)
 	c.log("iam-client received response body:%s", data)
 
@@ -284,7 +279,7 @@ func exponentialBackoff(retry int, initialBackoff, maxBackoff time.Duration) tim
 	return backoff
 }
 
-func processRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
+func (c *iamClient) processRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
 	resultChan := make(chan Result, 1)
 
 	// Get a worker from the pool
@@ -292,74 +287,90 @@ func processRequest(httpRequest *http.Request, successCode int) ([]byte, int, er
 
 	go func() {
 		// Return the worker to the pool when done
-		defer func() { workerPool <- struct{}{} }()
+		defer func() {
+			workerPool <- struct{}{}
+		}()
 
 		// Retry loop
+	retry:
 		for retries := 0; retries <= maxRetries; retries++ {
+			// Clone the request to ensure it can be sent again
+			reqClone := httpRequest.Clone(httpRequest.Context())
 
-			cbState := cb.State()
-			if cbState == gobreaker.StateOpen {
-				backoffDuration := exponentialBackoff(retries-1, initialBackoff, maxBackoff)
-				log.Printf("Retrying request after %v (retry %d/%d)", backoffDuration, retries, maxRetries)
-				time.Sleep(backoffDuration)
-				continue
-			}
-
-			resp, err := cb.Execute(func() (interface{}, error) {
-				// Clone the request to ensure it can be sent again
-				reqClone := httpRequest.Clone(httpRequest.Context())
-
-				client := &http.Client{
-					Timeout: 30 * time.Second,
-				}
-
-				httpResponse, err := client.Do(reqClone)
-				if err != nil {
-					return nil, err
-				}
-
-				if httpResponse.StatusCode == http.StatusTooManyRequests {
-					httpResponse.Body.Close()
-					return nil, ErrTooManyRequests
-				}
-
-				defer httpResponse.Body.Close()
-
-				err = ensureStatusOK(httpResponse, successCode)
-				_, ok := err.(*HTTPResponseError)
-
-				if err == nil || ok {
-					data, innerErr := io.ReadAll(httpResponse.Body)
-					if innerErr != nil {
-						return nil, innerErr
+			var beforeErr error
+			var shouldRetry bool
+			for _, interceptor := range c.interceptorsChain {
+				reqClone, beforeErr, shouldRetry = interceptor.BeforeRequest(reqClone)
+				if beforeErr != nil {
+					// If retry is needed and we haven't exceeded max retries
+					if shouldRetry && retries < maxRetries {
+						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
+						log.Printf("%s. Retrying after %v (retry %d/%d)", beforeErr.Error(), backoffDuration, retries+1, maxRetries)
+						time.Sleep(backoffDuration)
+						continue retry
 					}
-					return &Result{data, httpResponse.StatusCode, err}, nil
+
+					// If no retry needed or max retries exceeded, return the error
+					resultChan <- Result{nil, 0, beforeErr}
+					return
 				}
-
-				return &Result{nil, httpResponse.StatusCode, err}, nil
-			})
-
-			if errors.Is(err, ErrTooManyRequests) {
-				backoffDuration := exponentialBackoff(retries, initialBackoff*2, maxBackoff)
-				log.Printf("Rate limited (429). Retrying after %v (retry %d/%d)", backoffDuration, retries+1, maxRetries)
-				time.Sleep(backoffDuration)
-				continue // Retry
 			}
 
-			// For any other error, return the result
+			client := &http.Client{
+				Timeout: 30 * time.Second,
+			}
+
+			// Execute the request
+			httpResponse, err := client.Do(reqClone)
 			if err != nil {
 				resultChan <- Result{nil, 0, err}
 				return
 			}
 
-			// Type assertion for the result
-			if result, ok := resp.(*Result); ok {
-				resultChan <- *result
-				return // Success, exit retry loop
-			} else {
-				resultChan <- Result{nil, 0, errors.New("invalid response type")}
-				return
+			var afterErr error
+			for _, interceptor := range c.interceptorsChain {
+				httpResponse, afterErr, shouldRetry = interceptor.AfterResponse(httpResponse, successCode)
+				if afterErr != nil {
+					// Close response body if there's an error
+					if httpResponse != nil && httpResponse.Body != nil {
+						httpResponse.Body.Close()
+					}
+					// Return error with information about whether to retry
+					if shouldRetry && retries < maxRetries {
+						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
+						log.Printf("%s. Retrying after %v (retry %d/%d)", afterErr.Error(), backoffDuration, retries+1, maxRetries)
+						time.Sleep(backoffDuration)
+						continue retry
+					}
+
+					// If no retry needed or max retries exceeded, return the error
+					resultChan <- Result{nil, 0, afterErr}
+					return
+				}
 			}
+
+			var data []byte
+			if httpResponse != nil && httpResponse.Body != nil {
+				defer httpResponse.Body.Close()
+				if err := ensureStatusOK(httpResponse, successCode); err != nil {
+					resultChan <- Result{nil, 0, err}
+					return
+				}
+
+				data, err = io.ReadAll(httpResponse.Body)
+				if err != nil {
+					resultChan <- Result{nil, 0, err}
+					return
+				}
+			}
+
+			statusCode := 0
+			if httpResponse != nil {
+				statusCode = httpResponse.StatusCode
+			}
+
+			resultChan <- Result{data, statusCode, afterErr}
+			return
 		}
 
 		// If we've exhausted all retries
@@ -396,6 +407,9 @@ func (c *iamClient) NewRequestWithParameters(method, path string, parameters map
 	fullPath := serverAddress.ResolveReference(pathURL)
 
 	req, err := http.NewRequest(method, fullPath.String(), body)
+	if err != nil {
+		return nil, err
+	}
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", c.accessToken))
@@ -536,5 +550,12 @@ func (c *iamClient) log(messageFmt string, objects ...interface{}) {
 
 	if c.logLevel <= LogLevel(DEBUG) {
 		c.logger.Printf(messageFmt, objects...)
+	}
+}
+
+func OptionWithInterceptor(interceptors []ClientInterceptor) Option {
+	return func(client *iamClient) *iamClient {
+		client.interceptorsChain = interceptors
+		return client
 	}
 }
