@@ -22,7 +22,7 @@ func (c *iamClient) Authorize(identity, userType, action, object string) error {
 	query.Set("action", action)
 
 	req.URL.RawQuery = query.Encode()
-	data, statusCode, errRes := processRequest(req, 0)
+	data, statusCode, errRes := c.processRequestInWorkers(req, 0)
 	if errRes == nil {
 		c.log("user %v is authorized", identity)
 		return nil

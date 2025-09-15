@@ -2,16 +2,19 @@ package client
 
 import (
 	"log"
+	"net/http"
 	"net/url"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/client/interceptor"
 	"github.com/sotoon/iam-client/pkg/types"
 )
 
 // Client represents iam client interface
 type Client interface {
-
+	AddInterceptor(i interceptor.ClientInterceptor)
+	ProcessRequest(httpRequest *http.Request, successCode int, id string) (*http.Response, error)
 	// IsHealthy reports if the client can connect to the IAM Server
 	// For ReliableClient returns (true, nil) if it can connect to `at least one` healthy IAM Server endpoint
 	// For SimpleClient returns (true, nil) if it can connect to `the exactly one` IAM Server Endpoint and it is healthy

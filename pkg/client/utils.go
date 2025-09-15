@@ -11,19 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sotoon/iam-client/pkg/models"
 	"github.com/sotoon/iam-client/pkg/types"
 	"github.com/spf13/viper"
 )
 
-var (
-	ErrNotMatched          = errors.New("not matched")
-	ErrForbidden           = errors.New("forbidden")
-	ErrNotFound            = errors.New("not exists")
-	ErrUnauthorized        = errors.New("unauthorized")
-	ErrBadRequest          = errors.New("bad request")
-	ErrTooManyRequests     = errors.New("too many requests")
-	ErrInternalServerError = errors.New("internal server error")
-)
+// Error definitions moved to pkg/models/errors.go
 
 // HTTPResponseError is a type for errors on http requests based on status code
 type HTTPResponseError struct {
@@ -60,20 +53,20 @@ func ensureStatusOK(resp *http.Response, successCode int) error {
 
 	switch httpStatusCodeRange {
 	case 2:
-		return createFaultyHTTPResponseError(resp.StatusCode, ErrNotMatched)
+		return createFaultyHTTPResponseError(resp.StatusCode, models.ErrNotMatched)
 	case 4:
 		switch resp.StatusCode {
 		case http.StatusNotFound:
-			return createHTTPResponseError(resp.StatusCode, ErrNotFound)
+			return createHTTPResponseError(resp.StatusCode, models.ErrNotFound)
 		case http.StatusForbidden:
-			return createHTTPResponseError(resp.StatusCode, ErrForbidden)
+			return createHTTPResponseError(resp.StatusCode, models.ErrForbidden)
 		case http.StatusBadRequest:
-			return createHTTPResponseError(resp.StatusCode, ErrBadRequest)
+			return createHTTPResponseError(resp.StatusCode, models.ErrBadRequest)
 		case http.StatusTooManyRequests:
-			return createHTTPResponseError(resp.StatusCode, ErrTooManyRequests)
+			return createHTTPResponseError(resp.StatusCode, models.ErrTooManyRequests)
 		}
 	case 5:
-		return createFaultyHTTPResponseError(resp.StatusCode, ErrInternalServerError)
+		return createFaultyHTTPResponseError(resp.StatusCode, models.ErrInternalServerError)
 	}
 
 	body, err := io.ReadAll(resp.Body)

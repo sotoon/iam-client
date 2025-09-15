@@ -13,6 +13,7 @@ import (
 
 	"github.com/bxcodec/faker"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sotoon/iam-client/pkg/models"
 
 	"github.com/stretchr/testify/require"
 )
@@ -250,7 +251,7 @@ func DoTestListingAPI(t *testing.T, config TestConfig) {
 	faker.FakeData(config.Object)
 	testCases := []httpTestCase{
 		{200, nil},
-		{403, ErrForbidden},
+		{403, models.ErrForbidden},
 	}
 	for _, tc := range testCases {
 		s := createTestServer(t, &config, &tc, http.MethodGet)
@@ -279,8 +280,8 @@ func DoTestReadAPI(t *testing.T, config TestConfig) {
 	}
 	testCases := []httpTestCase{
 		{200, nil},
-		{403, ErrForbidden},
-		{404, ErrNotFound},
+		{403, models.ErrForbidden},
+		{404, models.ErrNotFound},
 	}
 
 	for _, tc := range testCases {
@@ -307,8 +308,8 @@ func DoTestReadAPI(t *testing.T, config TestConfig) {
 func DoTestDeleteAPI(t *testing.T, config TestConfig) {
 	testCases := []httpTestCase{
 		{204, nil},
-		{403, ErrForbidden},
-		{404, ErrNotFound},
+		{403, models.ErrForbidden},
+		{404, models.ErrNotFound},
 	}
 	for _, tc := range testCases {
 		s := createTestServer(t, &config, &tc, http.MethodDelete)
@@ -332,8 +333,8 @@ func DoTestCreateAPI(t *testing.T, config TestConfig) {
 
 	testCases := []httpTestCase{
 		{201, nil},
-		{403, ErrForbidden},
-		{400, ErrBadRequest},
+		{403, models.ErrForbidden},
+		{400, models.ErrBadRequest},
 	}
 	for _, tc := range testCases {
 		s := createTestServer(t, &config, &tc, http.MethodPost)
@@ -360,8 +361,8 @@ func DoTestUpdateAPI(t *testing.T, config TestConfig, httpMethod string) {
 
 	testCases := []httpTestCase{
 		{200, nil},
-		{403, ErrForbidden},
-		{400, ErrBadRequest},
+		{403, models.ErrForbidden},
+		{400, models.ErrBadRequest},
 	}
 	for _, tc := range testCases {
 		s := createTestServer(t, &config, &tc, httpMethod)
