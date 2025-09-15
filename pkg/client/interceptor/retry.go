@@ -6,41 +6,59 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
+	"github.com/sotoon/iam-client/pkg/models"
 )
 
 type ClientHandler interface {
 	ProcessRequest(httpRequest *http.Request, successCode int, id string) (*http.Response, error)
 }
 
-type Backoff interface {
+type BackoffTimer interface {
 	TimeToWait(iteration int) time.Duration
 }
 
+type RetryDecider interface {
+	// ShouldRetry determines whether a failed HTTP request should be retried.
+	// It receives the HTTP response (if any), the error (if any), and retry metadata.
+	// Returns:
+	//   - bool: true if the request should be retried, false otherwise
+	//   - error: non-nil if an error occurred during the decision process. returning error stops the whole interceptorsChain.
+	ShouldRetry(*http.Response, error, RetryInternalData) (bool, error)
+}
+
+type RetryInternalData struct {
+	RetryCount int
+}
+
 type RetryInterceptor struct {
-	maxRetries      int
-	maxBackoff      time.Duration
 	cache           *cache.Cache
 	clientHandler   ClientHandler
-	backoffStrategy Backoff
+	backoffStrategy BackoffTimer
+	retryDecider    RetryDecider
 }
 
-type retryInternalData struct {
-	retryCount int
-}
-
-func NewRetryInterceptor(maxRetries int, maxBackoffDuration time.Duration, clientHandler ClientHandler, backoffStrategy Backoff) *RetryInterceptor {
+func NewRetryInterceptor(clientHandler ClientHandler, backoffStrategy BackoffTimer, retryDecider RetryDecider) *RetryInterceptor {
 	return &RetryInterceptor{
-		maxRetries:      maxRetries,
-		maxBackoff:      maxBackoffDuration,
 		cache:           cache.New(time.Minute, time.Minute*15),
 		clientHandler:   clientHandler,
 		backoffStrategy: backoffStrategy,
+		retryDecider:    retryDecider,
 	}
 }
 
 func (e *RetryInterceptor) BeforeRequest(data InterceptorData) InterceptorData {
 	if data.Error != nil {
-		e.sleep(data)
+
+		d := e.getRetryInternalData(data)
+		if shouldRetry, err := e.retryDecider.ShouldRetry(data.Response, data.Error, d); !shouldRetry {
+			if err != nil {
+				panic(err)
+			}
+			return data
+		}
+
+		time.Sleep(e.backoffStrategy.TimeToWait(d.RetryCount))
+
 		response, err := e.clientHandler.ProcessRequest(data.Request, 0, data.ID)
 		if err != nil || response.StatusCode >= 400 {
 			data.Error = err
@@ -54,34 +72,39 @@ func (e *RetryInterceptor) BeforeRequest(data InterceptorData) InterceptorData {
 
 func (e *RetryInterceptor) AfterResponse(data InterceptorData) InterceptorData {
 
-	if data.Error != nil || data.Response.StatusCode >= 400 {
-		e.sleep(data)
-		response, err := e.clientHandler.ProcessRequest(data.InitialRequest, 0, data.ID)
-		data.Response = response
-		if err != nil || response.StatusCode >= 400 {
-			data.Error = err
-			return e.AfterResponse(data)
+	d := e.getRetryInternalData(data)
+	if shouldRetry, err := e.retryDecider.ShouldRetry(data.Response, data.Error, d); !shouldRetry {
+		if err != nil {
+			panic(err)
 		}
-		data.Error = nil
+		return data
 	}
+
+	time.Sleep(e.backoffStrategy.TimeToWait(d.RetryCount))
+
+	response, err := e.clientHandler.ProcessRequest(data.InitialRequest, 0, data.ID)
+	data.Response = response
+	if err != nil || response.StatusCode >= 400 {
+		data.Error = err
+		return e.AfterResponse(data)
+	}
+	data.Error = nil
+
 	return data
 }
 
-func (e *RetryInterceptor) sleep(data InterceptorData) {
+func (e *RetryInterceptor) getRetryInternalData(data InterceptorData) RetryInternalData {
 	internalData, found := e.cache.Get(data.ID)
-	var d retryInternalData
+	var d RetryInternalData
 	if found {
-		d = internalData.(retryInternalData)
-		if d.retryCount >= e.maxRetries {
-			panic(data.Error)
-		}
-		d.retryCount++
+		d = internalData.(RetryInternalData)
+		d.RetryCount++
 		e.cache.Set(data.ID, d, cache.DefaultExpiration)
 	} else {
-		d := retryInternalData{retryCount: 1}
+		d = RetryInternalData{RetryCount: 1}
 		e.cache.Set(data.ID, d, cache.DefaultExpiration)
 	}
-	time.Sleep(e.backoffStrategy.TimeToWait(d.retryCount))
+	return d
 }
 
 /////////////////////////////////////////
@@ -132,4 +155,32 @@ func NewRetryInterceptor_BackoffStrategyLinier(baseDuration time.Duration) Backo
 
 func (b BackoffStrategyLinier) TimeToWait(iteration int) time.Duration {
 	return b.baseDuration
+}
+
+/////////////////////////////////////
+
+type RetryDeciderAll struct {
+	maxRetries int
+}
+
+func NewRetryInterceptor_RetryDeciderAll(maxRetries int) RetryDeciderAll {
+	return RetryDeciderAll{
+		maxRetries: maxRetries,
+	}
+}
+
+func (r RetryDeciderAll) ShouldRetry(response *http.Response, err error, retryData RetryInternalData) (bool, error) {
+
+	if retryData.RetryCount >= r.maxRetries {
+		if err != nil {
+			return false, err
+		}
+		return false, models.ErrMaxRetriesExceeded
+	}
+
+	if err != nil || (response != nil && response.StatusCode >= 400) {
+		return true, nil
+	}
+
+	return false, nil
 }

@@ -33,7 +33,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	client.AddInterceptor(interceptor.NewRetryInterceptor(10, time.Second*10, client, interceptor.NewRetryInterceptor_ExponentialBackoff(time.Second, time.Second*10)))
+	client.AddInterceptor(
+		interceptor.NewRetryInterceptor(
+			client,
+			interceptor.NewRetryInterceptor_ExponentialBackoff(time.Second, time.Second*10),
+			interceptor.NewRetryInterceptor_RetryDeciderAll(10),
+		))
 
 	for i := 0; i < 100; i++ {
 		wg.Add(1)

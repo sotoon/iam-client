@@ -27,7 +27,7 @@ var CircuteBreakerForJust429 = gobreaker.NewCircuitBreaker(gobreaker.Settings{
 })
 
 // NewCircuitBreakerInterceptor creates a new circuit breaker interceptor
-// faced status codes (codes>=400) are passed as simple string to ReadyToTrip function.
+// faced status codes (including 2xx) are passed as simple string to ReadyToTrip function.
 func NewCircuitBreakerInterceptor(cb *gobreaker.CircuitBreaker, abortOnFailure bool) *CircuitBreakerInterceptor {
 	if cb == nil {
 		panic("cb should not be nil")
@@ -54,17 +54,18 @@ func (c *CircuitBreakerInterceptor) BeforeRequest(data InterceptorData) Intercep
 
 // AfterResponse records failures in the circuit breaker
 func (c *CircuitBreakerInterceptor) AfterResponse(data InterceptorData) InterceptorData {
-	if data.Response != nil && data.Response.StatusCode >= 400 {
+	if data.Response != nil {
 		c.cb.Execute(func() (interface{}, error) {
+			// pass status code to IsSuccessful function
 			return nil, fmt.Errorf("%d", data.Response.StatusCode)
 		})
 
-		if c.abortOnFailure {
-			panic(models.ErrTooManyRequests)
+		if data.Error != nil {
+			if c.abortOnFailure {
+				panic(data.Error)
+			}
+			return data
 		}
-
-		data.Error = models.ErrTooManyRequests
-		return data
 	}
 
 	return data
