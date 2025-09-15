@@ -2,12 +2,12 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -63,11 +63,6 @@ type iamClient struct {
 var (
 	// Worker pool
 	workerPoolSize = 5
-
-	// Retry configuration
-	maxRetries     = 20               // Increase max retries
-	initialBackoff = 4 * time.Second  // Start with a longer backoff
-	maxBackoff     = 10 * time.Second // Allow longer max backoff
 )
 
 // Request represents an HTTP request to be processed
@@ -118,6 +113,10 @@ func NewClient(accessToken string, baseURL string, defaultWorkspace, userUUID st
 	}
 
 	return client, nil
+}
+
+func (c *iamClient) AddInterceptor(i interceptor.ClientInterceptor) {
+	c.interceptorsChain = append(c.interceptorsChain, i)
 }
 
 func (c *iamClient) SetLogger(logger *log.Logger) {
@@ -215,7 +214,7 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 		httpRequest.Header.Add("Content-Type", "application/json")
 	}
 
-	data, statusCode, err := c.processRequest(httpRequest, successCode)
+	data, statusCode, err := c.processRequestInWorkers(httpRequest, successCode)
 
 	c.log("iam-client received response code:%d", statusCode)
 	c.log("iam-client received response body:%s", data)
@@ -235,101 +234,103 @@ func (c *iamClient) DoWithParams(method, path string, parameters map[string]stri
 	}
 }
 
-func (c *iamClient) processRequest(httpRequest *http.Request, successCode int) ([]byte, int, error) {
-	resultChan := make(chan Result, 1)
-	var finalError error
+func (c *iamClient) ProcessRequest(request *http.Request, successCode int, id string) (*http.Response, error) {
 
+	var interceptorPanicError error
+
+	recoverPanic := func() {
+		if r := recover(); r != nil {
+			switch rr := r.(type) {
+			case error:
+				interceptorPanicError = rr
+			default:
+				interceptorPanicError = fmt.Errorf("%v", rr)
+			}
+		}
+	}
+
+	httpRequest := request.Clone(context.Background())
+	// Get context from the request
+	ctx := httpRequest.Context()
+	var interceptorData = interceptor.InterceptorData{
+		ID:             id,
+		InitialRequest: request,
+		Request:        httpRequest,
+		Context:        ctx,
+		Response:       nil,
+		Error:          nil,
+	}
+	for _, interceptorFunc := range c.interceptorsChain {
+		func() {
+			defer recoverPanic()
+			interceptorData = interceptorFunc.BeforeRequest(interceptorData)
+		}()
+		if interceptorPanicError != nil {
+			return nil, interceptorPanicError
+		}
+		if interceptorData.Response != nil {
+			// interceptor has already handled the request
+			return interceptorData.Response, nil
+		}
+	}
+
+	if interceptorData.Error != nil {
+		return nil, interceptorData.Error
+	}
+
+	httpResponse, err := c.httpClient.Do(interceptorData.Request)
+	if err != nil {
+		return nil, err
+	}
+	interceptorData.Response = httpResponse
+
+	for _, interceptorFunc := range c.interceptorsChain {
+		func() {
+			defer recoverPanic()
+			interceptorData = interceptorFunc.AfterResponse(interceptorData)
+		}()
+		if interceptorPanicError != nil {
+			return nil, interceptorPanicError
+		}
+	}
+	if interceptorData.Error != nil {
+		return nil, interceptorData.Error
+	}
+
+	return interceptorData.Response, nil
+}
+
+func (c *iamClient) processRequestInWorkers(httpRequest *http.Request, successCode int) ([]byte, int, error) {
 	// Get a worker from the pool
 	<-c.workerPool
-	go func() {
-		// Return the worker to the pool when done
-		defer func() {
-			c.workerPool <- struct{}{}
-		}()
-		// Retry loop
-	retry:
-		for retries := 0; retries <= maxRetries; retries++ {
-			// Clone the request to ensure it can be sent again
-			reqClone := httpRequest.Clone(httpRequest.Context())
-
-			// Get context from the request
-			ctx := reqClone.Context()
-			for _, interceptor := range c.interceptorsChain {
-				InterceptorData := interceptor.BeforeRequest(ctx, reqClone)
-				ctx = InterceptorData.Context // to update any context modification inside the interceptor
-				if InterceptorData.Error != nil {
-					if InterceptorData.Retry {
-						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
-						c.log("%s. Retrying after %v (retry %d/%d)", InterceptorData.Error.Error(), backoffDuration, retries+1, maxRetries)
-						time.Sleep(backoffDuration)
-						finalError = InterceptorData.Error
-						continue retry
-					}
-					// If no retry needed return the error
-					resultChan <- Result{nil, 0, InterceptorData.Error}
-					return
-				}
-			}
-
-			httpResponse, err := c.httpClient.Do(reqClone)
-			if err != nil {
-				resultChan <- Result{nil, 0, err}
-				return
-			}
-
-			// Use the same context from the request
-			for _, interceptor := range c.interceptorsChain {
-				afterErrData := interceptor.AfterResponse(ctx, httpResponse, successCode)
-				ctx = afterErrData.Context // to update any context modification inside the interceptor
-				if afterErrData.Error != nil {
-					// Close response body if there's an error
-					if httpResponse != nil && httpResponse.Body != nil {
-						httpResponse.Body.Close()
-					}
-					if afterErrData.Retry {
-						backoffDuration := exponentialBackoff(retries, initialBackoff, maxBackoff)
-						c.log("%s. Retrying after %v (retry %d/%d)", afterErrData.Error.Error(), backoffDuration, retries+1, maxRetries)
-						time.Sleep(backoffDuration)
-						finalError = afterErrData.Error
-						continue retry
-					}
-					// If no retry needed, return the error
-					resultChan <- Result{nil, 0, afterErrData.Error}
-					return
-				}
-			}
-
-			var data []byte
-			if httpResponse != nil && httpResponse.Body != nil {
-				defer httpResponse.Body.Close()
-				if err := ensureStatusOK(httpResponse, successCode); err != nil {
-					resultChan <- Result{nil, 0, err}
-					return
-				}
-
-				data, err = io.ReadAll(httpResponse.Body)
-				if err != nil {
-					resultChan <- Result{nil, 0, err}
-					return
-				}
-			}
-
-			statusCode := 0
-			if httpResponse != nil {
-				statusCode = httpResponse.StatusCode
-			}
-
-			resultChan <- Result{data, statusCode, nil}
-			return
-		}
-
-		// If we've exhausted all retries
-		resultChan <- Result{nil, 0, finalError}
+	defer func() {
+		c.workerPool <- struct{}{}
 	}()
 
-	// Wait for the result
-	result := <-resultChan
-	return result.Data, result.StatusCode, result.Err
+	httpResponse, err := c.ProcessRequest(httpRequest, successCode, uuid.NewV1().String())
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var data []byte
+	if httpResponse != nil && httpResponse.Body != nil {
+		defer httpResponse.Body.Close()
+		if err := ensureStatusOK(httpResponse, successCode); err != nil {
+			return nil, 0, err
+		}
+		var err error
+		data, err = io.ReadAll(httpResponse.Body)
+		if err != nil {
+			return nil, 0, err
+		}
+	}
+
+	statusCode := 0
+	if httpResponse != nil {
+		statusCode = httpResponse.StatusCode
+	}
+
+	return data, statusCode, nil
 }
 
 func (c *iamClient) NewRequest(method, path string, body io.Reader) (*http.Request, error) {
@@ -491,24 +492,6 @@ func tuneTimeout(userTimeout time.Duration) time.Duration {
 // returns a reasonable URL if user has set a bad value
 func organizeUrl(userUrl string) string {
 	return strings.TrimSpace(userUrl)
-}
-
-// exponentialBackoff calculates the backoff duration with jitter for retries
-func exponentialBackoff(retry int, initialBackoff, maxBackoff time.Duration) time.Duration {
-	if retry <= 0 {
-		return initialBackoff
-	}
-
-	backoff := initialBackoff * time.Duration(1<<uint(retry))
-
-	jitter := time.Duration(rand.Int63n(int64(backoff) / 2))
-	backoff = backoff + jitter
-
-	if backoff > maxBackoff {
-		backoff = maxBackoff
-	}
-
-	return backoff
 }
 
 func getHealthCheckValue(c *iamClient, serverUrl *url.URL, resultChannel chan *url.URL) error {
