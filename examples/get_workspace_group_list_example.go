@@ -26,7 +26,6 @@ func main() {
 		client.INFO,
 		client.OptionWithInterceptor([]interceptor.ClientInterceptor{
 			interceptor.NewCircuitBreakerInterceptor(nil),
-			//interceptor.NewRetryInterceptor(),
 		}))
 	if err != nil {
 		fmt.Println("cannot create client:", err)
